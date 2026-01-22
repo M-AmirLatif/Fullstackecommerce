@@ -1,0 +1,102 @@
+extends ../layout
+
+block content
+  // ========== HERO SECTION ==========
+  section.hero
+    .hero-inner
+      .hero-left
+        h1.hero-title 🎉 Shop Smarter with E-Shop
+        p.hero-sub Discover premium products at unbeatable prices. Free shipping on orders over $50!
+        .hero-actions
+          a.btn(href='/shop') 🛍️ Browse All Products
+          a.btn.btn-outline(href='/shop?featured=true') ⭐ View Special Deals
+      .hero-right
+        img(src='/images/hero-image.png', alt='Hero Banner', onerror="this.style.display='none'")
+
+  // ========== FEATURED PRODUCTS SECTION ==========
+  section.container
+    .section-head
+      h2 ⭐ Featured Products
+      a.section-link(href='/shop') See All →
+    
+    if (products && products.length > 0)
+      .products-grid
+        each product in products.slice(0, 8)
+          .product
+            .product-media(style="position: relative; background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); display: flex; align-items: center; justify-content: center;")
+              if product.image && product.image.length > 0
+                img(src=product.image, alt=product.name, style="width: 100%; height: 100%; object-fit: cover; object-position: center;", onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\"font-size: 2rem; color: #999;\">📦</span>'", loading="lazy")
+              else
+                span(style="font-size: 2rem; color: #999;") 📦
+            .product-body
+              h3= product.name
+              .price $#{(product.price || 0).toFixed(2)}
+              a.btn(href='/product/#{product._id}') View Details
+              form(action='/cart/add', method='POST')
+                input(type='hidden', name='productId', value=product._id)
+                button.btn.btn-secondary(type='submit') 🛒 Add to Cart
+    else
+      .card
+        p.text-center No products available yet. Check back soon!
+
+  // ========== CATEGORIES SECTION ==========
+  section.container
+    .section-head
+      h2 🏪 Shop by Category
+    .categories-grid
+      .category-card
+        .category-img-wrapper
+          img(src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop&q=80', alt='Electronics')
+        .category-content
+          h3 Electronics
+          p Premium tech & gadgets
+          a.btn-category(href='/shop?category=Electronics') Shop Now →
+      
+      .category-card
+        .category-img-wrapper
+          img(src='https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop&q=80', alt='Clothing')
+        .category-content
+          h3 Clothing
+          p Fashion & apparel
+          a.btn-category(href='/shop?category=Clothing') Shop Now →
+      
+      .category-card
+        .category-img-wrapper
+          img(src='https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop&q=80', alt='Accessories')
+        .category-content
+          h3 Accessories
+          p Stylish accessories
+          a.btn-category(href='/shop?category=Accessories') Shop Now →
+
+  // ========== BEST SELLERS SECTION ==========
+  section.container
+    .section-head
+      h2 🔥 Best Sellers
+      a.section-link(href='/shop?sort=bestseller') See All →
+    
+    if (bestSellers && bestSellers.length > 0)
+      .products-grid
+        each product in bestSellers.slice(0, 8)
+          .product
+            .product-media(style="position: relative; background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); display: flex; align-items: center; justify-content: center;")
+              if product.image && product.image.length > 0
+                img(src=product.image, alt=product.name, style="width: 100%; height: 100%; object-fit: cover; object-position: center;", onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\"font-size: 2rem; color: #999;\">📦</span>'", loading="lazy")
+              else
+                span(style="font-size: 2rem; color: #999;") 📦
+            .product-body
+              h3= product.name
+              .price $#{(product.price || 0).toFixed(2)}
+              a.btn(href='/product/#{product._id}') View Details
+              form(action='/cart/add', method='POST')
+                input(type='hidden', name='productId', value=product._id)
+                button.btn.btn-secondary(type='submit') 🛒 Add to Cart
+    else
+      .card
+        p.text-center No bestsellers available yet!
+
+  // ========== PROMOTIONAL BANNERS ==========
+  section.container
+    .promo-banner
+      h3 🎁 Exclusive Offer
+      p Save 20% on your first purchase with code: WELCOME20
+      a.btn(href='/shop') Shop Now

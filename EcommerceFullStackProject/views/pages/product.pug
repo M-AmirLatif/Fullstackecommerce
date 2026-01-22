@@ -1,0 +1,90 @@
+extends ../layout
+
+block content
+  // Shop Header
+  section.hero
+    .hero-inner(style="flex-direction: column; text-align: center;")
+      .hero-left(style="flex: none;")
+        h1.hero-title 🛍️ Shop Our Collection
+        p.hero-sub Discover thousands of products from top brands at unbeatable prices.
+
+  .container
+    // Filters Section
+    .card
+      h3 🔍 Filter Products
+      form.shop-filters(action="/shop" method="GET")
+        .filter-grid
+          .form-group
+            label(for="category") Category
+            select#category(name="category")
+              option(value="") All Categories
+              if categories && categories.length
+                each c in categories
+                  option(value=c, selected=(c===selectedCategory))= c
+
+          .form-group
+            label(for="minPrice") Minimum Price
+            input#minPrice(type="number" name="minPrice" placeholder="$0" value=minPrice || '')
+
+          .form-group
+            label(for="maxPrice") Maximum Price
+            input#maxPrice(type="number" name="maxPrice" placeholder="$1000" value=maxPrice || '')
+
+          .field-btn
+            button.btn(type="submit") 🔎 Apply Filters
+            a.btn.btn-outline(href="/shop") ↺ Reset All
+
+  // Products Display
+  .container
+    if !products || products.length === 0
+      .card
+        .text-center
+          p(style="font-size: 2rem; margin-bottom: 1rem;") 🔍
+          h3 No Products Found
+          p(style="color: var(--gray);") Try adjusting your filters or browse all products.
+          a.btn(href="/shop") Browse All Products
+    else
+      .section-head
+        h2 📦 Results (#{products.length} product#{products.length !== 1 ? 's' : ''})
+        if totalPages && totalPages > 1
+          span.text-muted Page #{currentPage} of #{totalPages}
+
+      .products-grid
+        each p in products
+          .product
+            .product-media(style="position: relative; background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); display: flex; align-items: center; justify-content: center;")
+              if p.image && p.image.length > 0
+                img(
+                  src=p.image,
+                  alt=p.name,
+                  style="width: 100%; height: 100%; object-fit: cover; object-position: center;",
+                  onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.innerHTML='<span style=\"font-size: 3rem; color: #999;\">📦</span>'",
+                  loading="lazy"
+                )
+              else
+                span(style="font-size: 3rem; color: #999;") 📦
+              
+              if p.category
+                span.badge(style="position: absolute; top: 10px; right: 10px;")= p.category
+
+            .product-body
+              h3= p.name
+              p.price $#{(p.price || 0).toFixed(2)}
+              if p.stock
+                p.text-muted(style="font-size: 0.85rem;") Stock: #{p.stock}
+              .product-actions
+                a.btn.btn-outline(href=`/product/${p._id}`) View Details
+                form(action="/cart/add" method="POST" style="margin: 0;")
+                  input(type="hidden" name="productId" value=p._id)
+                  button.btn(type="submit" style="width: 100%;") 🛒 Add
+
+  // Pagination
+  if totalPages && totalPages > 1
+    .container
+      .pagination-bar
+        span.text-muted Page #{currentPage} of #{totalPages}
+        .pagination-links
+          if currentPage > 1
+            a.btn.btn-outline(href=`/shop?page=${currentPage-1}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) ← Previous
+          if currentPage < totalPages
+            a.btn(href=`/shop?page=${currentPage+1}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) Next →

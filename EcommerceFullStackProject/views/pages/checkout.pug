@@ -1,0 +1,99 @@
+extends ../layout
+
+block content
+  .container
+    h1 🔒 Secure Checkout
+
+    .checkout-container
+      .checkout-form
+        h2 Shipping Information
+        
+        form(action="/checkout" method="POST")
+          .form-row.full
+            .form-group
+              label(for="customerName") 👤 Full Name
+              input#customerName(type="text" name="customerName" placeholder="John Doe" required)
+          
+          .form-row
+            .form-group
+              label(for="email") 📧 Email Address
+              input#email(type="email" name="email" placeholder="john@example.com" required)
+            .form-group
+              label(for="phone") 📱 Phone Number
+              input#phone(type="tel" name="phone" placeholder="+1 (555) 123-4567" required)
+          
+          .form-row.full
+            .form-group
+              label(for="address") 📍 Shipping Address
+              textarea#address(name="address" placeholder="123 Main Street, Apt 4B, New York, NY 10001" required)
+          
+          .form-row
+            .form-group
+              label(for="city") City
+              input#city(type="text" name="city" placeholder="New York" required)
+            .form-group
+              label(for="state") State
+              input#state(type="text" name="state" placeholder="NY" required)
+          
+          .form-row
+            .form-group
+              label(for="zip") ZIP Code
+              input#zip(type="text" name="zip" placeholder="10001" required)
+            .form-group
+              label(for="country") Country
+              input#country(type="text" name="country" placeholder="United States" required)
+          
+          .form-row.full
+            .form-group
+              label(for="cardName") 💳 Cardholder Name
+              input#cardName(type="text" name="cardName" placeholder="John Doe" required)
+          
+          .form-row
+            .form-group
+              label(for="cardNumber") Card Number
+              input#cardNumber(type="text" name="cardNumber" placeholder="1234 5678 9012 3456" required pattern="[0-9\\s]{16,22}")
+            .form-group
+              label(for="cardExpiry") Expiry Date
+              input#cardExpiry(type="text" name="cardExpiry" placeholder="MM/YY" required pattern="\\d{2}/\\d{2}")
+          
+          .form-row
+            .form-group
+              label(for="cardCVC") CVC
+              input#cardCVC(type="text" name="cardCVC" placeholder="123" required pattern="\\d{3,4}")
+          
+          button.btn(type="submit" style="width: 100%; margin-top: 1.5rem; padding: 1rem; font-size: 1.05rem;") ✅ Place Order
+      
+      .checkout-summary
+        h2 Order Summary
+        
+        if cart && cart.length > 0
+          each item in cart
+            .summary-item
+              span #{item.name} × #{item.quantity}
+              span $#{((item.price || 0) * item.quantity).toFixed(2)}
+        else
+          p.text-center Your cart is empty
+        
+        .summary-item
+          span Subtotal
+          span $#{(total * 0.9).toFixed(2)}
+        
+        .summary-item
+          span Shipping
+          span(style="color: var(--success);") FREE
+        
+        .summary-item
+          span Tax (10%)
+          span $#{(total * 0.1).toFixed(2)}
+        
+        .summary-total
+          span Total Amount
+          span $#{total.toFixed(2)}
+        
+        .card(style="margin-top: 1.5rem; background-color: var(--light-gray);")
+          p(style="font-size: 0.9rem; margin: 0;")
+            | ✅ Secure Payment
+            br
+            | 🔒 SSL Encrypted
+            br
+            | 📦 Free Shipping on this order

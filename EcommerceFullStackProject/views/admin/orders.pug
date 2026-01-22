@@ -1,0 +1,47 @@
+extends layout
+
+block content
+  .admin-header
+    h1 📋 Orders Management
+    p View and manage all customer orders
+
+  .card
+    h3 All Orders
+    
+    if !orders || orders.length === 0
+      p.text-center No orders found.
+    else
+      .table-container
+        table
+          thead
+            tr
+              th Order ID
+              th Customer
+              th Total Amount
+              th Status
+              th Date
+              th Actions
+          tbody
+            each order in orders
+              tr
+                td
+                  strong ##{order._id.toString().slice(-6).toUpperCase()}
+                td= order.customerName || 'Unknown'
+                td
+                  strong.text-primary $#{(order.totalAmount || 0).toFixed(2)}
+                td
+                  if order.status === 'Confirmed'
+                    span.badge.success= order.status
+                  else if order.status === 'Cancelled'
+                    span.badge.danger= order.status
+                  else
+                    span.badge.warning= order.status || 'Pending'
+                td= new Date(order.createdAt).toLocaleDateString()
+                td
+                  .action-buttons
+                    if order.status !== 'Confirmed'
+                      form(method="POST", action=`/admin/orders/${order._id}/confirm`, style="display:inline;")
+                        button.btn(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") ✅ Confirm
+                    if order.status !== 'Cancelled'
+                      form(method="POST", action=`/admin/orders/${order._id}/cancel`, style="display:inline; margin-top: 0.25rem;", onclick="return confirm('Cancel this order?')")
+                        button.btn.btn-danger(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") ❌ Cancel

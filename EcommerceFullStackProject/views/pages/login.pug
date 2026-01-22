@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+  .auth-page
+    .auth-shell
+      .auth-left
+        h1.auth-hero-title 👋 Welcome Back!
+        p.auth-hero-sub Sign in to your account to manage your cart, checkout faster, and track your orders.
+        .auth-perks
+          .perk ✓ Fast and secure checkout
+          .perk ✓ Real-time order tracking
+          .perk ✓ Saved payment methods
+          .perk ✓ Access to admin panel
+          .perk ✓ Exclusive member deals
+
+      .auth-card
+        h2.auth-title Sign In
+        p.auth-subtitle Login with your email and password
+
+        if flash
+          .flash(class=flash.type)= flash.text
+
+        form.auth-form(action="/login" method="POST" autocomplete="off")
+          .auth-field
+            label(for="email") 📧 Email Address
+            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="off")
+
+          .auth-field
+            label(for="password") 🔐 Password
+            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password")
+
+          button.auth-submit(type="submit") 🔓 Sign In
+
+        p.auth-bottom
+          | Don't have an account? 
+          a(href="/register") Create One

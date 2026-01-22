@@ -1,0 +1,45 @@
+extends ../layout
+
+block content
+  .container
+    h1 🛒 Your Shopping Cart
+
+    if !cart || cart.length === 0
+      .card
+        .text-center
+          p(style="font-size: 3rem; margin-bottom: 1rem;") 🏪
+          h3 Your cart is empty
+          p(style="color: var(--gray); margin-bottom: 1.5rem;") No products added yet. Time to start shopping!
+          a.btn(href="/shop") 🛍️ Continue Shopping
+    else
+      .cart-grid
+        .card
+          h3 Order Items (#{cart.length} item#{cart.length !== 1 ? 's' : ''})
+          each item in cart
+            .cart-item
+              .cart-left
+                img.cart-img(src=(item.image || '/images/placeholder.png'), alt=item.name)
+                .cart-info
+                  strong= item.name
+                  span.cart-sub 
+                    | $#{(item.price || 0).toFixed(2)} × #{item.quantity}
+              form(action="/cart/remove" method="POST")
+                input(type="hidden" name="productId" value=item._id)
+                button.btn.btn-danger(type="submit" style="min-height: auto; padding: 0.5rem 1rem;") 🗑 Remove
+
+        .card
+          h3 Order Summary
+          .summary-item
+            span Subtotal
+            span $#{(total * 0.9).toFixed(2)}
+          .summary-item
+            span Shipping
+            span(style="color: var(--success);") FREE
+          .summary-item
+            span Tax
+            span $#{(total * 0.1).toFixed(2)}
+          .summary-total
+            span Total
+            span $#{total.toFixed(2)}
+          a.btn(href="/checkout" style="width: 100%; margin-top: 1.5rem; text-align: center;") 🔒 Proceed to Checkout
+          a.btn.btn-outline(href="/shop" style="width: 100%; margin-top: 0.5rem; text-align: center;") ← Continue Shopping

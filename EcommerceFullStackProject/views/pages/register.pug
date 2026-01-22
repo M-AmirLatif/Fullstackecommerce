@@ -1,0 +1,41 @@
+extends ../layout
+
+
+block content
+  .auth-page
+    .auth-shell
+      .auth-left
+        h1.auth-hero-title ✨ Create Your Account
+        p.auth-hero-sub Join thousands of happy customers! Sign up to save your cart, checkout faster, and track your orders.
+        .auth-perks
+          .perk ✓ Secure encrypted login
+          .perk ✓ Persistent shopping cart
+          .perk ✓ Order history & tracking
+          .perk ✓ Wishlist features
+          .perk ✓ Special offers & rewards
+
+      .auth-card
+        h2.auth-title Create Account
+        p.auth-subtitle Sign up takes less than a minute!
+
+        if flash
+          .flash(class=flash.type)= flash.text
+
+        form.auth-form(action="/register" method="POST" autocomplete="off")
+          .auth-field
+            label(for="name") 👤 Full Name
+            input#name(type="text" name="name" placeholder="John Doe" required)
+
+          .auth-field
+            label(for="email") 📧 Email Address
+            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="off")
+
+          .auth-field
+            label(for="password") 🔐 Password
+            input#password(type="password" name="password" placeholder="Create a strong password" required autocomplete="new-password")
+
+          button.auth-submit(type="submit") ✅ Create Account
+
+        p.auth-bottom
+          | Already have an account? 
+          a(href="/login") Sign In

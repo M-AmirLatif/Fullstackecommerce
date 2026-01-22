@@ -1,0 +1,49 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 ✍️ Edit Product
+
+  .card
+    form(method="POST", action=`/admin/products/edit/${product._id}`)
+      .form-row.full
+        .form-group
+          label(for="name") Product Name
+          input#name(type="text", name="name", value=product.name, placeholder="Enter product name", required)
+
+      .form-row
+        .form-group
+          label(for="price") Price ($)
+          input#price(type="number", name="price", value=product.price, placeholder="0.00", step="0.01", required)
+        .form-group
+          label(for="stock") Stock Quantity
+          input#stock(type="number", name="stock", value=product.stock || 0, placeholder="0")
+
+      .form-row
+        .form-group
+          label(for="category") Category
+          select#category(name="category", required)
+            option(value=product.category)= product.category || 'Select'
+            option(value="Electronics") Electronics
+            option(value="Clothing") Clothing
+            option(value="Accessories") Accessories
+            option(value="Other") Other
+        .form-group
+          label(for="image") Image URL
+          input#image(type="url", name="image", value=product.image, placeholder="https://example.com/image.jpg")
+
+      .form-row.full
+        .form-group
+          label(for="description") Description
+          textarea#description(name="description", placeholder="Enter detailed product description", style="min-height: 150px;")= product.description
+
+      .form-row.full
+        .form-group
+          label(for="inStock") Product Status
+          select#inStock(name="inStock")
+            option(value="true", selected=(product.inStock !== false)) In Stock
+            option(value="false", selected=(product.inStock === false)) Out of Stock
+
+      .form-row.full(style="gap: 1rem;")
+        button.btn(type="submit", style="flex: 1;") 📋 Update Product
+        a.btn.btn-outline(href="/admin/products", style="flex: 1; text-align: center;") ❌ Cancel

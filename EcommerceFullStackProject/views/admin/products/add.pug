@@ -1,0 +1,49 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 ➕ Add New Product
+
+  .card
+    form(method="POST", action="/admin/products/add")
+      .form-row.full
+        .form-group
+          label(for="name") Product Name
+          input#name(type="text", name="name", placeholder="Enter product name", required)
+
+      .form-row
+        .form-group
+          label(for="price") Price ($)
+          input#price(type="number", name="price", placeholder="0.00", step="0.01", required)
+        .form-group
+          label(for="stock") Stock Quantity
+          input#stock(type="number", name="stock", placeholder="0", value="0")
+
+      .form-row
+        .form-group
+          label(for="category") Category
+          select#category(name="category", required)
+            option(value="") Select a category
+            option(value="Electronics") Electronics
+            option(value="Clothing") Clothing
+            option(value="Accessories") Accessories
+            option(value="Other") Other
+        .form-group
+          label(for="image") Image URL
+          input#image(type="url", name="image", placeholder="https://example.com/image.jpg")
+
+      .form-row.full
+        .form-group
+          label(for="description") Description
+          textarea#description(name="description", placeholder="Enter detailed product description", style="min-height: 150px;")
+
+      .form-row.full
+        .form-group
+          label(for="inStock") Product Status
+          select#inStock(name="inStock")
+            option(value="true") In Stock
+            option(value="false") Out of Stock
+
+      .form-row.full(style="gap: 1rem;")
+        button.btn(type="submit", style="flex: 1;") ✅ Add Product
+        a.btn.btn-outline(href="/admin/products", style="flex: 1; text-align: center;") ❌ Cancel

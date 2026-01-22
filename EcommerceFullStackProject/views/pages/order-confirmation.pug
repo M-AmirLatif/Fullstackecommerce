@@ -1,0 +1,42 @@
+extends ../layout
+
+block content
+  .container
+    .confirmation-container
+      .confirmation-icon ✅
+      h2.confirmation-title Order Confirmed!
+      p.confirmation-text Thank you for your purchase! Your order has been successfully placed and will be processed shortly.
+
+      .order-details
+        p
+          span Order ID
+          strong ##{order._id.toString().slice(-8).toUpperCase()}
+        p
+          span Status
+          strong.text-success #{order.status || 'Processing'}
+        p
+          span Order Date
+          strong #{new Date(order.createdAt).toLocaleDateString()}
+        p
+          span Total Amount
+          strong.text-primary $#{(order.totalAmount || 0).toFixed(2)}
+
+      .card(style="background: var(--light-gray); margin: 2rem 0;")
+        h3(style="margin-top: 0;") Order Items
+        each item in order.items
+          .summary-item(style="padding: 0.75rem 0;")
+            span #{item.name} × #{item.quantity}
+            span $#{((item.price || 0) * item.quantity).toFixed(2)}
+
+      .card(style="background: #d4edda; border-left: 4px solid var(--success); margin: 2rem 0;")
+        p(style="margin: 0; color: #155724;")
+          | 📧 A confirmation email has been sent to your email address.
+          br
+          | 📍 You will receive shipping details shortly.
+          br
+          | 🚚 Estimated delivery: 3-5 business days.
+
+      .action-buttons(style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;")
+        a.btn(href="/") 🏠 Return to Home
+        a.btn.btn-secondary(href="/shop") 🛍️ Continue Shopping
+        a.btn.btn-outline(href="/cart") 🛒 View Cart

@@ -1,0 +1,13 @@
+header.site-header
+  nav.navbar
+    a.brand(href="/") E-Shop
+    .nav-links
+      a.nav-link(href="/") Home
+      a.nav-link(href="/shop") Shop
+      a.nav-link(href="/cart") Cart
+      a.nav-link(href="/checkout") Checkout
+      if !user
+        a.nav-link(href="/login") Login
+      else
+        form.nav-form(action="/logout" method="POST")
+          button.nav-logout(type="submit") Logout

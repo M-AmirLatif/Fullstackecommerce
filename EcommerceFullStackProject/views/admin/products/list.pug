@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+  .admin-header
+    h1 📋 Product Management
+    a.btn(href="/admin/products/add") ➕ Add New Product
+
+  .card
+    h3 📦 Products List
+    
+    if !products || products.length === 0
+      p.text-center No products found. 
+        a(href="/admin/products/add") Create one now
+    else
+      .table-container
+        table
+          thead
+            tr
+              th Name
+              th Category
+              th Price
+              th Stock
+              th Actions
+          tbody
+            each product in products
+              tr
+                td
+                  strong= product.name
+                td
+                  span.badge= product.category || 'N/A'
+                td $#{(product.price || 0).toFixed(2)}
+                td= product.stock || '-'
+                td
+                  .action-buttons
+                    a.btn(href=`/admin/products/edit/${product._id}`, style="padding: 0.5rem 1rem; font-size: 0.85rem;") ✍️ Edit
+                    a.btn.btn-danger(href=`/admin/products/delete/${product._id}`, onclick="return confirm('Are you sure?')", style="padding: 0.5rem 1rem; font-size: 0.85rem; margin-top: 0.25rem;") 🗑 Delete

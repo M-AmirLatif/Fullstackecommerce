@@ -1,0 +1,107 @@
+extends layout
+
+block content
+  .admin-header
+    h1 📊 Admin Dashboard
+    p Welcome to the admin control panel. Manage your store from here.
+
+  // Stats Section
+  .stats-grid
+    .stat-card
+      .stat-label Total Products
+      .stat-value 245
+    .stat-card.secondary
+      .stat-label Total Orders
+      .stat-value 1,248
+    .stat-card.success
+      .stat-label Total Revenue
+      .stat-value $45,320
+    .stat-card.warning
+      .stat-label Pending Orders
+      .stat-value 23
+
+  // Quick Actions
+  .card
+    h3 🚀 Quick Actions
+    .action-buttons(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;")
+      a.btn(href="/admin/products/add") ➕ Add New Product
+      a.btn(href="/admin/products") 📦 Manage Products
+      a.btn(href="/admin/orders") 📋 View Orders
+      a.btn.btn-outline(href="/") 🏠 View Store
+
+  // Recent Orders
+  .card
+    h3 📋 Recent Orders
+    .table-container
+      table
+        thead
+          tr
+            th Order ID
+            th Customer
+            th Amount
+            th Status
+            th Date
+            th Action
+        tbody
+          tr
+            td #ORD-001
+            td John Doe
+            td $150.00
+            td
+              span.badge.success Completed
+            td 2025-01-20
+            td
+              .action-buttons
+                a.btn(href="#" style="padding: 0.5rem 1rem; font-size: 0.85rem;") View
+          tr
+            td #ORD-002
+            td Jane Smith
+            td $320.50
+            td
+              span.badge.warning Processing
+            td 2025-01-21
+            td
+              .action-buttons
+                a.btn(href="#" style="padding: 0.5rem 1rem; font-size: 0.85rem;") View
+          tr
+            td #ORD-003
+            td Mike Johnson
+            td $89.99
+            td
+              span.badge.danger Pending
+            td 2025-01-22
+            td
+              .action-buttons
+                a.btn(href="#" style="padding: 0.5rem 1rem; font-size: 0.85rem;") View
+  
+  // Top Products
+  .card
+    h3 🔥 Top Selling Products
+    .table-container
+      table
+        thead
+          tr
+            th Product Name
+            th SKU
+            th Stock
+            th Sold
+            th Price
+        tbody
+          tr
+            td Wireless Headphones
+            td WH-001
+            td 45
+            td 234
+            td $79.99
+          tr
+            td USB-C Cable
+            td UCC-001
+            td 120
+            td 512
+            td $12.99
+          tr
+            td Phone Case
+            td PC-001
+            td 200
+            td 189
+            td $24.99

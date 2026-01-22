@@ -1,0 +1,20 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Admin Panel - E-Shop
+    link(rel="stylesheet", href="/stylesheets/style.css")
+  body
+    .admin-layout
+      aside.admin-sidebar
+        h3 🏢 E-Shop Admin
+        nav.admin-nav
+          a.nav-item(href="/admin") 📊 Dashboard
+          a.nav-item(href="/admin/products") 📦 Products
+          a.nav-item(href="/admin/products/add") ➕ Add Product
+          a.nav-item(href="/admin/orders") 📋 Orders
+          a.nav-item(href="/") 🏠 Back to Store
+
+      main.admin-content
+        block content
