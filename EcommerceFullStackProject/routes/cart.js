@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Product = require('../models/product')
+const { forbidAdmin } = require('../middleware/auth')
 
 // make sure cart exists
 function ensureCart(req) {
@@ -19,7 +20,7 @@ router.get('/cart', (req, res) => {
 })
 
 // ADD TO CART
-router.post('/cart/add', async (req, res) => {
+router.post('/cart/add', forbidAdmin, async (req, res) => {
   try {
     const cart = ensureCart(req)
     const { productId } = req.body
@@ -31,7 +32,7 @@ router.post('/cart/add', async (req, res) => {
     }
 
     const existing = cart.find(
-      (item) => String(item._id) === String(product._id)
+      (item) => String(item._id) === String(product._id),
     )
 
     if (existing) {
@@ -61,7 +62,7 @@ router.post('/cart/remove', (req, res) => {
   const { productId } = req.body
 
   req.session.cart = cart.filter(
-    (item) => String(item._id) !== String(productId)
+    (item) => String(item._id) !== String(productId),
   )
 
   res.redirect('/cart')

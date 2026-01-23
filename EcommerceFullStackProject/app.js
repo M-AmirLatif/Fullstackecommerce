@@ -18,7 +18,6 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
 // Middleware (body + static)
-
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(express.urlencoded({ extended: false }))
@@ -35,8 +34,9 @@ app.use(
       sameSite: 'lax',
       secure: false, // true only on HTTPS hosting
     },
-  })
+  }),
 )
+
 app.use(cartRoutes)
 
 // Flash message middleware (simple)
@@ -55,6 +55,42 @@ app.use((req, res, next) => {
 // ✅ Initialize cart safely (after session)
 app.use((req, res, next) => {
   if (!req.session.cart) req.session.cart = []
+  next()
+})
+
+/**
+ * ✅ IMAGE PATH HELPER (available in all PUG pages)
+ * Supports:
+ * - Full URLs: https://...
+ * - /images/file.jpg
+ * - images/file.jpg
+ * - public/images/file.jpg
+ * - file.jpg   -> becomes /images/file.jpg
+ */
+app.use((req, res, next) => {
+  res.locals.imageUrl = (img) => {
+    if (!img) return '/images/placeholder.png'
+
+    // keep external URLs as-is
+    if (/^https?:\/\//i.test(img)) return img
+
+    let p = String(img).trim().replace(/\\/g, '/')
+
+    // remove leading public/
+    p = p.replace(/^public\//, '')
+
+    // ensure leading slash
+    if (!p.startsWith('/')) p = `/${p}`
+
+    // if not already under /images, map it there
+    if (!p.startsWith('/images/')) {
+      // if it's like "/jacket.jpg" -> "/images/jacket.jpg"
+      p = `/images/${p.replace(/^\//, '')}`
+    }
+
+    return p
+  }
+
   next()
 })
 

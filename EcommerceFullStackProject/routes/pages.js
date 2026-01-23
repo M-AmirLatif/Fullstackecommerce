@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Product = require('../models/product')
+const mongoose = require('mongoose')
 
 router.get('/', async (req, res) => {
   try {
@@ -59,7 +60,7 @@ router.get('/shop', async (req, res) => {
 
     const totalPages = Math.ceil(totalProducts / limit)
 
-    res.render('pages/product', {
+    res.render('pages/shop', {
       products,
       currentPage: page,
       totalPages,
@@ -78,6 +79,11 @@ router.get('/shop', async (req, res) => {
 
 router.get('/product/:id', async (req, res) => {
   try {
+    // ✅ guard invalid ids so it doesn't throw
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).render('error', { message: 'Product not found' })
+    }
+
     const product = await Product.findById(req.params.id)
 
     if (!product) {
@@ -86,8 +92,8 @@ router.get('/product/:id', async (req, res) => {
       })
     }
 
-    res.render('pages/shop', {
-      product,
+    res.render('pages/product', {
+      product, // Pass the product data to the template
     })
   } catch (error) {
     console.error(error)
@@ -95,36 +101,6 @@ router.get('/product/:id', async (req, res) => {
       message: 'Failed to load product',
     })
   }
-})
-
-router.get('/cart', (req, res) => {
-  const cart = req.session.cart || []
-  res.render('pages/cart', { cart })
-})
-
-router.post('/cart/add/:id', async (req, res) => {
-  const product = await Product.findById(req.params.id)
-
-  if (!req.session.cart) {
-    req.session.cart = []
-  }
-
-  const existingItem = req.session.cart.find(
-    (item) => item.id.toString() === product._id.toString(),
-  )
-
-  if (existingItem) {
-    existingItem.quantity += 1
-  } else {
-    req.session.cart.push({
-      id: product._id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-    })
-  }
-
-  res.redirect('/cart')
 })
 
 module.exports = router

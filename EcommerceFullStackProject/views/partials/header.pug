@@ -4,8 +4,9 @@ header.site-header
     .nav-links
       a.nav-link(href="/") Home
       a.nav-link(href="/shop") Shop
-      a.nav-link(href="/cart") Cart
-      a.nav-link(href="/checkout") Checkout
+      if !user || user.role !== 'admin'
+        a.nav-link(href="/cart") Cart
+        a.nav-link(href="/checkout") Checkout
       if !user
         a.nav-link(href="/login") Login
       else

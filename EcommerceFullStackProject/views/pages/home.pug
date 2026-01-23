@@ -10,8 +10,6 @@ block content
         .hero-actions
           a.btn(href='/shop') 🛍️ Browse All Products
           a.btn.btn-outline(href='/shop?featured=true') ⭐ View Special Deals
-      .hero-right
-        img(src='/images/hero-image.png', alt='Hero Banner', onerror="this.style.display='none'")
 
   // ========== FEATURED PRODUCTS SECTION ==========
   section.container
@@ -23,18 +21,19 @@ block content
       .products-grid
         each product in products.slice(0, 8)
           .product
-            .product-media(style="position: relative; background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); display: flex; align-items: center; justify-content: center;")
+            .product-media
               if product.image && product.image.length > 0
-                img(src=product.image, alt=product.name, style="width: 100%; height: 100%; object-fit: cover; object-position: center;", onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\"font-size: 2rem; color: #999;\">📦</span>'", loading="lazy")
+                img(src=imageUrl(product.image), alt=product.name)
               else
-                span(style="font-size: 2rem; color: #999;") 📦
+                span.no-image 📦
             .product-body
               h3= product.name
-              .price $#{(product.price || 0).toFixed(2)}
-              a.btn(href='/product/#{product._id}') View Details
-              form(action='/cart/add', method='POST')
-                input(type='hidden', name='productId', value=product._id)
-                button.btn.btn-secondary(type='submit') 🛒 Add to Cart
+              .price $#{Number(product.price || 0).toFixed(2)}
+              a.btn(href='/product/' + product._id) View Details
+              if !user || user.role !== 'admin'
+                form(action='/cart/add', method='POST')
+                  input(type='hidden', name='productId', value=product._id)
+                  button.btn.btn-secondary(type='submit') 🛒 Add to Cart
     else
       .card
         p.text-center No products available yet. Check back soon!
@@ -78,18 +77,23 @@ block content
       .products-grid
         each product in bestSellers.slice(0, 8)
           .product
-            .product-media(style="position: relative; background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); display: flex; align-items: center; justify-content: center;")
+            .product-media
               if product.image && product.image.length > 0
-                img(src=product.image, alt=product.name, style="width: 100%; height: 100%; object-fit: cover; object-position: center;", onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\"font-size: 2rem; color: #999;\">📦</span>'", loading="lazy")
+                img(
+                  src=imageUrl(product.image),
+                  alt=product.name,
+                  onerror="this.parentElement.innerHTML='<span class=\"no-image\">📦</span>'"
+                )
               else
-                span(style="font-size: 2rem; color: #999;") 📦
+                span.no-image 📦
             .product-body
               h3= product.name
-              .price $#{(product.price || 0).toFixed(2)}
-              a.btn(href='/product/#{product._id}') View Details
-              form(action='/cart/add', method='POST')
-                input(type='hidden', name='productId', value=product._id)
-                button.btn.btn-secondary(type='submit') 🛒 Add to Cart
+              .price $#{Number(product.price || 0).toFixed(2)}
+              a.btn(href='/product/' + product._id) View Details
+              if !user || user.role !== 'admin'
+                form(action='/cart/add', method='POST')
+                  input(type='hidden', name='productId', value=product._id)
+                  button.btn.btn-secondary(type='submit') 🛒 Add to Cart
     else
       .card
         p.text-center No bestsellers available yet!

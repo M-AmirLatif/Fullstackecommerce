@@ -5,8 +5,26 @@ const Product = require('../models/product')
 const Order = require('../models/order')
 const { adminOnly } = require('../middleware/auth')
 
-
 router.use(adminOnly)
+
+function normalizeImagePath(image) {
+  if (!image) return image
+
+  // keep full URLs as-is (optional)
+  if (/^https?:\/\//i.test(image)) return image
+
+  let img = image.replaceAll('\\', '/').trim()
+
+  // remove leading "public/"
+  img = img.replace(/^public\//, '')
+
+  // if just filename like "jacket.jpg" -> "/images/jacket.jpg"
+  if (!img.startsWith('/')) img = `/${img}`
+  if (!img.startsWith('/images/')) img = `/images/${img.replace(/^\//, '')}`
+
+  return img
+}
+
 
 router.get('/', (req, res) => {
   res.render('admin/dashboard', { layout: 'admin/layout' })
@@ -67,13 +85,17 @@ router.get('/products/add', (req, res) => {
 
 router.post('/products/add', async (req, res) => {
   try {
-    const { name, price, category, description } = req.body
+    const { name, price, category, description, image, stock, inStock } =
+      req.body
 
     await Product.create({
       name,
-      price,
+      price: Number(price),
       category,
       description,
+      image,
+      stock: Number(stock) || 0,
+      inStock: inStock === 'true',
     })
 
     res.redirect('/admin/products')
@@ -99,7 +121,8 @@ router.get('/products/edit/:id', async (req, res) => {
 
 router.post('/products/edit/:id', async (req, res) => {
   try {
-    const { name, price, category, description } = req.body
+    const { name, price, category, description, image, stock, inStock } =
+      req.body
 
     await Product.findByIdAndUpdate(
       req.params.id,
@@ -108,11 +131,14 @@ router.post('/products/edit/:id', async (req, res) => {
         price: Number(price),
         category,
         description,
+        image,
+        stock: Number(stock) || 0,
+        inStock: inStock === 'true',
       },
       {
         runValidators: true,
         new: true,
-      }
+      },
     )
 
     res.redirect('/admin/products')

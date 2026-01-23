@@ -10,4 +10,16 @@ const adminOnly = (req, res, next) => {
   return res.redirect('/login')
 }
 
-module.exports = { protect, adminOnly }
+// Prevent admin users from performing customer-only actions (buying/orders)
+const forbidAdmin = (req, res, next) => {
+  if (req.session?.user?.role === 'admin') {
+    req.session.flash = {
+      type: 'error',
+      text: 'Admins are not allowed to perform this action.',
+    }
+    return res.redirect('/admin')
+  }
+  return next()
+}
+
+module.exports = { protect, adminOnly, forbidAdmin }

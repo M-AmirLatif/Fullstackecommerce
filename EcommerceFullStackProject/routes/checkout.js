@@ -1,18 +1,18 @@
 const express = require('express')
 const router = express.Router()
 
-const { protect } = require('../middleware/auth')
+const { protect, forbidAdmin } = require('../middleware/auth')
 const Order = require('../models/order')
 
 // GET checkout page (must be logged in)
-router.get('/checkout', protect, (req, res) => {
+router.get('/checkout', protect, forbidAdmin, (req, res) => {
   const cart = req.session.cart || []
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   return res.render('pages/checkout', { cart, total })
 })
 
 // POST checkout (place order)
-router.post('/checkout', protect, async (req, res) => {
+router.post('/checkout', protect, forbidAdmin, async (req, res) => {
   try {
     const cart = req.session.cart || []
     if (cart.length === 0) {

@@ -374,6 +374,9 @@ footer p {
   overflow: hidden;
   background-color: var(--light-gray);
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-media img {
@@ -381,6 +384,18 @@ footer p {
   height: 100%;
   object-fit: cover;
   transition: var(--transition);
+  display: block;
+}
+
+.product-media .no-image {
+  font-size: 3rem;
+  color: #999;
+}
+
+.product-media .badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .product:hover .product-media img {

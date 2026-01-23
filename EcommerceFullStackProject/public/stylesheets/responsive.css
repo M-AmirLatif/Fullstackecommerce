@@ -1,0 +1,76 @@
+/* public/stylesheets/responsive.css */
+
+/* ✅ Base safety (doesn't hurt desktop) */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero {
+  margin-top: 24px;
+}
+
+/* =========================
+   TABLET (<= 1024px)
+   ========================= */
+@media (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+}
+
+/* =========================
+   MOBILE (<= 600px)
+   ========================= */
+@media (max-width: 600px) {
+  /* ✅ Space between navbar (top) and hero (below) */
+  .hero {
+    margin-top: 40px !important; /* <-- THIS is the gap you want */
+    padding-top: 0 !important; /* remove inside padding if it was pushing content weirdly */
+  }
+
+  /* containers */
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* product grid -> 1 column */
+  .products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* product cards */
+  .product {
+    border-radius: 12px !important;
+  }
+
+  /* images */
+  .product-media {
+    height: 240px !important;
+  }
+
+  .product-media img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* buttons/touch targets */
+  .btn,
+  button {
+    min-height: 44px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* hero layout */
+  .hero-inner {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 1rem !important;
+  }
+}
