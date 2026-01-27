@@ -2,43 +2,59 @@ const mongoose = require('mongoose')
 const Product = require('../models/product')
 const User = require('../models/user')
 
-const MONGO = process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce'
+function required(name) {
+  const v = process.env[name]
+  if (!v) throw new Error(`Missing required env var: ${name}`)
+  return v
+}
+
+const MONGO = process.env.MONGO_URI // no fallback (safer)
+
+const ALLOW_ADMIN_SEED =
+  process.env.ALLOW_ADMIN_SEED === '1' || process.argv.includes('--seed-admin')
 
 async function run() {
   try {
+    // Require DB connection string always
+    required('MONGO_URI')
+
     await mongoose.connect(MONGO)
     console.log('Connected to MongoDB')
 
     const count = await Product.countDocuments()
     console.log('Total products:', count)
+
     const sample = await Product.findOne()
-    if (sample) {
-      console.log('Sample product:', {
-        name: sample.name,
-        price: sample.price,
-        category: sample.category,
-        image: sample.image,
-        stock: sample.stock,
-        inStock: sample.inStock,
-      })
-    } else {
-      console.log('No products found in DB')
+    console.log('Sample product:', sample ? sample.name : 'None')
+
+    // If admin seeding is NOT allowed, we just report and exit safely
+    if (!ALLOW_ADMIN_SEED) {
+      console.log(
+        'Admin seeding is disabled. (Set ALLOW_ADMIN_SEED=1 or run with --seed-admin to enable.)',
+      )
+      process.exit(0)
     }
 
-    const adminEmail = 'admin@shop.com'
-    let admin = await User.findOne({ email: adminEmail })
+    // If seeding is allowed, require admin env vars
+    const ADMIN_EMAIL = required('ADMIN_EMAIL')
+    const ADMIN_PASSWORD = required('ADMIN_PASSWORD')
+    const ADMIN_NAME = required('ADMIN_NAME')
+
+    let admin = await User.findOne({ email: ADMIN_EMAIL })
+
     if (admin) {
       console.log('Admin user exists:', admin.email)
-    } else {
-      admin = await User.create({
-        name: 'Admin',
-        email: adminEmail,
-        password: 'admin123',
-        role: 'admin',
-      })
-      console.log('Created admin user:', admin.email, '(password: admin123)')
+      process.exit(0)
     }
 
+    admin = await User.create({
+      name: ADMIN_NAME,
+      email: ADMIN_EMAIL,
+      password: ADMIN_PASSWORD,
+      role: 'admin',
+    })
+
+    console.log(`Created admin user: ${admin.email}`)
     process.exit(0)
   } catch (err) {
     console.error('Error:', err.message)

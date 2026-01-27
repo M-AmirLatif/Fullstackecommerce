@@ -3,3 +3,4 @@ node_modules
 image-update-backup.json
 .DS_Store
 npm-debug.log*
+*.zip
