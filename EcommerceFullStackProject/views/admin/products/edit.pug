@@ -1,8 +1,8 @@
-extends ../layout
+﻿extends ../layout
 
 block content
   .admin-header
-    h1 ✍️ Edit Product
+    h1 Edit Product
 
   .card
     form(method="POST", action=`/admin/products/edit/${product._id}`)
@@ -16,10 +16,21 @@ block content
           label(for="price") Price ($)
           input#price(type="number", name="price", value=product.price, placeholder="0.00", step="0.01", required)
         .form-group
-          label(for="stock") Stock Quantity
-          input#stock(type="number", name="stock", value=product.stock || 0, placeholder="0")
+          label(for="originalPrice") Original Price ($)
+          input#originalPrice(type="number", name="originalPrice", value=product.originalPrice || '', placeholder="0.00", step="0.01")
 
       .form-row
+        .form-group
+          label(for="stock") Stock Quantity
+          input#stock(type="number", name="stock", value=product.stock || 0, placeholder="0")
+        .form-group
+          label(for="rating") Rating (0-5)
+          input#rating(type="number", name="rating", value=product.rating || 0, min="0", max="5", step="0.1")
+
+      .form-row
+        .form-group
+          label(for="reviewCount") Review Count
+          input#reviewCount(type="number", name="reviewCount", value=product.reviewCount || 0, min="0")
         .form-group
           label(for="category") Category
           select#category(name="category", required)
@@ -27,10 +38,21 @@ block content
             option(value="Electronics") Electronics
             option(value="Clothing") Clothing
             option(value="Accessories") Accessories
+            option(value="Shoes") Shoes
             option(value="Other") Other
+
+      .form-row
         .form-group
           label(for="image") Image URL
-          input#image(type="url", name="image", value=product.image, placeholder="https://example.com/image.jpg")
+          input#image(type="text", name="image", value=product.image, placeholder="/images/jacket.jpg")
+        .form-group
+          label(for="colors") Colors (comma separated)
+          input#colors(type="text", name="colors", value=(product.colors || []).join(', '), placeholder="#111827, #2563eb, #e5e7eb")
+
+      .form-row.full
+        .form-group
+          label(for="highlights") Highlights (comma separated)
+          textarea#highlights(name="highlights", placeholder="Free shipping, 2 year warranty, Lightweight build", style="min-height: 90px;")= (product.highlights || []).join(', ')
 
       .form-row.full
         .form-group
@@ -45,5 +67,5 @@ block content
             option(value="false", selected=(product.inStock === false)) Out of Stock
 
       .form-row.full(style="gap: 1rem;")
-        button.btn(type="submit", style="flex: 1;") 📋 Update Product
-        a.btn.btn-outline(href="/admin/products", style="flex: 1; text-align: center;") ❌ Cancel
+        button.btn(type="submit", style="flex: 1;") Update Product
+        a.btn.btn-outline(href="/admin/products", style="flex: 1; text-align: center;") Cancel

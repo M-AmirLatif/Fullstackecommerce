@@ -1,37 +1,18 @@
-doctype html
+﻿doctype html
 html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     meta(name="description" content="E-Shop - Your Ultimate Online Store for Quality Products")
-    meta(name="theme-color" content="#004e89")
+    meta(name="theme-color" content="#0b1f36")
     title E-Shop - Your Ultimate Online Store
     link(rel="stylesheet", href="/stylesheets/style.css")
     link(rel="stylesheet", href="/stylesheets/responsive.css")
 
   body
-    header.site-header
-      nav.navbar
-        a.brand(href="/") 🛍️ E-Shop
-        .nav-links
-          a.nav-link(href="/") Home
-          a.nav-link(href="/shop") Shop
-          a.nav-link(href="/cart") 🛒 Cart
-          a.nav-link(href="/checkout") Checkout
-          if !user
-            a.nav-link(href="/login") Login
-          else
-            form.nav-form(action="/logout" method="POST")
-              button.nav-logout(type="submit") Logout (#{user.email})
-    
+    include partials/header
+
     main
       block content
-    
-    footer
-      p © 2025 E-Commerce Project. All rights reserved. | Made with ❤️
-      p
-        a(href="#") Terms of Service
-        |  • 
-        a(href="#") Privacy Policy
-        |  • 
-        a(href="#") Contact Us
+
+    include partials/footer

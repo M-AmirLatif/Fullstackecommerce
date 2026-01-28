@@ -1,0 +1,28 @@
+﻿extends ../layout
+
+block content
+  section.hero.hero-compact
+    .hero-inner
+      .hero-left
+        h1.hero-title= title
+        if lead
+          p.hero-sub= lead
+
+  .container
+    if sections && sections.length
+      .info-grid
+        each section in sections
+          .card.info-card
+            h3= section.heading
+            if section.text
+              p= section.text
+            if section.points && section.points.length
+              ul.info-list
+                each point in section.points
+                  li= point
+            if section.link
+              a.btn.btn-outline(href=section.link.href)= section.link.label
+    else
+      .card
+        h3 More coming soon
+        p We will publish more content for this page shortly.

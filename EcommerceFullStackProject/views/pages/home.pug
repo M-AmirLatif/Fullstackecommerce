@@ -1,106 +1,167 @@
-extends ../layout
+﻿extends ../layout
 
 block content
-  // ========== HERO SECTION ==========
   section.hero
     .hero-inner
       .hero-left
-        h1.hero-title 🎉 Shop Smarter with E-Shop
-        p.hero-sub Discover premium products at unbeatable prices. Free shipping on orders over $50!
+        h1.hero-title Shop Smarter with E-Shop
+        p.hero-sub Discover premium products at unbeatable prices. Free shipping on orders over $50.
         .hero-actions
-          a.btn(href='/shop') 🛍️ Browse All Products
-          a.btn.btn-outline(href='/shop?featured=true') ⭐ View Special Deals
+          a.btn(href='/shop') Browse All Products
+          a.btn.btn-outline(href='/shop?featured=true') View Special Deals
 
-  // ========== FEATURED PRODUCTS SECTION ==========
   section.container
     .section-head
-      h2 ⭐ Featured Products
-      a.section-link(href='/shop') See All →
-    
+      h2 Featured Products
+      a.section-link(href='/shop') See All ->
+
     if (products && products.length > 0)
       .products-grid
         each product in products.slice(0, 8)
+          - const ratingValue = Number(product.rating || 0)
+          - const reviewCount = Number(product.reviewCount || 0)
+          - const safeReviewCount = reviewCount > 0 ? reviewCount : 128
+          - const colorList = product.colors && product.colors.length ? product.colors : ['#111827', '#2563eb', '#f8fafc']
+          - const priceValue = Number(product.price || 0)
+          - const originalValue = Number(product.originalPrice || 0)
+          - const hasDiscount = originalValue > priceValue && originalValue > 0
+          - const discountPct = hasDiscount ? Math.round(((originalValue - priceValue) / originalValue) * 100) : 0
+          - const roundedRating = Math.max(0, Math.min(5, Math.round(ratingValue)))
           .product
             .product-media
               if product.image && product.image.length > 0
                 img(src=imageUrl(product.image), alt=product.name)
               else
-                span.no-image 📦
+                span.no-image []
+
+              if product.category
+                span.badge.badge-surface= product.category
+              if product.inStock === false
+                span.badge.badge-danger Out of stock
+
             .product-body
+              .product-top
+                .product-colors
+                  each color, idx in colorList.slice(0, 4)
+                    span.swatch(style=`--swatch:${color}`)
+                  if colorList.length > 4
+                    span.swatch.more +#{colorList.length - 4}
+
+                .product-rating
+                  span.rating-stars= '★★★★★'.slice(0, roundedRating) + '☆☆☆☆☆'.slice(0, 5 - roundedRating)
+                  span.rating-count (#{safeReviewCount})
+
               h3= product.name
-              .price $#{Number(product.price || 0).toFixed(2)}
-              a.btn(href='/product/' + product._id) View Details
-              if !user || user.role !== 'admin'
-                form(action='/cart/add', method='POST')
-                  input(type='hidden', name='productId', value=product._id)
-                  button.btn.btn-secondary(type='submit') 🛒 Add to Cart
+
+              .price-row
+                span.price-current $#{priceValue.toFixed(2)}
+                if hasDiscount
+                  span.price-original $#{originalValue.toFixed(2)}
+                  span.price-discount -#{discountPct}%
+
+              .product-actions
+                a.btn.btn-outline(href='/product/' + product._id) View Details
+                if !user || user.role !== 'admin'
+                  form(action='/cart/add', method='POST')
+                    input(type='hidden', name='productId', value=product._id)
+                    button.btn(type='submit') Add to Cart
     else
       .card
-        p.text-center No products available yet. Check back soon!
+        p.text-center No products available yet. Check back soon.
 
-  // ========== CATEGORIES SECTION ==========
   section.container
     .section-head
-      h2 🏪 Shop by Category
+      h2 Shop by Category
     .categories-grid
       .category-card
         .category-img-wrapper
           img(src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop&q=80', alt='Electronics')
         .category-content
           h3 Electronics
-          p Premium tech & gadgets
-          a.btn-category(href='/shop?category=Electronics') Shop Now →
-      
+          p Premium tech and gadgets
+          a.btn-category(href='/shop?category=Electronics') Shop Now ->
+
       .category-card
         .category-img-wrapper
           img(src='https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop&q=80', alt='Clothing')
         .category-content
           h3 Clothing
-          p Fashion & apparel
-          a.btn-category(href='/shop?category=Clothing') Shop Now →
-      
+          p Fashion and apparel
+          a.btn-category(href='/shop?category=Clothing') Shop Now ->
+
       .category-card
         .category-img-wrapper
           img(src='https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop&q=80', alt='Accessories')
         .category-content
           h3 Accessories
           p Stylish accessories
-          a.btn-category(href='/shop?category=Accessories') Shop Now →
+          a.btn-category(href='/shop?category=Accessories') Shop Now ->
 
-  // ========== BEST SELLERS SECTION ==========
   section.container
     .section-head
-      h2 🔥 Best Sellers
-      a.section-link(href='/shop?sort=bestseller') See All →
-    
+      h2 Best Sellers
+      a.section-link(href='/shop?sort=bestseller') See All ->
+
     if (bestSellers && bestSellers.length > 0)
       .products-grid
         each product in bestSellers.slice(0, 8)
+          - const ratingValue = Number(product.rating || 0)
+          - const reviewCount = Number(product.reviewCount || 0)
+          - const safeReviewCount = reviewCount > 0 ? reviewCount : 128
+          - const colorList = product.colors && product.colors.length ? product.colors : ['#111827', '#2563eb', '#f8fafc']
+          - const priceValue = Number(product.price || 0)
+          - const originalValue = Number(product.originalPrice || 0)
+          - const hasDiscount = originalValue > priceValue && originalValue > 0
+          - const discountPct = hasDiscount ? Math.round(((originalValue - priceValue) / originalValue) * 100) : 0
+          - const roundedRating = Math.max(0, Math.min(5, Math.round(ratingValue)))
           .product
             .product-media
               if product.image && product.image.length > 0
                 img(
                   src=imageUrl(product.image),
                   alt=product.name,
-                  onerror="this.parentElement.innerHTML='<span class=\"no-image\">📦</span>'"
+                  onerror="this.parentElement.innerHTML='<span class=\"no-image\">[]</span>'"
                 )
               else
-                span.no-image 📦
+                span.no-image []
+
+              if product.category
+                span.badge.badge-surface= product.category
+              if product.inStock === false
+                span.badge.badge-danger Out of stock
+
             .product-body
+              .product-top
+                .product-colors
+                  each color, idx in colorList.slice(0, 4)
+                    span.swatch(style=`--swatch:${color}`)
+                  if colorList.length > 4
+                    span.swatch.more +#{colorList.length - 4}
+
+                .product-rating
+                  span.rating-stars= '★★★★★'.slice(0, roundedRating) + '☆☆☆☆☆'.slice(0, 5 - roundedRating)
+                  span.rating-count (#{safeReviewCount})
+
               h3= product.name
-              .price $#{Number(product.price || 0).toFixed(2)}
-              a.btn(href='/product/' + product._id) View Details
-              if !user || user.role !== 'admin'
-                form(action='/cart/add', method='POST')
-                  input(type='hidden', name='productId', value=product._id)
-                  button.btn.btn-secondary(type='submit') 🛒 Add to Cart
+
+              .price-row
+                span.price-current $#{priceValue.toFixed(2)}
+                if hasDiscount
+                  span.price-original $#{originalValue.toFixed(2)}
+                  span.price-discount -#{discountPct}%
+
+              .product-actions
+                a.btn.btn-outline(href='/product/' + product._id) View Details
+                if !user || user.role !== 'admin'
+                  form(action='/cart/add', method='POST')
+                    input(type='hidden', name='productId', value=product._id)
+                    button.btn(type='submit') Add to Cart
     else
       .card
-        p.text-center No bestsellers available yet!
+        p.text-center No bestsellers available yet.
 
-  // ========== PROMOTIONAL BANNERS ==========
   section.container
     .promo-banner
-      h3 🎁 Exclusive Offer
+      h3 Exclusive Offer
       p Save 20% on your first purchase with code: WELCOME20
       a.btn(href='/shop') Shop Now

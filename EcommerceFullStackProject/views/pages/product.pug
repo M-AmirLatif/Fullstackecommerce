@@ -1,35 +1,68 @@
-extends ../layout
+﻿extends ../layout
 
 block content
   if product
-    .container(style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin: 3rem auto; align-items: start;")
-      .product-images
-        .product-media(style="width: 100%; height: 500px; margin-bottom: 1rem; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); background: #f5f5f5; display: flex; align-items: center; justify-content: center; position: relative;")
-          if product.image && product.image.length > 0
-            img(
-              src=imageUrl(product.image),
-              alt=product.name,
-              style="width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.3s ease; display: block;"
-            )
-          else
-            span(style="font-size: 4rem; color: #ddd;") 📦
+    - const ratingValue = Number(product.rating || 0)
+    - const reviewCount = Number(product.reviewCount || 0)
+    - const safeReviewCount = reviewCount > 0 ? reviewCount : 128
+    - const colorList = product.colors && product.colors.length ? product.colors : ['#111827', '#2563eb', '#f8fafc']
+    - const priceValue = Number(product.price || 0)
+    - const originalValue = Number(product.originalPrice || 0)
+    - const hasDiscount = originalValue > priceValue && originalValue > 0
+    - const discountPct = hasDiscount ? Math.round(((originalValue - priceValue) / originalValue) * 100) : 0
+    - const roundedRating = Math.max(0, Math.min(5, Math.round(ratingValue)))
+    .container.product-detail
+      .product-detail-grid
+        .product-images
+          .product-media.product-detail-media
+            if product.image && product.image.length > 0
+              img(src=imageUrl(product.image), alt=product.name)
+            else
+              span.no-image []
 
-      .product-info
-        .section-head(style="flex-direction: column; align-items: flex-start; margin-bottom: 1.5rem;")
-          h1(style="font-size: 2.5rem; margin: 0; color: #1a1a1a;")= product.name
-          span.badge(style="background: linear-gradient(135deg, #ff6b35 0%, #ff5722 100%); color: white; padding: 0.5rem 1.5rem; border-radius: 25px; width: fit-content; margin-top: 0.5rem; font-weight: 600;")= product.category || 'Uncategorized'
+          if product.highlights && product.highlights.length
+            .card
+              h3 Quick Highlights
+              ul.info-list
+                each item in product.highlights
+                  li= item
 
-        .price(style="font-size: 2.5rem; color: #ff6b35; font-weight: 700; margin: 1.5rem 0;") $#{Number(product.price || 0).toFixed(2)}
+        .product-info
+          .product-header
+            h1= product.name
+            if product.category
+              span.badge.badge-surface= product.category
 
-        if product.description
-          .card(style="margin: 1.5rem 0; padding: 1.5rem; background: #f9f9f9; border-left: 4px solid #ff6b35; border-radius: 8px;")
-            h3(style="margin-top: 0; color: #1a1a1a;") 📋 Description
-            p(style="margin: 0; color: #555; line-height: 1.8;")= product.description
+          .product-rating.large
+            span.rating-stars= '★★★★★'.slice(0, roundedRating) + '☆☆☆☆☆'.slice(0, 5 - roundedRating)
+            span.rating-count #{ratingValue.toFixed(1)} (#{safeReviewCount} reviews)
 
-        .card(style="margin: 1.5rem 0; padding: 1.5rem; background: #f9f9f9; border-radius: 8px;")
-          if product.inStock
-            p(style="color: #4caf50; font-weight: 700; margin: 0; font-size: 1.1rem;") ✅ In Stock
-            if product.stock
-              p(style="color: #666; font-weight: 600; margin: 0.5rem 0;") Available: #{product.stock} units
-          else
-            p(style="color: #f44336; font-weight: 700; margin: 0; font-size: 1.1rem;") ❌ Out of Stock
+          .price-row.large
+            span.price-current $#{priceValue.toFixed(2)}
+            if hasDiscount
+              span.price-original $#{originalValue.toFixed(2)}
+              span.price-discount Save #{discountPct}%
+
+          .card
+            h3 Color Options
+            .swatch-row
+              each color in colorList
+                span.swatch(style=`--swatch:${color}` title=color)
+
+          if product.description
+            .card
+              h3 Description
+              p= product.description
+
+          .card
+            if product.inStock !== false
+              p.stock-note In stock
+              if product.stock
+                p.product-meta #{product.stock} units available
+            else
+              p.stock-note.out Out of stock
+
+          if !user || user.role !== 'admin'
+            form.product-form(action="/cart/add" method="POST")
+              input(type="hidden" name="productId" value=product._id)
+              button.btn(type="submit") Add to Cart
