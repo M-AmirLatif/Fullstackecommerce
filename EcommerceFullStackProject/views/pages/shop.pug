@@ -8,10 +8,25 @@ block content
         p.hero-sub Discover thousands of products from top brands at unbeatable prices.
 
   .container
-    .card
+    nav.breadcrumbs
+      a(href="/") Home
+      span.sep /
+      span Shop
+    .card.filter-card
       h3 Filter Products
       form.shop-filters(action="/shop" method="GET")
         .filter-grid
+          .form-group
+            label(for="q") Semantic Search
+            input#q(type="text" name="q" placeholder="e.g. black running shoes under 50" value=q || '')
+          .form-group
+            label(for="sort") Sort By
+            select#sort(name="sort")
+              option(value="") Default
+              option(value="price_asc", selected=(sort === 'price_asc')) Price: Low to High
+              option(value="price_desc", selected=(sort === 'price_desc')) Price: High to Low
+              option(value="rating", selected=(sort === 'rating')) Top Rated
+              option(value="newest", selected=(sort === 'newest')) Newest
           .form-group
             label(for="category") Category
             select#category(name="category")
@@ -29,6 +44,9 @@ block content
             a.btn.btn-outline(href="/shop") Reset All
 
   .container
+    if aiError
+      .card
+        p.text-danger Semantic search is unavailable, showing standard results.
     if !products || products.length === 0
       .card
         .text-center
@@ -53,16 +71,20 @@ block content
           - const hasDiscount = originalValue > priceValue && originalValue > 0
           - const discountPct = hasDiscount ? Math.round(((originalValue - priceValue) / originalValue) * 100) : 0
           - const roundedRating = Math.max(0, Math.min(5, Math.round(ratingValue)))
+          - const isAvailable = p.inStock !== false && Number(p.stock || 0) > 0
+          - const deliveryText = isAvailable ? 'Ships in 24-48 hrs' : 'Restock soon'
           .product
             .product-media
               if p.image && p.image.length > 0
-                img(src=imageUrl(p.image), alt=p.name)
+                img(src=imageUrl(p.image), alt=p.name, loading="lazy", decoding="async")
               else
                 span.no-image []
 
               if p.category
                 span.badge.badge-surface= p.category
-              if p.inStock === false
+              if isAvailable
+                span.badge.badge-trust Free Returns
+              if !isAvailable
                 span.badge.badge-danger Out of stock
 
             .product-body
@@ -85,15 +107,21 @@ block content
                   span.price-original $#{originalValue.toFixed(2)}
                   span.price-discount -#{discountPct}%
 
+              p.product-meta= deliveryText
               if p.stock
                 p.product-meta Stock: #{p.stock}
 
               .product-actions
                 a.btn.btn-outline(href=`/product/${p._id}`) View Details
                 if !user || user.role !== 'admin'
-                  form(action="/cart/add" method="POST" style="margin: 0;")
-                    input(type="hidden" name="productId" value=p._id)
-                    button.btn(type="submit" style="width: 100%;") Add
+                  if isAvailable
+                    form(action="/cart/add" method="POST" style="margin: 0;")
+                      input(type="hidden" name="productId" value=p._id)
+                      .quick-add
+                        input(type="number" name="quantity" min="1" max=p.stock value="1")
+                        button.btn(type="submit") Add
+                  else
+                    button.btn(type="button" style="width: 100%;" disabled) Out of Stock
 
   if totalPages && totalPages > 1
     .container
@@ -101,6 +129,6 @@ block content
         span.text-muted Page #{currentPage} of #{totalPages}
         .pagination-links
           if currentPage > 1
-            a.btn.btn-outline(href=`/shop?page=${currentPage-1}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) <- Previous
+            a.btn.btn-outline(href=`/shop?page=${currentPage-1}&q=${q||''}&sort=${sort||''}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) <- Previous
           if currentPage < totalPages
-            a.btn(href=`/shop?page=${currentPage+1}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) Next ->
+            a.btn(href=`/shop?page=${currentPage+1}&q=${q||''}&sort=${sort||''}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) Next ->

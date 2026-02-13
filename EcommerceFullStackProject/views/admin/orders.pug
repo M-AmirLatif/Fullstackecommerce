@@ -30,8 +30,10 @@ block content
                 td
                   strong.text-primary $#{(order.totalAmount || 0).toFixed(2)}
                 td
-                  if order.status === 'Confirmed'
+                  if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Delivered'
                     span.badge.success= order.status
+                  else if order.status === 'Shipped'
+                    span.badge.secondary= order.status
                   else if order.status === 'Cancelled'
                     span.badge.danger= order.status
                   else
@@ -39,9 +41,12 @@ block content
                 td= new Date(order.createdAt).toLocaleDateString()
                 td
                   .action-buttons
-                    if order.status !== 'Confirmed'
-                      form(method="POST", action=`/admin/orders/${order._id}/confirm`, style="display:inline;")
-                        button.btn(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") ✅ Confirm
-                    if order.status !== 'Cancelled'
+                    if order.status === 'Paid' || order.status === 'Confirmed'
+                      form(method="POST", action=`/admin/orders/${order._id}/ship`, style="display:inline;")
+                        button.btn(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") 🚚 Mark Shipped
+                    if order.status === 'Shipped'
+                      form(method="POST", action=`/admin/orders/${order._id}/deliver`, style="display:inline;")
+                        button.btn(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") ✅ Mark Delivered
+                    if order.status === 'Pending' || order.status === 'Paid' || order.status === 'Confirmed'
                       form(method="POST", action=`/admin/orders/${order._id}/cancel`, style="display:inline; margin-top: 0.25rem;", onclick="return confirm('Cancel this order?')")
                         button.btn.btn-danger(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") ❌ Cancel

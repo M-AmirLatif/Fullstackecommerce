@@ -2,98 +2,146 @@ extends ../layout
 
 block content
   .container
-    h1 🔒 Secure Checkout
+    nav.breadcrumbs
+      a(href="/") Home
+      span.sep /
+      a(href="/cart") Cart
+      span.sep /
+      span Checkout
+    h1 Secure Checkout
 
     .checkout-container
       .checkout-form
-        h2 Shipping Information
+        h2 Checkout
         
-        form(action="/checkout" method="POST")
-          .form-row.full
-            .form-group
-              label(for="customerName") 👤 Full Name
-              input#customerName(type="text" name="customerName" placeholder="John Doe" required)
-          
-          .form-row
-            .form-group
-              label(for="email") 📧 Email Address
-              input#email(type="email" name="email" placeholder="john@example.com" required)
-            .form-group
-              label(for="phone") 📱 Phone Number
-              input#phone(type="tel" name="phone" placeholder="+1 (555) 123-4567" required)
-          
-          .form-row.full
-            .form-group
-              label(for="address") 📍 Shipping Address
-              textarea#address(name="address" placeholder="123 Main Street, Apt 4B, New York, NY 10001" required)
-          
-          .form-row
-            .form-group
-              label(for="city") City
-              input#city(type="text" name="city" placeholder="New York" required)
-            .form-group
-              label(for="state") State
-              input#state(type="text" name="state" placeholder="NY" required)
-          
-          .form-row
-            .form-group
-              label(for="zip") ZIP Code
-              input#zip(type="text" name="zip" placeholder="10001" required)
-            .form-group
-              label(for="country") Country
-              input#country(type="text" name="country" placeholder="United States" required)
-          
-          .form-row.full
-            .form-group
-              label(for="cardName") 💳 Cardholder Name
-              input#cardName(type="text" name="cardName" placeholder="John Doe" required)
-          
-          .form-row
-            .form-group
-              label(for="cardNumber") Card Number
-              input#cardNumber(type="text" name="cardNumber" placeholder="1234 5678 9012 3456" required pattern="[0-9\\s]{16,22}")
-            .form-group
-              label(for="cardExpiry") Expiry Date
-              input#cardExpiry(type="text" name="cardExpiry" placeholder="MM/YY" required pattern="\\d{2}/\\d{2}")
-          
-          .form-row
-            .form-group
-              label(for="cardCVC") CVC
-              input#cardCVC(type="text" name="cardCVC" placeholder="123" required pattern="\\d{3,4}")
-          
-          button.btn(type="submit" style="width: 100%; margin-top: 1.5rem; padding: 1rem; font-size: 1.05rem;") ✅ Place Order
+        .checkout-steps
+          span.step.active(data-step="1") 1. Shipping
+          span.step(data-step="2") 2. Payment
+          span.step(data-step="3") 3. Review
+
+        form#checkout-form(action="/checkout" method="POST")
+          .checkout-step(data-step="1")
+            .form-row.full
+              .form-group
+                label(for="customerName") Full Name
+                input#customerName(type="text" name="customerName" placeholder="John Doe" required)
+            
+            .form-row
+              .form-group
+                label(for="email") Email Address
+                input#email(type="email" name="email" placeholder="john@example.com" required)
+              .form-group
+                label(for="phone") Phone Number
+                input#phone(type="tel" name="phone" placeholder="+1 (555) 123-4567" required)
+            
+            .form-row.full
+              .form-group
+                label(for="address") Shipping Address
+                textarea#address(name="address" placeholder="123 Main Street, Apt 4B, New York, NY 10001" required)
+            
+            .form-row
+              .form-group
+                label(for="city") City
+                input#city(type="text" name="city" placeholder="New York" required)
+              .form-group
+                label(for="state") State
+                input#state(type="text" name="state" placeholder="NY" required)
+            
+            .form-row
+              .form-group
+                label(for="zip") ZIP Code
+                input#zip(type="text" name="zip" placeholder="10001" required)
+              .form-group
+                label(for="country") Country
+                input#country(type="text" name="country" placeholder="United States" required)
+            
+            .step-actions
+              button.btn(type="button" data-step-next="2") Continue to Payment
+
+          .checkout-step(data-step="2")
+            .form-row.full
+              .form-group
+                label Payment Method
+                p.text-muted Demo checkout - no card data is collected.
+            .payment-grid
+              .form-group
+                label(for="cardName") Name on card
+                input#cardName(type="text" name="cardName" placeholder="John Doe" autocomplete="cc-name")
+              .form-group
+                label(for="cardNumber") Card number
+                input#cardNumber(type="text" name="cardNumber" placeholder="4242 4242 4242 4242" inputmode="numeric" autocomplete="cc-number")
+              .form-group
+                label(for="cardExpiry") Expiry
+                input#cardExpiry(type="text" name="cardExpiry" placeholder="MM/YY" inputmode="numeric" autocomplete="cc-exp")
+              .form-group
+                label(for="cardCvc") CVC
+                input#cardCvc(type="text" name="cardCvc" placeholder="123" inputmode="numeric" autocomplete="cc-csc")
+            p.payment-note We never store card details in demo mode.
+            .step-actions
+              button.btn.btn-outline(type="button" data-step-prev="1") Back
+              button.btn(type="button" data-step-next="3") Review Order
+
+          .checkout-step(data-step="3")
+            .card(style="margin-bottom: 1.5rem;")
+              h3 Review
+              p Confirm your shipping info and place the order.
+            .step-actions
+              button.btn.btn-outline(type="button" data-step-prev="2") Back
+              button.btn(type="submit") Place Order
       
       .checkout-summary
         h2 Order Summary
-        
+
         if cart && cart.length > 0
           each item in cart
             .summary-item
-              span #{item.name} × #{item.quantity}
+              span #{item.name} x #{item.quantity}
               span $#{((item.price || 0) * item.quantity).toFixed(2)}
         else
           p.text-center Your cart is empty
-        
+
         .summary-item
           span Subtotal
           span $#{(total * 0.9).toFixed(2)}
-        
+
         .summary-item
           span Shipping
           span(style="color: var(--success);") FREE
-        
+
         .summary-item
           span Tax (10%)
           span $#{(total * 0.1).toFixed(2)}
-        
+
+        .summary-item
+          span Delivery estimate
+          span 3-5 business days
+
         .summary-total
           span Total Amount
           span $#{total.toFixed(2)}
-        
-        .card(style="margin-top: 1.5rem; background-color: var(--light-gray);")
-          p(style="font-size: 0.9rem; margin: 0;")
-            | ✅ Secure Payment
+
+        .trust-row
+          span Secure checkout
+          span Free returns
+          span 24/7 support
+
+        .card.checkout-info
+          h3 Delivery & Support
+          ul.info-list
+            li Orders ship in 24-48 hours
+            li Free returns within 30 days
+            li Support: hello@eshop.dev
+
+        .card.checkout-note
+          p
+            | Secure payment
             br
-            | 🔒 SSL Encrypted
+            | Demo mode enabled
             br
-            | 📦 Free Shipping on this order
+            | Free shipping on this order
+  if cart && cart.length > 0
+    .mobile-cta
+      button.btn(type="button" data-submit-target="#checkout-form") Place Order
+
+block scripts
+  script(src="/js/checkout-steps.js")

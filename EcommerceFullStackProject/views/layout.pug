@@ -6,13 +6,36 @@ html(lang="en")
     meta(name="description" content="E-Shop - Your Ultimate Online Store for Quality Products")
     meta(name="theme-color" content="#0b1f36")
     title E-Shop - Your Ultimate Online Store
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap")
     link(rel="stylesheet", href="/stylesheets/style.css")
     link(rel="stylesheet", href="/stylesheets/responsive.css")
 
   body
     include partials/header
 
+    if flash
+      .toast-container
+        .toast(class=flash.type)= flash.text
+
     main
       block content
 
     include partials/footer
+
+    .assistant-widget
+      button.assistant-toggle(type="button") Chat
+      .assistant-panel
+        .assistant-header
+          span Shop Assistant
+          button.assistant-close(type="button") Close
+        .assistant-messages
+          .assistant-message.assistant-bot Ask me about products, pricing, or gifting ideas.
+        form.assistant-form
+          input.assistant-input(type="text" name="question" placeholder="Ask about products..." autocomplete="off")
+          button.btn(type="submit") Send
+
+    block scripts
+    script(src="/js/assistant.js")
+    script(src="/js/ui.js")

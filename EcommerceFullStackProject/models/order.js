@@ -9,6 +9,14 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  shipping: {
+    phone: String,
+    address: String,
+    city: String,
+    state: String,
+    zip: String,
+    country: String,
+  },
   items: [
     {
       product: {
@@ -26,7 +34,7 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Confirmed', 'Cancelled'],
+    enum: ['Pending', 'Paid', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'],
     default: 'Pending',
   },
   createdAt: {

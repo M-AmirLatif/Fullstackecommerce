@@ -56,8 +56,33 @@ block content
 
       .form-row.full
         .form-group
+          label(for="seoTitle") SEO Title
+          input#seoTitle(type="text", name="seoTitle", placeholder="SEO-friendly title for search")
+
+      .form-row.full
+        .form-group
+          label(for="tags") Tags (comma separated)
+          input#tags(type="text", name="tags", placeholder="gift, running, lightweight")
+
+      .form-row.full
+        .form-group
+          label(for="faqs") FAQs (comma or newline separated)
+          textarea#faqs(name="faqs", placeholder="Is it giftable? Yes, it ships ready to gift.", style="min-height: 120px;")
+
+      .form-row.full
+        .form-group
           label(for="description") Description
           textarea#description(name="description", placeholder="Enter detailed product description", style="min-height: 150px;")
+
+      .form-row.full
+        .form-group
+          label AI Tools
+          .ai-tools
+            button.btn.btn-outline(type="button" data-ai="description") Generate description
+            button.btn.btn-outline(type="button" data-ai="highlights") Generate highlights
+            button.btn.btn-outline(type="button" data-ai="seo") Generate SEO title + tags
+            button.btn.btn-outline(type="button" data-ai="faqs") Generate product FAQs
+            button.btn.btn-outline(type="button" data-ai="autofill") Auto-fill colors & category
 
       .form-row.full
         .form-group

@@ -11,12 +11,20 @@ block content
     - const hasDiscount = originalValue > priceValue && originalValue > 0
     - const discountPct = hasDiscount ? Math.round(((originalValue - priceValue) / originalValue) * 100) : 0
     - const roundedRating = Math.max(0, Math.min(5, Math.round(ratingValue)))
+    - const isAvailable = product.inStock !== false && Number(product.stock || 0) > 0
+    - const gallery = product.image ? [product.image, product.image, product.image] : []
     .container.product-detail
+      nav.breadcrumbs
+        a(href="/") Home
+        span.sep /
+        a(href="/shop") Shop
+        span.sep /
+        span= product.name
       .product-detail-grid
         .product-images
           .product-media.product-detail-media
             if product.image && product.image.length > 0
-              img(src=imageUrl(product.image), alt=product.name)
+              img#product-main-image(src=imageUrl(product.image), alt=product.name, loading="eager", decoding="async")
             else
               span.no-image []
 
@@ -37,6 +45,27 @@ block content
             span.rating-stars= '★★★★★'.slice(0, roundedRating) + '☆☆☆☆☆'.slice(0, 5 - roundedRating)
             span.rating-count #{ratingValue.toFixed(1)} (#{safeReviewCount} reviews)
 
+          .trust-row
+            span Secure checkout
+            span Free returns
+            span Ships in 24-48 hrs
+
+          if user && user.role !== 'admin'
+            .card.rating-card
+              h3 Rate this product
+              form.rating-form(action=`/product/${product._id}/rate` method="POST")
+                .rating-input
+                  - const ratingChoices = [5, 4, 3, 2, 1]
+                  each r in ratingChoices
+                    input(type="radio" id=`rate-${r}` name="rating" value=r required)
+                    label.rating-star(for=`rate-${r}`) &#9733;
+                button.btn(type="submit") Submit rating
+          else if !user
+            .card.rating-card
+              h3 Rate this product
+              p.text-muted Log in to leave a rating.
+              a.btn.btn-outline(href="/login") Log in
+
           .price-row.large
             span.price-current $#{priceValue.toFixed(2)}
             if hasDiscount
@@ -55,7 +84,7 @@ block content
               p= product.description
 
           .card
-            if product.inStock !== false
+            if isAvailable
               p.stock-note In stock
               if product.stock
                 p.product-meta #{product.stock} units available
@@ -63,6 +92,34 @@ block content
               p.stock-note.out Out of stock
 
           if !user || user.role !== 'admin'
-            form.product-form(action="/cart/add" method="POST")
-              input(type="hidden" name="productId" value=product._id)
-              button.btn(type="submit") Add to Cart
+            if isAvailable
+              form.product-form(action="/cart/add" method="POST")
+                input(type="hidden" name="productId" value=product._id)
+                button.btn(type="submit") Add to Cart
+            else
+              button.btn(type="button" disabled) Out of Stock
+
+      if recommendations && recommendations.length > 0
+        .card
+          h3 Customers Also Liked
+          .products-grid
+            each rec in recommendations
+              - const recPrice = Number(rec.price || 0)
+              - const recOriginal = Number(rec.originalPrice || 0)
+              - const recHasDiscount = recOriginal > recPrice && recOriginal > 0
+              .product
+                .product-media
+                  if rec.image && rec.image.length > 0
+                    img(src=imageUrl(rec.image), alt=rec.name, loading="lazy", decoding="async")
+                  else
+                    span.no-image []
+                .product-body
+                  h3= rec.name
+                  .price-row
+                    span.price-current $#{recPrice.toFixed(2)}
+                    if recHasDiscount
+                      span.price-original $#{recOriginal.toFixed(2)}
+                  a.btn.btn-outline(href='/product/' + rec._id) View Details
+
+block scripts
+  script(src="/js/product-gallery.js")

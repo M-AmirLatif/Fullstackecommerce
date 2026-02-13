@@ -21,16 +21,16 @@ block content
           span Total Amount
           strong.text-primary $#{(order.totalAmount || 0).toFixed(2)}
 
-      .card(style="background: var(--light-gray); margin: 2rem 0;")
+      .card(style="background: var(--surface-strong); margin: 2rem 0;")
         h3(style="margin-top: 0;") Order Items
         each item in order.items
           .summary-item(style="padding: 0.75rem 0;")
             span #{item.name} × #{item.quantity}
             span $#{((item.price || 0) * item.quantity).toFixed(2)}
 
-      .card(style="background: #d4edda; border-left: 4px solid var(--success); margin: 2rem 0;")
-        p(style="margin: 0; color: #155724;")
-          | 📧 A confirmation email has been sent to your email address.
+      .card(style="background: var(--surface-strong); border-left: 4px solid var(--success); margin: 2rem 0;")
+        p(style="margin: 0; color: var(--text);")
+          | 📧 We'll email your receipt if notifications are enabled.
           br
           | 📍 You will receive shipping details shortly.
           br

@@ -218,7 +218,7 @@ const products = [
 async function seedDatabase() {
   try {
     await mongoose.connect(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce',
+      process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce',
     )
     console.log('MongoDB connected')
 

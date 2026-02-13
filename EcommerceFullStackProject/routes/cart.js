@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Product = require('../models/product')
 const { forbidAdmin } = require('../middleware/auth')
+const { z } = require('zod')
 
 // make sure cart exists
 function ensureCart(req) {
@@ -23,7 +24,18 @@ router.get('/cart', (req, res) => {
 router.post('/cart/add', forbidAdmin, async (req, res) => {
   try {
     const cart = ensureCart(req)
-    const { productId } = req.body
+    const addSchema = z.object({
+      productId: z.string().min(1),
+      quantity: z.coerce.number().int().min(1).max(50).optional(),
+    })
+    const parsed = addSchema.safeParse(req.body)
+    if (!parsed.success) {
+      req.session.flash = { type: 'error', text: 'Invalid cart request.' }
+      return res.redirect('/shop')
+    }
+
+    const { productId } = parsed.data
+    const requestedQty = parsed.data.quantity || 1
 
     const product = await Product.findById(productId)
     if (!product) {
@@ -31,18 +43,30 @@ router.post('/cart/add', forbidAdmin, async (req, res) => {
       return res.redirect('/shop')
     }
 
+    if (product.inStock === false || Number(product.stock) <= 0) {
+      req.session.flash = { type: 'error', text: 'This product is out of stock.' }
+      return res.redirect('back')
+    }
+
     const existing = cart.find(
       (item) => String(item._id) === String(product._id),
     )
 
     if (existing) {
-      existing.quantity += 1
+      if (Number(existing.quantity) + requestedQty > Number(product.stock)) {
+        req.session.flash = {
+          type: 'error',
+          text: 'Not enough stock for that quantity.',
+        }
+        return res.redirect('back')
+      }
+      existing.quantity += requestedQty
     } else {
       cart.push({
         _id: product._id,
         name: product.name,
         price: product.price,
-        quantity: 1,
+        quantity: requestedQty,
         image: product.image || '/images/placeholder.png',
       })
     }
@@ -54,6 +78,36 @@ router.post('/cart/add', forbidAdmin, async (req, res) => {
     req.session.flash = { type: 'error', text: 'Failed to add to cart' }
     return res.redirect('/shop')
   }
+})
+
+// UPDATE CART QUANTITY
+router.post('/cart/update', (req, res) => {
+  const cart = ensureCart(req)
+  const updateSchema = z.object({
+    productId: z.string().min(1),
+    quantity: z.coerce.number().int().min(0).max(99),
+  })
+  const parsed = updateSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.redirect('/cart')
+  }
+
+  const { productId, quantity: qty } = parsed.data
+
+  const item = cart.find((entry) => String(entry._id) === String(productId))
+  if (!item) {
+    return res.redirect('/cart')
+  }
+
+  if (qty === 0) {
+    req.session.cart = cart.filter(
+      (entry) => String(entry._id) !== String(productId),
+    )
+    return res.redirect('/cart')
+  }
+
+  item.quantity = qty
+  return res.redirect('/cart')
 })
 
 // REMOVE FROM CART

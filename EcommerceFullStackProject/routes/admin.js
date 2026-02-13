@@ -23,7 +23,7 @@ function normalizeImagePath(image) {
 function parseList(value) {
   if (!value) return []
   return String(value)
-    .split(',')
+    .split(/[\n,]/)
     .map((item) => item.trim())
     .filter(Boolean)
 }
@@ -48,23 +48,53 @@ router.get('/orders', async (req, res) => {
   }
 })
 
-router.post('/orders/:id/confirm', async (req, res) => {
+router.post('/orders/:id/ship', async (req, res) => {
   try {
-    await Order.findByIdAndUpdate(req.params.id, {
-      status: 'Confirmed',
-    })
+    const order = await Order.findById(req.params.id)
+    if (!order) {
+      return res.status(404).send('Order not found')
+    }
+    if (order.status !== 'Paid' && order.status !== 'Confirmed') {
+      return res.status(400).send('Order is not ready to ship')
+    }
+    order.status = 'Shipped'
+    await order.save()
     res.redirect('/admin/orders')
   } catch (err) {
     console.error(err)
-    res.status(500).send('Failed to confirm order')
+    res.status(500).send('Failed to mark order as shipped')
+  }
+})
+
+router.post('/orders/:id/deliver', async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+    if (!order) {
+      return res.status(404).send('Order not found')
+    }
+    if (order.status !== 'Shipped') {
+      return res.status(400).send('Order is not shipped yet')
+    }
+    order.status = 'Delivered'
+    await order.save()
+    res.redirect('/admin/orders')
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Failed to mark order as delivered')
   }
 })
 
 router.post('/orders/:id/cancel', async (req, res) => {
   try {
-    await Order.findByIdAndUpdate(req.params.id, {
-      status: 'Cancelled',
-    })
+    const order = await Order.findById(req.params.id)
+    if (!order) {
+      return res.status(404).send('Order not found')
+    }
+    if (!['Pending', 'Paid', 'Confirmed'].includes(order.status)) {
+      return res.status(400).send('Order cannot be cancelled')
+    }
+    order.status = 'Cancelled'
+    await order.save()
     res.redirect('/admin/orders')
   } catch (err) {
     console.error(err)
@@ -106,10 +136,16 @@ router.post('/products/add', async (req, res) => {
       reviewCount,
       colors,
       highlights,
+      seoTitle,
+      tags,
+      faqs,
     } = req.body
 
     const priceNum = Number(price)
     const originalNum = Number(originalPrice)
+
+    const stockNum = Number(stock) || 0
+    const inStockValue = inStock === 'true' && stockNum > 0
 
     await Product.create({
       name,
@@ -118,12 +154,15 @@ router.post('/products/add', async (req, res) => {
       category,
       description,
       image: normalizeImagePath(image),
-      stock: Number(stock) || 0,
-      inStock: inStock === 'true',
+      stock: stockNum,
+      inStock: inStockValue,
       rating: clampRating(rating) || 0,
       reviewCount: Math.max(0, Number(reviewCount) || 0),
       colors: parseList(colors),
       highlights: parseList(highlights),
+      seoTitle,
+      tags: parseList(tags),
+      faqs: parseList(faqs),
     })
 
     res.redirect('/admin/products')
@@ -162,10 +201,16 @@ router.post('/products/edit/:id', async (req, res) => {
       reviewCount,
       colors,
       highlights,
+      seoTitle,
+      tags,
+      faqs,
     } = req.body
 
     const priceNum = Number(price)
     const originalNum = Number(originalPrice)
+
+    const stockNum = Number(stock) || 0
+    const inStockValue = inStock === 'true' && stockNum > 0
 
     await Product.findByIdAndUpdate(
       req.params.id,
@@ -176,12 +221,15 @@ router.post('/products/edit/:id', async (req, res) => {
         category,
         description,
         image: normalizeImagePath(image),
-        stock: Number(stock) || 0,
-        inStock: inStock === 'true',
+        stock: stockNum,
+        inStock: inStockValue,
         rating: clampRating(rating) || 0,
         reviewCount: Math.max(0, Number(reviewCount) || 0),
         colors: parseList(colors),
         highlights: parseList(highlights),
+        seoTitle,
+        tags: parseList(tags),
+        faqs: parseList(faqs),
       },
       {
         runValidators: true,

@@ -1,5 +1,10 @@
 extends layout
 
 block content
-  h1 Error
-  p #{message}
+  .container
+    .card.error-page
+      h1 Error
+      p.text-muted= message
+      .error-actions
+        a.btn(href="/shop") Browse products
+        a.btn.btn-outline(href="/") Back home

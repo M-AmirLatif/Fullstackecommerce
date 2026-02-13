@@ -1,9 +1,14 @@
 extends layout
 
 block content
-  .admin-header
-    h1 📊 Admin Dashboard
-    p Welcome to the admin control panel. Manage your store from here.
+  .admin-hero
+    .admin-hero-inner
+      .admin-hero-text
+        h1 Admin Dashboard
+        p Manage products, orders, and performance from one place.
+      .admin-hero-actions
+        a.btn(href="/admin/products/add") Add New Product
+        a.btn.btn-outline(href="/admin/orders") View Orders
 
   // Stats Section
   .stats-grid
@@ -22,16 +27,15 @@ block content
 
   // Quick Actions
   .card
-    h3 🚀 Quick Actions
+    h3 Quick Actions
     .action-buttons(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;")
-      a.btn(href="/admin/products/add") ➕ Add New Product
-      a.btn(href="/admin/products") 📦 Manage Products
-      a.btn(href="/admin/orders") 📋 View Orders
-      a.btn.btn-outline(href="/") 🏠 View Store
+      a.btn(href="/admin/products") Manage Products
+      a.btn(href="/admin/orders") View Orders
+      a.btn.btn-outline(href="/") View Store
 
   // Recent Orders
   .card
-    h3 📋 Recent Orders
+    h3 Recent Orders
     .table-container
       table
         thead
@@ -76,7 +80,7 @@ block content
   
   // Top Products
   .card
-    h3 🔥 Top Selling Products
+    h3 Top Selling Products
     .table-container
       table
         thead

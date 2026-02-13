@@ -1,14 +1,18 @@
 header.site-header
   nav.navbar
     a.brand(href="/") E-Shop
+    button.nav-toggle(type="button" aria-label="Toggle navigation") ☰
     .nav-links
-      a.nav-link(href="/") Home
-      a.nav-link(href="/shop") Shop
+      - const safePath = currentPath || ''
+      a.nav-link(class=(safePath === '/' ? 'active' : '') href="/") Home
+      a.nav-link(class=(safePath.startsWith('/shop') ? 'active' : '') href="/shop") Shop
       if !user || user.role !== 'admin'
-        a.nav-link(href="/cart") Cart
-        a.nav-link(href="/checkout") Checkout
+        a.nav-link(class=(safePath.startsWith('/cart') ? 'active' : '') href="/cart") Cart
+        a.nav-link(class=(safePath.startsWith('/checkout') ? 'active' : '') href="/checkout") Checkout
       if !user
-        a.nav-link(href="/login") Login
+        a.nav-link(class=(safePath.startsWith('/login') ? 'active' : '') href="/login") Login
       else
+        if user.role === 'admin'
+          a.nav-link(class=(safePath.startsWith('/admin') ? 'active' : '') href="/admin") Admin Panel
         form.nav-form(action="/logout" method="POST")
           button.nav-logout(type="submit") Logout

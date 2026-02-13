@@ -52,6 +52,18 @@ const productSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    seoTitle: {
+      type: String,
+      default: '',
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    faqs: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

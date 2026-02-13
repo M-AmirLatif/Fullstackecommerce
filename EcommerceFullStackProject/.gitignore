@@ -4,3 +4,6 @@ image-update-backup.json
 .DS_Store
 npm-debug.log*
 *.zip
+ai_service/data/
+ai_service/__pycache__/
+ai_service/.venv/
