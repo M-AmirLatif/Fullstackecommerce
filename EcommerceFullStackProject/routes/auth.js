@@ -130,6 +130,23 @@ const clearLoginFailures = (ip, email) => {
 
 setInterval(pruneOldLoginEntries, 5 * 60 * 1000).unref()
 
+const getSafePostLoginRedirect = (req, user) => {
+  const fallback = user?.role === 'admin' ? '/admin' : '/'
+  const candidate = String(req.session?.returnTo || '').trim()
+  delete req.session.returnTo
+
+  if (!candidate) return fallback
+  if (!candidate.startsWith('/')) return fallback
+  if (candidate.startsWith('//')) return fallback
+
+  const blockedPrefixes = ['/login', '/logout', '/register', '/forgot-password', '/reset-password']
+  if (blockedPrefixes.some((prefix) => candidate === prefix || candidate.startsWith(`${prefix}?`))) {
+    return fallback
+  }
+
+  return candidate
+}
+
 const createOtp = () => String(Math.floor(100000 + Math.random() * 900000))
 const createResetToken = () => crypto.randomBytes(24).toString('hex')
 const hashToken = (token) => crypto.createHash('sha256').update(String(token)).digest('hex')
@@ -517,7 +534,7 @@ router.post('/login', async (req, res) => {
     req.session.user = { id: user._id, email: user.email, role: user.role }
     req.session.flash = { type: 'success', text: 'Logged in successfully.' }
 
-    return res.redirect('/')
+    return res.redirect(getSafePostLoginRedirect(req, user))
   } catch (err) {
     console.error('LOGIN ERROR:', err)
     req.session.flash = {
