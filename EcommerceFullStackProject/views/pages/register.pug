@@ -3,8 +3,8 @@ extends ../layout
 
 block content
   .auth-page
-    .auth-shell
-      .auth-left
+    .auth-shell(data-stagger="90")
+      .auth-left(data-reveal="up")
         h1.auth-hero-title ✨ Create Your Account
         p.auth-hero-sub Join thousands of happy customers! Sign up to save your cart, checkout faster, and track your orders.
         .auth-perks
@@ -14,14 +14,14 @@ block content
           .perk ✓ Wishlist features
           .perk ✓ Special offers & rewards
 
-      .auth-card
+      .auth-card(data-reveal="scale")
         h2.auth-title Create Account
         p.auth-subtitle Sign up takes less than a minute!
 
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/register" method="POST" autocomplete="off")
+        form.auth-form(action="/register/start" method="POST" autocomplete="off")
           .auth-field
             label(for="name") 👤 Full Name
             input#name(type="text" name="name" placeholder="John Doe" required)

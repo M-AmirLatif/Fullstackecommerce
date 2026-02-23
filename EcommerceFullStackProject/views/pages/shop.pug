@@ -4,22 +4,22 @@ block content
   section.hero
     .hero-inner(style="flex-direction: column; text-align: center;")
       .hero-left(style="flex: none;")
-        h1.hero-title Shop Our Collection
-        p.hero-sub Discover thousands of products from top brands at unbeatable prices.
+        h1.hero-title(data-reveal="up") Shop Our Collection
+        p.hero-sub(data-reveal="up" data-reveal-delay="90") Discover thousands of products from top brands at unbeatable prices.
 
   .container
     nav.breadcrumbs
       a(href="/") Home
       span.sep /
       span Shop
-    .card.filter-card
-      h3 Filter Products
+    .card.filter-card(data-reveal="up")
+      h3(data-reveal="fade") Filter Products
       form.shop-filters(action="/shop" method="GET")
-        .filter-grid
-          .form-group
+        .filter-grid(data-stagger="60")
+          .form-group(data-reveal="up")
             label(for="q") Semantic Search
             input#q(type="text" name="q" placeholder="e.g. black running shoes under 50" value=q || '')
-          .form-group
+          .form-group(data-reveal="up")
             label(for="sort") Sort By
             select#sort(name="sort")
               option(value="") Default
@@ -27,19 +27,19 @@ block content
               option(value="price_desc", selected=(sort === 'price_desc')) Price: High to Low
               option(value="rating", selected=(sort === 'rating')) Top Rated
               option(value="newest", selected=(sort === 'newest')) Newest
-          .form-group
+          .form-group(data-reveal="up")
             label(for="category") Category
             select#category(name="category")
               option(value="") All Categories
               each c in categories
                 option(value=c, selected=(c === selectedCategory))= c
-          .form-group
+          .form-group(data-reveal="up")
             label(for="minPrice") Minimum Price
             input#minPrice(type="number" name="minPrice" placeholder="$0" value=minPrice || '')
-          .form-group
+          .form-group(data-reveal="up")
             label(for="maxPrice") Maximum Price
             input#maxPrice(type="number" name="maxPrice" placeholder="$1000" value=maxPrice || '')
-          .field-btn
+          .field-btn(data-reveal="up")
             button.btn(type="submit") Apply Filters
             a.btn.btn-outline(href="/shop") Reset All
 
@@ -55,12 +55,12 @@ block content
           p(style="color: var(--muted);") Try adjusting your filters or browse all products.
           a.btn(href="/shop") Browse All Products
     else
-      .section-head
+      .section-head(data-reveal="fade")
         h2 Results (#{products.length} product#{products.length !== 1 ? 's' : ''})
         if totalPages && totalPages > 1
           span.text-muted Page #{currentPage} of #{totalPages}
 
-      .products-grid
+      .products-grid(data-stagger="70")
         each p in products
           - const ratingValue = Number(p.rating || 0)
           - const reviewCount = Number(p.reviewCount || 0)
@@ -73,7 +73,7 @@ block content
           - const roundedRating = Math.max(0, Math.min(5, Math.round(ratingValue)))
           - const isAvailable = p.inStock !== false && Number(p.stock || 0) > 0
           - const deliveryText = isAvailable ? 'Ships in 24-48 hrs' : 'Restock soon'
-          .product
+          .product(data-reveal="scale")
             .product-media
               if p.image && p.image.length > 0
                 img(src=imageUrl(p.image), alt=p.name, loading="lazy", decoding="async")

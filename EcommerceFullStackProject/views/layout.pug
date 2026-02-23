@@ -5,10 +5,12 @@ html(lang="en")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     meta(name="description" content="E-Shop - Your Ultimate Online Store for Quality Products")
     meta(name="theme-color" content="#0b1f36")
+    if csrfToken
+      meta(name="csrf-token" content=csrfToken)
     title E-Shop - Your Ultimate Online Store
     link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
-    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap")
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap")
     link(rel="stylesheet", href="/stylesheets/style.css")
     link(rel="stylesheet", href="/stylesheets/responsive.css")
 
@@ -37,5 +39,7 @@ html(lang="en")
           button.btn(type="submit") Send
 
     block scripts
+    script(src="/js/csrf.js")
     script(src="/js/assistant.js")
+    script(src="/js/motion.js")
     script(src="/js/ui.js")

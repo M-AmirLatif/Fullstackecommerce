@@ -2,12 +2,12 @@ extends ../layout
 
 block content
   .container
-    .confirmation-container
+    .confirmation-container(data-reveal="scale")
       .confirmation-icon ✅
-      h2.confirmation-title Order Confirmed!
-      p.confirmation-text Thank you for your purchase! Your order has been successfully placed and will be processed shortly.
+      h2.confirmation-title= order.payment && order.payment.status === 'succeeded' ? 'Payment Successful!' : 'Order Received!'
+      p.confirmation-text= order.payment && order.payment.status === 'succeeded' ? 'Your payment is confirmed and we are preparing shipment.' : 'Your order is created and payment is pending confirmation.'
 
-      .order-details
+      .order-details(data-reveal="up" data-reveal-delay="120")
         p
           span Order ID
           strong ##{order._id.toString().slice(-8).toUpperCase()}
@@ -15,20 +15,23 @@ block content
           span Status
           strong.text-success #{order.status || 'Processing'}
         p
+          span Payment
+          strong #{(order.payment && order.payment.status) || 'pending'}
+        p
           span Order Date
           strong #{new Date(order.createdAt).toLocaleDateString()}
         p
           span Total Amount
           strong.text-primary $#{(order.totalAmount || 0).toFixed(2)}
 
-      .card(style="background: var(--surface-strong); margin: 2rem 0;")
+      .card(style="background: var(--surface-strong); margin: 2rem 0;" data-reveal="up")
         h3(style="margin-top: 0;") Order Items
         each item in order.items
           .summary-item(style="padding: 0.75rem 0;")
             span #{item.name} × #{item.quantity}
             span $#{((item.price || 0) * item.quantity).toFixed(2)}
 
-      .card(style="background: var(--surface-strong); border-left: 4px solid var(--success); margin: 2rem 0;")
+      .card(style="background: var(--surface-strong); border-left: 4px solid var(--success); margin: 2rem 0;" data-reveal="up")
         p(style="margin: 0; color: var(--text);")
           | 📧 We'll email your receipt if notifications are enabled.
           br
@@ -36,7 +39,7 @@ block content
           br
           | 🚚 Estimated delivery: 3-5 business days.
 
-      .action-buttons(style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;")
+      .action-buttons(style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;" data-reveal="up")
         a.btn(href="/") 🏠 Return to Home
         a.btn.btn-secondary(href="/shop") 🛍️ Continue Shopping
         a.btn.btn-outline(href="/cart") 🛒 View Cart

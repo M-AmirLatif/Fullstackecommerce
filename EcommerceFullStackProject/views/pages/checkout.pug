@@ -8,10 +8,10 @@ block content
       a(href="/cart") Cart
       span.sep /
       span Checkout
-    h1 Secure Checkout
+    h1(data-reveal="up") Secure Checkout
 
-    .checkout-container
-      .checkout-form
+    .checkout-container(data-stagger="80")
+      .checkout-form(data-reveal="up")
         h2 Checkout
         
         .checkout-steps
@@ -20,6 +20,7 @@ block content
           span.step(data-step="3") 3. Review
 
         form#checkout-form(action="/checkout" method="POST")
+          input(type="hidden" name="checkoutToken" value=checkoutToken)
           .checkout-step(data-step="1")
             .form-row.full
               .form-group
@@ -89,7 +90,7 @@ block content
               button.btn.btn-outline(type="button" data-step-prev="2") Back
               button.btn(type="submit") Place Order
       
-      .checkout-summary
+      .checkout-summary(data-reveal="up")
         h2 Order Summary
 
         if cart && cart.length > 0

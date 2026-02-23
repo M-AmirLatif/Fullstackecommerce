@@ -6,17 +6,17 @@ block content
       a(href="/") Home
       span.sep /
       span Cart
-    h1 Your Shopping Cart
+    h1(data-reveal="up") Your Shopping Cart
 
     if !cart || cart.length === 0
-      .card
+      .card(data-reveal="up")
         .text-center
           h3 Your cart is empty
           p(style="color: var(--gray); margin-bottom: 1.5rem;") No products added yet. Time to start shopping!
           a.btn(href="/shop") Continue Shopping
     else
-      .cart-grid
-        .card
+      .cart-grid(data-stagger="80")
+        .card(data-reveal="up")
           h3 Order Items (#{cart.length} item#{cart.length !== 1 ? 's' : ''})
           each item in cart
             .cart-item
@@ -40,7 +40,7 @@ block content
                   input(type="hidden" name="productId" value=item._id)
                   button.btn.btn-danger(type="submit" style="min-height: auto; padding: 0.5rem 1rem;") Remove
 
-        .card
+        .card(data-reveal="up")
           h3 Order Summary
           .summary-item
             span Subtotal

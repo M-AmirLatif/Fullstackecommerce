@@ -2,8 +2,8 @@ extends ../layout
 
 block content
   .auth-page
-    .auth-shell
-      .auth-left
+    .auth-shell(data-stagger="90")
+      .auth-left(data-reveal="up")
         h1.auth-hero-title 👋 Welcome Back!
         p.auth-hero-sub Sign in to your account to manage your cart, checkout faster, and track your orders.
         .auth-perks
@@ -13,7 +13,7 @@ block content
           .perk ✓ Access to admin panel
           .perk ✓ Exclusive member deals
 
-      .auth-card
+      .auth-card(data-reveal="scale")
         h2.auth-title Sign In
         p.auth-subtitle Login with your email and password
 
@@ -28,6 +28,9 @@ block content
           .auth-field
             label(for="password") 🔐 Password
             input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password")
+
+          p.auth-bottom(style="margin-top: -0.35rem; margin-bottom: 0.6rem;")
+            a(href="/forgot-password") Forgot password?
 
           button.auth-submit(type="submit") 🔓 Sign In
 

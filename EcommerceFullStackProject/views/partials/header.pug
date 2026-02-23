@@ -6,13 +6,12 @@ header.site-header
       - const safePath = currentPath || ''
       a.nav-link(class=(safePath === '/' ? 'active' : '') href="/") Home
       a.nav-link(class=(safePath.startsWith('/shop') ? 'active' : '') href="/shop") Shop
+      a.nav-link(class=(safePath.startsWith('/admin') ? 'active' : '') href="/admin") Admin Panel
       if !user || user.role !== 'admin'
         a.nav-link(class=(safePath.startsWith('/cart') ? 'active' : '') href="/cart") Cart
         a.nav-link(class=(safePath.startsWith('/checkout') ? 'active' : '') href="/checkout") Checkout
       if !user
         a.nav-link(class=(safePath.startsWith('/login') ? 'active' : '') href="/login") Login
       else
-        if user.role === 'admin'
-          a.nav-link(class=(safePath.startsWith('/admin') ? 'active' : '') href="/admin") Admin Panel
         form.nav-form(action="/logout" method="POST")
           button.nav-logout(type="submit") Logout

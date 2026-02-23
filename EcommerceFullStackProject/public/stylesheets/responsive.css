@@ -19,6 +19,57 @@ img {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 1rem !important;
   }
+
+  /* Admin layout should stay usable on tablet/mobile */
+  .admin-layout {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    min-height: auto !important;
+  }
+
+  .admin-sidebar {
+    display: block !important;
+    padding: 0.9rem 1rem 0.75rem !important;
+    border-bottom: 1px solid rgba(148, 167, 255, 0.18);
+  }
+
+  .admin-sidebar h3 {
+    margin: 0 0 0.65rem !important;
+    font-size: 1rem !important;
+  }
+
+  .admin-nav {
+    flex-direction: row !important;
+    gap: 0.6rem !important;
+    overflow-x: auto !important;
+    padding-bottom: 0.2rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-nav a {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    padding: 0.6rem 0.85rem !important;
+  }
+
+  .admin-nav a:hover,
+  .admin-nav a.active {
+    padding-left: 0.85rem !important;
+    transform: none !important;
+  }
+
+  .admin-content {
+    padding: 1.1rem !important;
+  }
+
+  .admin-content .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-content .table-container table {
+    min-width: 720px !important;
+  }
 }
 
 /* =========================
@@ -39,7 +90,7 @@ img {
 
   /* product grid -> 1 column */
   .products-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr 1fr !important;
     gap: 1rem !important;
   }
 
@@ -54,7 +105,6 @@ img {
   }
 
   .product-media img {
-    width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
   }
@@ -75,5 +125,229 @@ img {
     flex-direction: column !important;
     text-align: center !important;
     gap: 1rem !important;
+  }
+
+  /* -------------------------
+     Footer mobile fixes
+     ------------------------- */
+  .site-footer {
+    margin-top: 2.5rem !important;
+  }
+
+  .footer-top {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-areas:
+      'brand brand'
+      'company policy'
+      'categories categories'
+      'address address' !important;
+    gap: 1.4rem 1rem !important;
+    padding: 1.6rem 1.2rem 1.4rem !important;
+    align-items: start !important;
+  }
+
+  .footer-brand {
+    grid-area: brand !important;
+    text-align: left !important;
+  }
+
+  .footer-top > .footer-col:nth-child(2) {
+    grid-area: company !important;
+  }
+  .footer-top > .footer-col:nth-child(3) {
+    grid-area: policy !important;
+  }
+  .footer-top > .footer-col:nth-child(4) {
+    grid-area: categories !important;
+  }
+  .footer-col.footer-address {
+    grid-area: address !important;
+  }
+
+  .footer-col {
+    text-align: left !important;
+  }
+
+  .footer-address {
+    text-align: left !important;
+  }
+
+  .footer-address .footer-title {
+    justify-self: start !important;
+  }
+
+  .footer-address .footer-contact {
+    justify-items: start !important;
+  }
+
+  .footer-address .footer-contact li {
+    text-align: left !important;
+  }
+
+  .footer-socials {
+    justify-content: flex-start !important;
+  }
+
+  .footer-tagline {
+    max-width: none !important;
+    margin-bottom: 0.9rem !important;
+    line-height: 1.55 !important;
+    font-size: 0.95rem !important;
+  }
+
+  .footer-title {
+    margin-bottom: 0.55rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  .footer-links,
+  .footer-contact {
+    gap: 0.45rem !important;
+  }
+
+  .footer-bottom {
+    position: relative !important;
+  }
+
+  .footer-bottom-inner {
+    padding: 0.8rem 1.2rem 1rem !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.45rem !important;
+  }
+
+  .footer-copy {
+    font-size: 0.92rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .footer-mini-links {
+    gap: 0.85rem !important;
+  }
+
+  /* -------------------------
+     Admin mobile layout tightening
+     ------------------------- */
+  .admin-sidebar {
+    position: static !important;
+    padding: 0.85rem 0.85rem 0.65rem !important;
+  }
+
+  .admin-sidebar h3 {
+    line-height: 1.2 !important;
+  }
+
+  .admin-nav {
+    gap: 0.55rem !important;
+    scrollbar-width: thin;
+  }
+
+  .admin-nav a {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    padding: 0.55rem 0.8rem !important;
+    font-size: 0.92rem !important;
+  }
+
+  .admin-content {
+    padding: 0.9rem !important;
+  }
+
+  .admin-header {
+    margin-bottom: 1rem !important;
+  }
+
+  .admin-header h1 {
+    font-size: 1.2rem !important;
+  }
+
+  .admin-hero {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .admin-hero-text h1 {
+    font-size: 1.25rem !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.9rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .stat-card {
+    padding: 1rem !important;
+  }
+
+  .stat-value {
+    font-size: 1.35rem !important;
+  }
+
+  .admin-content .card {
+    margin-bottom: 1rem !important;
+    padding: 1rem !important;
+  }
+
+  .admin-content th,
+  .admin-content td {
+    padding: 0.65rem 0.6rem !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .admin-content td:first-child,
+  .admin-content th:first-child {
+    position: sticky;
+    left: 0;
+    background: inherit;
+    z-index: 1;
+  }
+
+  .action-buttons {
+    gap: 0.35rem !important;
+    align-items: flex-start !important;
+  }
+
+  .action-buttons .btn {
+    font-size: 0.78rem !important;
+    padding: 0.45rem 0.7rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.4rem !important;
+    padding: 1.4rem 1rem 1rem !important;
+  }
+
+  .footer-links a,
+  .footer-contact a,
+  .footer-contact li {
+    font-size: 0.92rem !important;
+  }
+
+  .footer-address .footer-contact li {
+    gap: 0.15rem !important;
+  }
+
+  .footer-copy {
+    font-size: 0.88rem !important;
+  }
+
+  .footer-mini-links a {
+    font-size: 0.9rem !important;
+  }
+
+  .admin-nav a {
+    font-size: 0.86rem !important;
+    padding: 0.48rem 0.7rem !important;
+  }
+
+  .admin-content {
+    padding: 0.75rem !important;
   }
 }

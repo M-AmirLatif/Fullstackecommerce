@@ -7,3 +7,6 @@ npm-debug.log*
 ai_service/data/
 ai_service/__pycache__/
 ai_service/.venv/
+
+.vercel
+.env*.local

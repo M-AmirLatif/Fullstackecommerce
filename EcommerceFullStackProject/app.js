@@ -6,6 +6,7 @@ const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const mongoSanitize = require('express-mongo-sanitize')
 const morgan = require('morgan')
+const csrf = require('csurf')
 const MongoStore = connectMongo.MongoStore || connectMongo.default || connectMongo
 const cartRoutes = require('./routes/cart')
 
@@ -21,6 +22,7 @@ const adminRouter = require('./routes/admin')
 const checkoutRoutes = require('./routes/checkout')
 const orderRoutes = require('./routes/order')
 const aiRoutes = require('./routes/ai')
+const paymentRoutes = require('./routes/payments')
 
 const app = express()
 
@@ -78,6 +80,16 @@ app.use(
   }),
 )
 
+const csrfProtection = csrf({
+  ignoreMethods: ['GET', 'HEAD', 'OPTIONS'],
+})
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/ai/')) return next()
+  if (req.path.startsWith('/payments/webhook/')) return next()
+  return csrfProtection(req, res, next)
+})
+
 // Flash message middleware (simple)
 app.use((req, res, next) => {
   res.locals.flash = req.session.flash || null
@@ -89,6 +101,11 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.user = req.session?.user || null
   res.locals.currentPath = req.path || ''
+  try {
+    res.locals.csrfToken = req.csrfToken ? req.csrfToken() : null
+  } catch (_) {
+    res.locals.csrfToken = null
+  }
   next()
 })
 
@@ -143,6 +160,16 @@ app.use('/admin', adminRouter)
 app.use(checkoutRoutes)
 app.use(orderRoutes)
 app.use(aiRoutes)
+app.use(paymentRoutes)
+
+app.use((err, req, res, next) => {
+  if (err && err.code === 'EBADCSRFTOKEN') {
+    req.session.flash = { type: 'error', text: 'Session expired. Please try again.' }
+    const back = req.get('referer')
+    return res.redirect(back || '/')
+  }
+  return next(err)
+})
 
 // Error handler
 app.use((err, req, res, next) => {

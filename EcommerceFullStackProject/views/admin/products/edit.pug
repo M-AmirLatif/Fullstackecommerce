@@ -43,6 +43,14 @@ block content
 
       .form-row
         .form-group
+          label(for="model") Model (optional)
+          input#model(type="text", name="model", value=product.model || '', placeholder="WH-1000XM5 / Series 9")
+        .form-group
+          label(for="sku") SKU (optional)
+          input#sku(type="text", name="sku", value=product.sku || '', placeholder="WH-001")
+
+      .form-row
+        .form-group
           label(for="image") Image URL
           input#image(type="text", name="image", value=product.image, placeholder="/images/jacket.jpg")
         .form-group

@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  .admin-hero
+  .admin-hero(data-reveal="up")
     .admin-hero-inner
       .admin-hero-text
         h1 Admin Dashboard
@@ -11,22 +11,22 @@ block content
         a.btn.btn-outline(href="/admin/orders") View Orders
 
   // Stats Section
-  .stats-grid
-    .stat-card
+  .stats-grid(data-stagger="70")
+    .stat-card(data-reveal="scale")
       .stat-label Total Products
       .stat-value 245
-    .stat-card.secondary
+    .stat-card.secondary(data-reveal="scale")
       .stat-label Total Orders
       .stat-value 1,248
-    .stat-card.success
+    .stat-card.success(data-reveal="scale")
       .stat-label Total Revenue
       .stat-value $45,320
-    .stat-card.warning
+    .stat-card.warning(data-reveal="scale")
       .stat-label Pending Orders
       .stat-value 23
 
   // Quick Actions
-  .card
+  .card(data-reveal="up")
     h3 Quick Actions
     .action-buttons(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;")
       a.btn(href="/admin/products") Manage Products
@@ -34,7 +34,7 @@ block content
       a.btn.btn-outline(href="/") View Store
 
   // Recent Orders
-  .card
+  .card(data-reveal="up")
     h3 Recent Orders
     .table-container
       table
@@ -79,7 +79,7 @@ block content
                 a.btn(href="#" style="padding: 0.5rem 1rem; font-size: 0.85rem;") View
   
   // Top Products
-  .card
+  .card(data-reveal="up")
     h3 Top Selling Products
     .table-container
       table

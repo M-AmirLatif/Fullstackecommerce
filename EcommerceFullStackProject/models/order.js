@@ -1,6 +1,15 @@
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  idempotencyKey: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   customerName: {
     type: String,
     required: true,
@@ -16,6 +25,19 @@ const orderSchema = new mongoose.Schema({
     state: String,
     zip: String,
     country: String,
+  },
+  payment: {
+    provider: { type: String, default: 'demo' },
+    status: {
+      type: String,
+      enum: ['pending', 'succeeded', 'failed', 'refunded'],
+      default: 'pending',
+    },
+    transactionId: { type: String, default: '' },
+  },
+  paidAt: {
+    type: Date,
+    default: null,
   },
   items: [
     {

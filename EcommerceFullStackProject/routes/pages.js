@@ -193,6 +193,19 @@ router.get('/register', (req, res) => {
   res.render('pages/register')
 })
 
+router.get('/forgot-password', (req, res) => {
+  res.render('pages/forgot-password')
+})
+
+router.get('/reset-password', (req, res) => {
+  const token = String(req.query.token || '').trim()
+  if (!token) {
+    req.session.flash = { type: 'error', text: 'Reset link is invalid or missing.' }
+    return res.redirect('/forgot-password')
+  }
+  return res.render('pages/reset-password', { token })
+})
+
 router.get('/shop', cacheRender(60 * 1000), async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1

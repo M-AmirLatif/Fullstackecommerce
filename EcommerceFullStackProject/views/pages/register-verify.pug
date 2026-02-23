@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+  .auth-page
+    .auth-shell
+      .auth-left
+        h1.auth-hero-title Verify Your Email
+        p.auth-hero-sub We sent a 6-digit OTP to your email. Enter it to complete signup.
+        .auth-perks
+          .perk OTP expires in 10 minutes
+          .perk Up to 5 verification attempts
+          .perk You can resend OTP if needed
+
+      .auth-card
+        h2.auth-title Enter OTP
+        p.auth-subtitle Email: #{email}
+
+        if flash
+          .flash(class=flash.type)= flash.text
+
+        form.auth-form(action="/register/verify" method="POST" autocomplete="off")
+          input(type="hidden" name="email" value=email)
+          .auth-field
+            label(for="otp") 6-digit OTP
+            input#otp(type="text" name="otp" placeholder="123456" required maxlength="6" pattern="\\d{6}" inputmode="numeric")
+          button.auth-submit(type="submit") Verify & Create Account
+
+        form.auth-form(action="/register/resend-otp" method="POST")
+          input(type="hidden" name="email" value=email)
+          button.auth-submit.btn-outline(type="submit") Resend OTP
+
+        p.auth-bottom
+          a(href="/register") Back to Sign Up

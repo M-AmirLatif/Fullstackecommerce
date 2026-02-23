@@ -21,7 +21,7 @@ block content
         span.sep /
         span= product.name
       .product-detail-grid
-        .product-images
+        .product-images(data-reveal="up")
           .product-media.product-detail-media
             if product.image && product.image.length > 0
               img#product-main-image(src=imageUrl(product.image), alt=product.name, loading="eager", decoding="async")
@@ -29,29 +29,36 @@ block content
               span.no-image []
 
           if product.highlights && product.highlights.length
-            .card
+            .card(data-reveal="up" data-reveal-delay="70")
               h3 Quick Highlights
               ul.info-list
                 each item in product.highlights
                   li= item
 
         .product-info
-          .product-header
+          .product-header(data-reveal="up")
             h1= product.name
             if product.category
               span.badge.badge-surface= product.category
 
-          .product-rating.large
+          if product.model || product.sku
+            .product-meta(style="margin-bottom: 0.75rem;" data-reveal="fade" data-reveal-delay="60")
+              if product.model
+                span(style="margin-right: 0.75rem;") Model: #{product.model}
+              if product.sku
+                span SKU: #{product.sku}
+
+          .product-rating.large(data-reveal="up" data-reveal-delay="90")
             span.rating-stars= '★★★★★'.slice(0, roundedRating) + '☆☆☆☆☆'.slice(0, 5 - roundedRating)
             span.rating-count #{ratingValue.toFixed(1)} (#{safeReviewCount} reviews)
 
-          .trust-row
+          .trust-row(data-reveal="up" data-reveal-delay="120")
             span Secure checkout
             span Free returns
             span Ships in 24-48 hrs
 
           if user && user.role !== 'admin'
-            .card.rating-card
+            .card.rating-card(data-reveal="up" data-reveal-delay="150")
               h3 Rate this product
               form.rating-form(action=`/product/${product._id}/rate` method="POST")
                 .rating-input
@@ -61,29 +68,29 @@ block content
                     label.rating-star(for=`rate-${r}`) &#9733;
                 button.btn(type="submit") Submit rating
           else if !user
-            .card.rating-card
+            .card.rating-card(data-reveal="up" data-reveal-delay="150")
               h3 Rate this product
               p.text-muted Log in to leave a rating.
               a.btn.btn-outline(href="/login") Log in
 
-          .price-row.large
+          .price-row.large(data-reveal="up" data-reveal-delay="180")
             span.price-current $#{priceValue.toFixed(2)}
             if hasDiscount
               span.price-original $#{originalValue.toFixed(2)}
               span.price-discount Save #{discountPct}%
 
-          .card
+          .card(data-reveal="up" data-reveal-delay="210")
             h3 Color Options
             .swatch-row
               each color in colorList
                 span.swatch(style=`--swatch:${color}` title=color)
 
           if product.description
-            .card
+            .card(data-reveal="up" data-reveal-delay="240")
               h3 Description
               p= product.description
 
-          .card
+          .card(data-reveal="up" data-reveal-delay="270")
             if isAvailable
               p.stock-note In stock
               if product.stock
@@ -93,21 +100,21 @@ block content
 
           if !user || user.role !== 'admin'
             if isAvailable
-              form.product-form(action="/cart/add" method="POST")
+              form.product-form(action="/cart/add" method="POST" data-reveal="up" data-reveal-delay="300")
                 input(type="hidden" name="productId" value=product._id)
                 button.btn(type="submit") Add to Cart
             else
-              button.btn(type="button" disabled) Out of Stock
+              button.btn(type="button" disabled data-reveal="up" data-reveal-delay="300") Out of Stock
 
       if recommendations && recommendations.length > 0
-        .card
+        .card(data-reveal="up")
           h3 Customers Also Liked
-          .products-grid
+          .products-grid(data-stagger="70")
             each rec in recommendations
               - const recPrice = Number(rec.price || 0)
               - const recOriginal = Number(rec.originalPrice || 0)
               - const recHasDiscount = recOriginal > recPrice && recOriginal > 0
-              .product
+              .product(data-reveal="scale")
                 .product-media
                   if rec.image && rec.image.length > 0
                     img(src=imageUrl(rec.image), alt=rec.name, loading="lazy", decoding="async")

@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema(
     },
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    resetPasswordTokenHash: { type: String, default: null },
+    resetPasswordExpiresAt: { type: Date, default: null },
   },
   { timestamps: true }
 )
@@ -20,6 +22,7 @@ const userSchema = new mongoose.Schema(
 // Hash password before saving (only if changed)
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return
+  if (typeof this.password === 'string' && this.password.startsWith('$2')) return
 
   const salt = await bcrypt.genSalt(10)
   this.password = await bcrypt.hash(this.password, salt)

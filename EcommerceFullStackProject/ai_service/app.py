@@ -1,5 +1,7 @@
 import json
 import os
+import re
+import time
 
 import faiss
 import numpy as np
@@ -24,6 +26,8 @@ AI_OLLAMA_MODEL = os.getenv("AI_OLLAMA_MODEL", "phi3:mini")
 AI_CHAT_MODE = os.getenv("AI_CHAT_MODE", "llm")
 AI_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 AI_OPENAI_MODEL = os.getenv("AI_OPENAI_MODEL", "gpt-4o-mini")
+AI_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+AI_GEMINI_MODEL = os.getenv("AI_GEMINI_MODEL", "gemini-1.5-flash")
 AI_DEBUG = os.getenv("AI_DEBUG", "0") == "1"
 
 app = FastAPI()
@@ -78,14 +82,20 @@ def load_assets() -> None:
 
 @app.get("/health")
 def health() -> dict:
+    llm_model = AI_OLLAMA_MODEL
+    if AI_LLM_PROVIDER == "openai":
+        llm_model = AI_OPENAI_MODEL
+    elif AI_LLM_PROVIDER == "gemini":
+        llm_model = AI_GEMINI_MODEL
     return {
         "index_loaded": _index is not None,
         "count": len(_id_map),
         "db_loaded": _collection is not None,
         "llm_provider": AI_LLM_PROVIDER,
-        "llm_model": AI_OPENAI_MODEL if AI_LLM_PROVIDER == "openai" else AI_OLLAMA_MODEL,
+        "llm_model": llm_model,
         "chat_mode": AI_CHAT_MODE,
         "openai_key_loaded": bool(AI_OPENAI_API_KEY) if AI_LLM_PROVIDER == "openai" else False,
+        "gemini_key_loaded": bool(AI_GEMINI_API_KEY) if AI_LLM_PROVIDER == "gemini" else False,
         "ai_debug": AI_DEBUG,
     }
 
@@ -140,12 +150,117 @@ def _load_products(product_ids):
             "reviewCount": 1,
             "highlights": 1,
             "image": 1,
+            "originalPrice": 1,
+            "colors": 1,
+            "tags": 1,
+            "faqs": 1,
+            "seoTitle": 1,
+            "model": 1,
+            "sku": 1,
         },
     )
     products = list(cursor)
     by_id = {str(doc["_id"]): doc for doc in products}
     ordered = [by_id.get(str(pid)) for pid in product_ids]
     return [item for item in ordered if item]
+
+
+def _load_all_products(limit: int = 100):
+    if _collection is None:
+        return []
+    cursor = _collection.find(
+        {},
+        {
+            "name": 1,
+            "price": 1,
+            "category": 1,
+            "image": 1,
+            "description": 1,
+            "stock": 1,
+            "inStock": 1,
+            "rating": 1,
+            "reviewCount": 1,
+            "highlights": 1,
+            "originalPrice": 1,
+            "colors": 1,
+            "tags": 1,
+            "faqs": 1,
+            "seoTitle": 1,
+            "model": 1,
+            "sku": 1,
+        },
+    ).limit(limit)
+    products = list(cursor)
+    products.sort(key=lambda item: str(item.get("name", "")).lower())
+    return products
+
+
+def _load_price_sorted_products(desc: bool = True, limit: int = 10):
+    if _collection is None:
+        return []
+    order = -1 if desc else 1
+    cursor = _collection.find(
+        {},
+        {
+            "name": 1,
+            "price": 1,
+            "category": 1,
+            "image": 1,
+            "description": 1,
+            "stock": 1,
+            "inStock": 1,
+            "rating": 1,
+            "reviewCount": 1,
+            "highlights": 1,
+            "originalPrice": 1,
+            "colors": 1,
+            "model": 1,
+            "sku": 1,
+        },
+    ).sort("price", order).limit(limit)
+    return list(cursor)
+
+
+def _keyword_search_products(query: str, limit: int = 10):
+    if _collection is None or not query.strip():
+        return []
+    tokens = [t.strip() for t in query.lower().split() if len(t.strip()) >= 2][:8]
+    if not tokens:
+        return []
+    pattern = "|".join([re.escape(t) for t in tokens])
+    try:
+        regex = {"$regex": pattern, "$options": "i"}
+        cursor = _collection.find(
+            {
+                "$or": [
+                    {"name": regex},
+                    {"description": regex},
+                    {"category": regex},
+                    {"tags": regex},
+                ]
+            },
+            {
+                "name": 1,
+                "price": 1,
+                "category": 1,
+                "description": 1,
+                "stock": 1,
+                "inStock": 1,
+                "rating": 1,
+                "reviewCount": 1,
+                "highlights": 1,
+                "image": 1,
+                "originalPrice": 1,
+                "colors": 1,
+                "tags": 1,
+                "faqs": 1,
+                "model": 1,
+                "sku": 1,
+            },
+        ).limit(limit)
+        return list(cursor)
+    except Exception:
+        return []
 
 
 def _format_money(value):
@@ -172,6 +287,9 @@ def _build_answer(question, products, scores):
             "Try: \"gift under $50\" or \"cheaper than this\"."
         )
 
+    if q_lower.strip() in {"thanks", "thank you", "thx", "ok", "okay"}:
+        return "You're welcome. Ask me for product details, features, pricing, or comparisons."
+
     if any(phrase in q_lower for phrase in ["what can you do", "what u can do", "what u cn do", "help", "how do you work", "what do you do"]):
         return (
             "I can help you find products, compare items, suggest gifts, and recommend budget-friendly picks. "
@@ -180,6 +298,9 @@ def _build_answer(question, products, scores):
 
     if "laptop" in q_lower or "notebook" in q_lower or "macbook" in q_lower:
         return "We do not have laptops in the catalog yet. Here are the closest electronics picks I can suggest."
+
+    if q_lower.strip() in {"feature", "features", "detail", "details", "spec", "specs"}:
+        return "Please tell me which product you want details for (for example: \"features of smart watch\")."
 
     if top_score < 0.32:
         picks = []
@@ -243,6 +364,10 @@ def _openai_available() -> bool:
     return AI_LLM_PROVIDER == "openai" and bool(AI_OPENAI_API_KEY)
 
 
+def _gemini_available() -> bool:
+    return AI_LLM_PROVIDER == "gemini" and bool(AI_GEMINI_API_KEY)
+
+
 def _call_ollama(prompt: str, system: str | None = None) -> str:
     system_message = system or (
         "You are a helpful ecommerce shopping assistant. "
@@ -304,24 +429,103 @@ def _call_openai(prompt: str) -> str:
     return (choices[0].get("message", {}) or {}).get("content", "").strip()
 
 
+def _call_gemini(prompt: str, system: str | None = None) -> str:
+    payload = {
+        "system_instruction": {
+            "parts": [
+                {
+                    "text": system or (
+                        "You are an ecommerce shopping assistant. Use ONLY the provided product list. "
+                        "If the request is unclear, ask one short clarifying question. "
+                        "When possible, mention 1-2 product names with prices. "
+                        "Be friendly, concise, and end with a short question."
+                    )
+                }
+            ]
+        },
+        "contents": [
+            {
+                "role": "user",
+                "parts": [{"text": prompt}],
+            }
+        ],
+        "generationConfig": {
+            "temperature": 0.3,
+            "maxOutputTokens": 220,
+        },
+    }
+    model_candidates = []
+    for model in [AI_GEMINI_MODEL, "gemini-2.5-flash", "gemini-2.0-flash"]:
+        if model and model not in model_candidates:
+            model_candidates.append(model)
+
+    last_error: Exception | None = None
+    for model in model_candidates:
+        url = (
+            "https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{model}:generateContent?key={AI_GEMINI_API_KEY}"
+        )
+        for attempt in range(3):
+            resp = requests.post(url, json=payload, timeout=30)
+            if resp.status_code == 429 and attempt < 2:
+                time.sleep(1.2 * (attempt + 1))
+                continue
+            try:
+                resp.raise_for_status()
+                data = resp.json()
+                candidates = data.get("candidates") or []
+                if not candidates:
+                    return ""
+                parts = ((candidates[0].get("content") or {}).get("parts")) or []
+                texts = [p.get("text", "") for p in parts if p.get("text")]
+                return "\n".join(texts).strip()
+            except requests.RequestException as exc:
+                last_error = exc
+                break
+
+    if last_error:
+        raise last_error
+    raise HTTPException(status_code=502, detail="Gemini API call failed.")
+
+
+def _get_active_llm_model(llm_used: str) -> str:
+    if llm_used == "openai":
+        return AI_OPENAI_MODEL
+    if llm_used == "gemini":
+        return AI_GEMINI_MODEL
+    if llm_used == "ollama":
+        return AI_OLLAMA_MODEL
+    if AI_LLM_PROVIDER == "openai":
+        return AI_OPENAI_MODEL
+    if AI_LLM_PROVIDER == "gemini":
+        return AI_GEMINI_MODEL
+    return AI_OLLAMA_MODEL
+
+
 def _build_chat_prompt(question, products) -> str:
     product_lines = []
     for idx, p in enumerate(products, start=1):
+        color_text = ", ".join((p.get("colors") or [])[:4]) if p.get("colors") else "N/A"
+        model_text = p.get("model") or p.get("sku") or "N/A"
         product_lines.append(
             f"{idx}. {p.get('name','Unknown')} | ${p.get('price', 0):.2f} | "
             f"{p.get('category','N/A')} | rating {p.get('rating','N/A')} | stock {p.get('stock', 0)} | "
-            f"highlights: {', '.join(p.get('highlights', [])[:3])}"
+            f"model/sku {model_text} | colors {color_text} | "
+            f"highlights: {', '.join((p.get('highlights') or [])[:3])} | "
+            f"description: {str(p.get('description') or '')[:160]}"
         )
 
     context = "\n".join(product_lines) if product_lines else "No products found."
     return (
-        "You are an ecommerce shopping assistant. Use ONLY the provided product list. "
-        "If the request is unclear, ask one short clarifying question. "
-        "When possible, mention 1-2 product names with prices. "
-        "Be friendly, concise, and end with a short question.\n\n"
+        "You are a premium ecommerce assistant. Use ONLY the provided product list as ground truth. "
+        "Do not claim lack of database access. "
+        "If user asks product details, answer with exact fields from the list (name, price, category, stock, rating, highlights, description, model/sku if present). "
+        "If a requested field is missing, say it is not available in our catalog data. "
+        "Mention relevant product names and prices. Sound natural like a high-quality assistant, but remain grounded in provided products. "
+        "End with one short helpful follow-up question only when useful.\n\n"
         f"Customer question: {question}\n\n"
         f"Products:\n{context}\n\n"
-        "Respond in 2-4 sentences."
+        "Respond in 2-5 sentences."
     )
 
 
@@ -363,6 +567,206 @@ def _looks_generic(answer: str) -> bool:
         "i can assist",
     ]
     return any(phrase in lowered for phrase in generic_phrases)
+
+
+def _hybrid_rank_products(question: str, semantic_pairs, semantic_products):
+    by_id = {}
+    for pair in semantic_pairs:
+        by_id[str(pair["id"])] = {"score": float(pair.get("score", 0.0)), "source": "semantic"}
+
+    for product in semantic_products:
+        pid = str(product.get("_id"))
+        if pid not in by_id:
+            by_id[pid] = {"score": 0.0, "source": "semantic"}
+
+    keyword_products = _keyword_search_products(question, limit=10)
+    q_lower = question.lower()
+    for product in keyword_products:
+        pid = str(product.get("_id"))
+        name = str(product.get("name") or "").lower()
+        category = str(product.get("category") or "").lower()
+        description = str(product.get("description") or "").lower()
+        boost = 0.22
+        if name and name in q_lower:
+            boost += 0.35
+        if category and category in q_lower:
+            boost += 0.12
+        token_hits = sum(1 for t in q_lower.split() if len(t) > 2 and (t in name or t in description))
+        boost += min(token_hits * 0.03, 0.18)
+        if pid not in by_id:
+            by_id[pid] = {"score": boost, "source": "keyword"}
+        else:
+            by_id[pid]["score"] += boost
+            if by_id[pid]["source"] != "semantic":
+                by_id[pid]["source"] = "hybrid"
+            else:
+                by_id[pid]["source"] = "hybrid"
+
+    ranked_ids = [pid for pid, _ in sorted(by_id.items(), key=lambda kv: kv[1]["score"], reverse=True)]
+    ranked_products = _load_products(ranked_ids[:12])
+    score_map = {pid: meta["score"] for pid, meta in by_id.items()}
+    source_map = {pid: meta["source"] for pid, meta in by_id.items()}
+    return ranked_products, score_map, source_map
+
+
+def _find_named_product_in_question(question: str):
+    products = _load_all_products(limit=300)
+    q_lower = question.lower()
+    matches = []
+    for product in products:
+        name = str(product.get("name") or "").strip()
+        if not name:
+            continue
+        if name.lower() in q_lower:
+            matches.append(product)
+    if not matches:
+        return None
+    matches.sort(key=lambda p: len(str(p.get("name") or "")), reverse=True)
+    return matches[0]
+
+
+def _is_product_detail_query(question: str) -> bool:
+    q = question.lower()
+    detail_words = [
+        "details", "detail", "spec", "specs", "model", "sku", "price", "stock",
+        "rating", "description", "feature", "features", "highlight", "highlights"
+    ]
+    return any(w in q for w in detail_words)
+
+
+def _build_product_detail_answer(question: str, product) -> str:
+    if not product:
+        return ""
+    q = question.lower()
+    name = product.get("name", "This product")
+    price = _format_money(product.get("price"))
+    category = product.get("category", "N/A")
+    rating = product.get("rating", "N/A")
+    reviews = product.get("reviewCount", 0)
+    stock = int(product.get("stock") or 0)
+    in_stock = "in stock" if product.get("inStock", True) and stock > 0 else "out of stock"
+    model_or_sku = product.get("model") or product.get("sku")
+    highlights = product.get("highlights") or []
+    description = str(product.get("description") or "").strip()
+
+    if "model" in q or "sku" in q:
+        if model_or_sku:
+            return f"{name} {('model' if product.get('model') else 'SKU')} is {model_or_sku}. Want price and stock too?"
+        return f"{name} does not have a model/SKU field in your catalog data yet. I can still share price, stock, and highlights."
+
+    if any(k in q for k in ["detail", "details", "spec", "specs", "feature", "features", "highlight"]):
+        detail_parts = [
+            f"{name} is in {category} and costs {price}.",
+            f"It is currently {in_stock} ({stock} units).",
+            f"Rating: {rating} ({reviews} reviews)." if reviews or rating else "",
+        ]
+        if model_or_sku:
+            detail_parts.append(f"Model/SKU: {model_or_sku}.")
+        if highlights:
+            detail_parts.append(f"Highlights: {', '.join(highlights[:4])}.")
+        elif description:
+            detail_parts.append(f"Description: {description[:180]}.")
+        detail_parts.append("Want me to compare it with another product?")
+        return " ".join([p for p in detail_parts if p]).strip()
+
+    return ""
+
+
+def _wants_product_list(question: str) -> bool:
+    lowered = question.lower()
+    triggers = [
+        "product list",
+        "products list",
+        "show products",
+        "show me products",
+        "all products",
+        "list products",
+        "list with prices",
+        "with prices",
+    ]
+    return any(token in lowered for token in triggers)
+
+
+def _wants_all_products(question: str) -> bool:
+    lowered = question.lower()
+    triggers = [
+        "all products",
+        "all product",
+        "all products name",
+        "all product names",
+        "from my database",
+        "from database",
+        "complete product list",
+        "full product list",
+    ]
+    return any(token in lowered for token in triggers)
+
+
+def _wants_most_expensive(question: str) -> bool:
+    lowered = question.lower()
+    triggers = [
+        "most costly",
+        "most expensive",
+        "highest price",
+        "costliest",
+        "top expensive",
+        "highest priced",
+    ]
+    return any(token in lowered for token in triggers)
+
+
+def _wants_cheapest(question: str) -> bool:
+    lowered = question.lower()
+    triggers = [
+        "cheapest",
+        "most cheap",
+        "most cheapest",
+        "cheap product",
+        "cheap item",
+        "low price",
+        "lowest priced",
+        "lowest price",
+        "least expensive",
+        "budget product",
+    ]
+    if any(token in lowered for token in triggers):
+        return True
+    return "cheap" in lowered and ("product" in lowered or "item" in lowered)
+
+
+def _build_product_list_answer(products) -> str:
+    if not products:
+        return "I could not find products right now. Try a category like clothing or accessories."
+    lines = ["Here are products from our catalog with prices:"]
+    for item in products[:8]:
+        name = item.get("name", "Item")
+        category = item.get("category", "N/A")
+        price = _format_money(item.get("price"))
+        lines.append(f"- {name} ({category}) - {price}")
+    lines.append("Want me to filter by category or budget?")
+    return "\n".join(lines)
+
+def _build_all_products_answer(products) -> str:
+    if not products:
+        return "I could not load products from the database right now."
+    lines = [f"Here are all {len(products)} product names from your catalog:"]
+    for item in products:
+        lines.append(f"- {item.get('name', 'Item')}")
+    lines.append("Want this list with prices too?")
+    return "\n".join(lines)
+
+
+def _build_price_extreme_answer(products, mode: str) -> str:
+    if not products:
+        return "I could not load products from the database right now."
+    item = products[0]
+    name = item.get("name", "Item")
+    category = item.get("category", "N/A")
+    price = _format_money(item.get("price"))
+    if mode == "max":
+        return f"The most expensive product is {name} ({category}) at {price}. Want the top expensive products too?"
+    return f"The cheapest product is {name} ({category}) at {price}. Want more budget options?"
+
 
 def _guess_category(name: str, fallback: str) -> str:
     name_lower = name.lower()
@@ -449,7 +853,7 @@ def generate(req: GenerateRequest) -> dict:
     faqs = _build_faqs(name)
     colors = _detect_colors(name)
 
-    if _ollama_available():
+    if _ollama_available() or _openai_available() or _gemini_available():
         prompt = (
             "Generate product content for this item. Return JSON only with keys: "
             "description (string), highlights (array), seoTitle (string), tags (array), "
@@ -458,7 +862,12 @@ def generate(req: GenerateRequest) -> dict:
             f"Description: {req.description}\nHighlights: {req.highlights}\n"
         )
         try:
-            raw = _call_ollama(prompt)
+            if _openai_available():
+                raw = _call_openai(prompt)
+            elif _gemini_available():
+                raw = _call_gemini(prompt)
+            else:
+                raw = _call_ollama(prompt)
             data = json.loads(raw)
             return {
                 "description": data.get("description", description),
@@ -507,15 +916,19 @@ def chat(req: ChatRequest) -> dict:
 
     if AI_CHAT_MODE == "general":
         answer = ""
-        used_openai = False
+        llm_used = "none"
         llm_error = ""
         try:
             prompt = _build_general_prompt(question)
             if _openai_available():
                 answer = _call_openai(prompt)
-                used_openai = True
+                llm_used = "openai"
+            elif _gemini_available():
+                answer = _call_gemini(prompt, system=_build_general_system_prompt())
+                llm_used = "gemini"
             elif _ollama_available():
                 answer = _call_ollama(prompt, system=_build_general_system_prompt())
+                llm_used = "ollama"
         except requests.RequestException as exc:
             llm_error = str(exc)
             answer = ""
@@ -525,13 +938,83 @@ def chat(req: ChatRequest) -> dict:
 
         response = {"answer": answer, "products": []}
         if AI_DEBUG:
-            response["llm_used"] = "openai" if used_openai else "ollama" if _ollama_available() else "none"
+            response["llm_used"] = llm_used
             response["llm_error"] = llm_error
-            response["llm_model"] = AI_OPENAI_MODEL if used_openai else AI_OLLAMA_MODEL
+            response["llm_model"] = _get_active_llm_model(llm_used)
         return response
 
     if _index is None or _model is None or _collection is None:
         raise HTTPException(status_code=503, detail="AI service not ready.")
+
+    if _wants_all_products(question):
+        all_products = _load_all_products(limit=200)
+        return {
+            "answer": _build_all_products_answer(all_products),
+            "products": [
+                {
+                    "id": str(p.get("_id")),
+                    "name": p.get("name"),
+                    "price": p.get("price"),
+                    "category": p.get("category"),
+                    "image": p.get("image"),
+                }
+                for p in all_products
+            ],
+        }
+
+    if _wants_most_expensive(question):
+        expensive = _load_price_sorted_products(desc=True, limit=6)
+        return {
+            "answer": _build_price_extreme_answer(expensive, "max"),
+            "products": [
+                {
+                    "id": str(p.get("_id")),
+                    "name": p.get("name"),
+                    "price": p.get("price"),
+                    "category": p.get("category"),
+                    "image": p.get("image"),
+                }
+                for p in expensive
+            ],
+        }
+
+    if _wants_cheapest(question):
+        cheap = _load_price_sorted_products(desc=False, limit=6)
+        return {
+            "answer": _build_price_extreme_answer(cheap, "min"),
+            "products": [
+                {
+                    "id": str(p.get("_id")),
+                    "name": p.get("name"),
+                    "price": p.get("price"),
+                    "category": p.get("category"),
+                    "image": p.get("image"),
+                }
+                for p in cheap
+            ],
+        }
+
+    named_product = _find_named_product_in_question(question)
+    if named_product and _is_product_detail_query(question):
+        detail_answer = _build_product_detail_answer(question, named_product)
+        if detail_answer:
+            response = {
+                "answer": detail_answer,
+                "products": [
+                    {
+                        "id": str(named_product.get("_id")),
+                        "name": named_product.get("name"),
+                        "price": named_product.get("price"),
+                        "category": named_product.get("category"),
+                        "image": named_product.get("image"),
+                    }
+                ],
+            }
+            if AI_DEBUG:
+                response["llm_used"] = "intent-db"
+                response["llm_error"] = ""
+                response["llm_model"] = _get_active_llm_model("none")
+            return response
 
     top_k = min(max(req.top_k, 1), len(_id_map))
     embedding = _model.encode([question], normalize_embeddings=True)
@@ -545,21 +1028,25 @@ def chat(req: ChatRequest) -> dict:
         pairs.append({"id": _id_map[idx], "score": float(score)})
 
     product_ids = [item["id"] for item in pairs]
-    products = _load_products(product_ids)
-    score_map = {item["id"]: item["score"] for item in pairs}
+    semantic_products = _load_products(product_ids)
+    products, score_map, source_map = _hybrid_rank_products(question, pairs, semantic_products)
     scores_for_products = [score_map.get(str(p.get("_id")), 0.0) for p in products]
 
     answer = ""
-    used_openai = False
+    llm_used = "none"
     llm_error = ""
     if AI_CHAT_MODE != "catalog":
         try:
             prompt = _build_chat_prompt(question, products[:6])
             if _openai_available():
                 answer = _call_openai(prompt)
-                used_openai = True
+                llm_used = "openai"
+            elif _gemini_available():
+                answer = _call_gemini(prompt)
+                llm_used = "gemini"
             elif _ollama_available():
                 answer = _call_ollama(prompt)
+                llm_used = "ollama"
         except requests.RequestException as exc:
             llm_error = str(exc)
             answer = ""
@@ -568,10 +1055,16 @@ def chat(req: ChatRequest) -> dict:
         AI_CHAT_MODE == "catalog"
         or not answer
         or _looks_like_refusal(answer)
-        or ((not used_openai) and _looks_generic(answer))
-        or ((not used_openai) and not _mentions_product(answer, products))
+        or ((llm_used != "openai" and llm_used != "gemini") and _looks_generic(answer))
+        or ((llm_used != "openai" and llm_used != "gemini") and not _mentions_product(answer, products))
     ):
-        answer = _build_answer(question, products, scores_for_products)
+        # Fallback stays grounded and richer than generic "closest match" text.
+        if products:
+            answer = _build_product_list_answer(products[:6]) if _wants_product_list(question) else _build_answer(question, products, scores_for_products)
+        else:
+            answer = _build_answer(question, products, scores_for_products)
+    elif _wants_product_list(question) or len(answer.strip()) < 40:
+        answer = _build_product_list_answer(products)
 
     response = {
         "answer": answer,
@@ -587,7 +1080,12 @@ def chat(req: ChatRequest) -> dict:
         ],
     }
     if AI_DEBUG:
-        response["llm_used"] = "openai" if used_openai else "ollama" if _ollama_available() else "none"
+        response["llm_used"] = llm_used
         response["llm_error"] = llm_error
-        response["llm_model"] = AI_OPENAI_MODEL if used_openai else AI_OLLAMA_MODEL
+        response["llm_model"] = _get_active_llm_model(llm_used)
+        response["retrieved_names"] = [p.get("name") for p in products[:8]]
+        response["retrieval_sources"] = {
+            str(p.get("_id")): source_map.get(str(p.get("_id")), "semantic")
+            for p in products[:8]
+        }
     return response
