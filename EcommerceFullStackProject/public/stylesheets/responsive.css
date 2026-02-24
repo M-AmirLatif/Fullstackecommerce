@@ -76,10 +76,10 @@ img {
    MOBILE (<= 600px)
    ========================= */
 @media (max-width: 600px) {
-  /* Keep a small gap under navbar on mobile (not a large empty band) */
+  /* Keep a small gap under navbar and balanced hero padding on mobile */
   .hero {
     margin-top: 12px !important;
-    padding-top: 0 !important;
+    padding: 1.35rem 1rem !important;
   }
 
   /* containers */
@@ -88,9 +88,9 @@ img {
     padding-right: 1rem !important;
   }
 
-  /* product grid -> 1 column */
+  /* product grid -> single column on phones */
   .products-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: 1fr !important;
     gap: 1rem !important;
   }
 
