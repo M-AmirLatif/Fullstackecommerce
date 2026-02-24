@@ -76,10 +76,10 @@ img {
    MOBILE (<= 600px)
    ========================= */
 @media (max-width: 600px) {
-  /* ✅ Space between navbar (top) and hero (below) */
+  /* Keep a small gap under navbar on mobile (not a large empty band) */
   .hero {
-    margin-top: 40px !important; /* <-- THIS is the gap you want */
-    padding-top: 0 !important; /* remove inside padding if it was pushing content weirdly */
+    margin-top: 12px !important;
+    padding-top: 0 !important;
   }
 
   /* containers */
