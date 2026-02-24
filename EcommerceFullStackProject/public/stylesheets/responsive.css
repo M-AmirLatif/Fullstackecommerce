@@ -90,7 +90,7 @@ img {
 
   /* product grid -> 1 column */
   .products-grid {
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 1rem !important;
   }
 
@@ -314,6 +314,26 @@ img {
   .action-buttons .btn {
     font-size: 0.78rem !important;
     padding: 0.45rem 0.7rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Small phones (e.g. iPhone SE): force single-column cards */
+  .products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.9rem !important;
+  }
+
+  .product-media {
+    height: 220px !important;
+  }
+
+  .section-head {
+    gap: 0.5rem !important;
+  }
+
+  .section-head .link-arrow {
+    align-self: flex-start !important;
   }
 }
 
