@@ -125,6 +125,21 @@ img {
     flex-direction: column !important;
     text-align: center !important;
     gap: 1rem !important;
+    align-items: center !important;
+  }
+
+  .hero-left {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    align-items: center !important;
+    margin-inline: auto !important;
+  }
+
+  .hero-sub {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
   }
 
   /* -------------------------
