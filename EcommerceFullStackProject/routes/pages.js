@@ -11,6 +11,21 @@ const AI_TOP_K = 200
 const pageCache = new Map()
 const buildCacheKey = (req) => req.originalUrl
 
+const redirectBack = (req, res, fallback = '/shop') => {
+  const ref = req.get('referer') || req.get('referrer')
+  if (ref) {
+    try {
+      const url = new URL(ref)
+      if (url.host === req.get('host')) {
+        return res.redirect(303, `${url.pathname}${url.search}`)
+      }
+    } catch (_) {
+      if (ref.startsWith('/')) return res.redirect(303, ref)
+    }
+  }
+  return res.redirect(303, fallback)
+}
+
 const cacheRender = (ttlMs) => (req, res, next) => {
   if (req.method !== 'GET') return next()
   if (req.session?.user) return next()
@@ -364,14 +379,14 @@ router.post('/product/:id/rate', protect, forbidAdmin, async (req, res) => {
     const parsed = ratingSchema.safeParse(req.body)
     if (!parsed.success) {
       req.session.flash = { type: 'error', text: 'Invalid rating.' }
-      return res.redirect('back')
+      return redirectBack(req, res)
     }
 
     const productId = String(req.params.id)
     const rated = req.session.ratedProducts || []
     if (rated.includes(productId)) {
       req.session.flash = { type: 'error', text: 'You already rated this product.' }
-      return res.redirect('back')
+      return redirectBack(req, res)
     }
 
     const product = await Product.findById(productId)
@@ -390,11 +405,11 @@ router.post('/product/:id/rate', protect, forbidAdmin, async (req, res) => {
 
     req.session.ratedProducts = [...rated, productId]
     req.session.flash = { type: 'success', text: 'Thanks for your rating!' }
-    return res.redirect('back')
+    return redirectBack(req, res)
   } catch (error) {
     console.error('RATING ERROR:', error)
     req.session.flash = { type: 'error', text: 'Failed to submit rating.' }
-    return res.redirect('back')
+    return redirectBack(req, res)
   }
 })
 
