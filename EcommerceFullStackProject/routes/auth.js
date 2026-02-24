@@ -534,7 +534,8 @@ router.post('/login', async (req, res) => {
     req.session.user = { id: user._id, email: user.email, role: user.role }
     req.session.flash = { type: 'success', text: 'Logged in successfully.' }
 
-    return res.redirect(getSafePostLoginRedirect(req, user))
+    // Force GET after login form POST (some clients may preserve POST on 302)
+    return res.redirect(303, getSafePostLoginRedirect(req, user))
   } catch (err) {
     console.error('LOGIN ERROR:', err)
     req.session.flash = {
