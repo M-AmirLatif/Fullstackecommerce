@@ -22,15 +22,19 @@ img {
 
   /* Admin layout should stay usable on tablet/mobile */
   .admin-layout {
+    /* Stack sidebar above content instead of shrinking both columns */
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: 1fr !important;
     min-height: auto !important;
+    align-items: start !important;
   }
 
   .admin-sidebar {
     display: block !important;
     padding: 0.9rem 1rem 0.75rem !important;
     border-bottom: 1px solid rgba(148, 167, 255, 0.18);
+    width: 100% !important;
+    min-width: 0 !important;
   }
 
   .admin-sidebar h3 {
@@ -60,6 +64,8 @@ img {
 
   .admin-content {
     padding: 1.1rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
   }
 
   .admin-content .table-container {
@@ -72,6 +78,34 @@ img {
   }
 }
 
+@media (max-width: 760px) {
+  .admin-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-sidebar {
+    padding: 0.85rem 0.9rem 0.65rem !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .admin-hero-inner {
+    align-items: flex-start !important;
+  }
+
+  .admin-hero-actions {
+    width: 100% !important;
+  }
+
+  .admin-hero-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
 /* =========================
    MOBILE (<= 600px)
    ========================= */
@@ -79,13 +113,31 @@ img {
   /* Keep a small gap under navbar and balanced hero padding on mobile */
   .hero {
     margin-top: 12px !important;
+    margin-bottom: 1rem !important;
     padding: 1.35rem 1rem !important;
   }
 
   /* containers */
   .container {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
+    padding: 1rem !important;
+  }
+
+  /* tighten stacked sections on small screens (hero -> breadcrumbs -> filters) */
+  .hero + .container {
+    padding-top: 0.35rem !important;
+  }
+
+  .container + .container {
+    padding-top: 0.5rem !important;
+  }
+
+  .breadcrumbs {
+    margin: 0 0 0.85rem !important;
+    padding: 0.55rem 0.75rem !important;
+    gap: 0.45rem !important;
+    font-size: 0.9rem !important;
+    border-radius: 10px !important;
+    max-width: 100% !important;
   }
 
   /* product grid -> single column on phones */
@@ -140,6 +192,10 @@ img {
     margin-left: auto !important;
     margin-right: auto !important;
     text-align: center !important;
+  }
+
+  .filter-card {
+    margin-top: 0 !important;
   }
 
   /* -------------------------
@@ -287,7 +343,7 @@ img {
   }
 
   .stats-grid {
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: 1fr !important;
     gap: 0.9rem !important;
     margin-bottom: 1rem !important;
   }
@@ -384,5 +440,153 @@ img {
 
   .admin-content {
     padding: 0.75rem !important;
+  }
+}
+
+/* =========================================
+   Storefront header + home hero refresh
+   ========================================= */
+@media (max-width: 900px) {
+  .header-row--utility {
+    padding: 0.6rem 1rem !important;
+  }
+
+  .header-search {
+    width: min(320px, 100%) !important;
+  }
+
+  .header-main-copy {
+    font-size: 0.72rem !important;
+    letter-spacing: 0.09em !important;
+  }
+
+  .site-categorybar .nav-links {
+    padding-inline: 1rem !important;
+    gap: 1rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .site-header-utility {
+    display: none !important;
+  }
+
+  .navbar.navbar-main {
+    padding: 0.95rem 0.9rem !important;
+    gap: 0.75rem !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .header-main-center {
+    display: none !important;
+  }
+
+  .site-categorybar {
+    background: rgba(5, 10, 20, 0.96) !important;
+  }
+
+  .site-categorybar .nav-links {
+    padding: 0.7rem 0.9rem 0.9rem !important;
+    gap: 0.5rem !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    background: transparent !important;
+  }
+
+  .site-categorybar .nav-link {
+    width: 100% !important;
+    padding: 0.65rem 0.2rem !important;
+    border-bottom: 1px solid rgba(148, 167, 255, 0.08);
+  }
+
+  .site-categorybar .nav-form {
+    width: 100% !important;
+  }
+
+  .site-categorybar .nav-logout {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .site-promo-strip {
+    display: none !important;
+  }
+
+  .hero.hero-showcase {
+    padding: 0.9rem !important;
+  }
+
+  .hero.hero-showcase .hero-inner {
+    gap: 0.9rem !important;
+  }
+
+  .hero.hero-showcase .hero-left {
+    padding: 0.35rem 0.2rem 0.2rem !important;
+    border-radius: 12px !important;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.11em !important;
+    margin-bottom: 0.55rem !important;
+  }
+
+  .hero.hero-showcase .hero-title {
+    max-width: 100% !important;
+    font-size: 2.1rem !important;
+  }
+
+  .hero.hero-showcase .hero-sub {
+    max-width: 100% !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-mini-links {
+    justify-content: center !important;
+    margin-top: 0.35rem !important;
+    padding-top: 0.7rem !important;
+  }
+
+  .hero.hero-showcase .hero-actions .btn {
+    min-width: 0 !important;
+  }
+
+  .hero.hero-showcase .hero-right {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .hero-visual-card {
+    min-height: 250px !important;
+  }
+
+  .hero-visual-copy {
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    padding: 0.75rem 0.8rem !important;
+    text-align: center !important;
+  }
+
+  .hero-visual-copy h3 {
+    font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .navbar.navbar-main {
+    padding-inline: 0.75rem !important;
+  }
+
+  .brand {
+    font-size: 1.15rem !important;
+  }
+
+  .hero.hero-showcase .hero-title {
+    font-size: 1.8rem !important;
+  }
+
+  .hero-visual-card {
+    min-height: 220px !important;
   }
 }
