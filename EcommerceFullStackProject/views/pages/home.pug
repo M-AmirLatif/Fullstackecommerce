@@ -1,14 +1,26 @@
 ﻿extends ../layout
 
 block content
-  section.hero
+  section.hero.hero-showcase
     .hero-inner
       .hero-left
+        p.hero-eyebrow(data-reveal="fade") CURATED PICKS • LIMITED-TIME OFFERS
         h1.hero-title(data-reveal="up") Shop Smarter with E-Shop
         p.hero-sub(data-reveal="up" data-reveal-delay="90") Discover premium products at unbeatable prices. Free shipping on orders over $50.
         .hero-actions(data-reveal="up" data-reveal-delay="170")
           a.btn(href='/shop') Browse All Products
           a.btn.btn-outline(href='/shop?featured=true') View Special Deals
+        .hero-mini-links(data-reveal="up" data-reveal-delay="230")
+          a(href='/shop?sort=newest') New arrivals
+          a(href='/shop?featured=true') Deals of the week
+          a(href='/shop?sort=rating') Top rated
+      .hero-right(data-reveal="up" data-reveal-delay="140")
+        .hero-visual-card
+          img(src='/images/webcam.jpg', alt='Featured electronics collection', loading='lazy', decoding='async')
+          .hero-visual-copy
+            p.hero-visual-kicker Going, going, almost gone
+            h3 Up to 30% off selected favorites
+            a.btn.btn-ink(href='/shop?featured=true') Shop Deals
 
   section.container
     .section-head(data-reveal="fade")
