@@ -42,6 +42,19 @@ const sessionStore = process.env.MONGO_URI
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
+const formatImageUrl = (img) => {
+  if (!img) return '/images/placeholder.png'
+  if (/^https?:\/\//i.test(img)) return img
+  let p = String(img).trim().replace(/\\/g, '/')
+  p = p.replace(/^public\//, '')
+  if (!p.startsWith('/')) p = `/${p}`
+  if (!p.startsWith('/images/')) {
+    p = `/images/${p.replace(/^\//, '')}`
+  }
+  return p
+}
+app.locals.imageUrl = formatImageUrl
+
 // Middleware (body + static)
 app.use(
   express.static(path.join(__dirname, 'public'), {
