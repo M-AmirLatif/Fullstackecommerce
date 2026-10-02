@@ -7,6 +7,12 @@ const { adminOnly } = require('../middleware/auth')
 
 router.use(adminOnly)
 
+// Defensive route: if a client/proxy replays a POST to /admin after login,
+// normalize it to the dashboard GET instead of falling through to 404.
+router.post('/', (req, res) => {
+  res.redirect(303, '/admin')
+})
+
 function normalizeImagePath(image) {
   if (!image) return image
   if (/^https?:\/\//i.test(image)) return image

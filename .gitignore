@@ -9,3 +9,4 @@ ai_service/__pycache__/
 ai_service/.venv/
 
 .vercel
+.env*.local

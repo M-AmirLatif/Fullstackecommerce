@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ecommerce-ai-service
+    runtime: python
+    rootDir: EcommerceFullStackProject/ai_service
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python build_index.py && uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: AI_INDEX_PATH
+        value: data/faiss.index
+      - key: AI_META_PATH
+        value: data/meta.json

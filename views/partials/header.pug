@@ -1,9 +1,37 @@
 header.site-header
-  nav.navbar
+  - const safePath = currentPath || ''
+  .site-header-utility
+    .header-row.header-row--utility
+      form.header-search(action="/shop" method="GET")
+        input#headerSearch(
+          type="search"
+          name="q"
+          placeholder="What can we help you find?"
+          autocomplete="off"
+          aria-label="Search products"
+        )
+        button.header-search-btn(type="submit" aria-label="Search")
+          span.header-search-icon ⌕
+      .header-utility-links
+        a.header-utility-link(href="/shop?featured=true") Deals
+        a.header-utility-link(href="/shop?sort=newest") New Arrivals
+        if !user
+          a.header-utility-link(href="/login") Orders & Sign In
+        else if user.role === 'admin'
+          a.header-utility-link(href="/admin") Admin
+        else
+          a.header-utility-link(href="/checkout") My Account
+        if !user || user.role !== 'admin'
+          a.header-utility-link(href="/cart") Cart
+
+  nav.navbar.navbar-main
     a.brand(href="/") E-Shop
+    .header-main-center
+      span.header-main-copy Premium store picks, refreshed weekly
     button.nav-toggle(type="button" aria-label="Toggle navigation") ☰
+
+  .site-categorybar
     .nav-links
-      - const safePath = currentPath || ''
       a.nav-link(class=(safePath === '/' ? 'active' : '') href="/") Home
       a.nav-link(class=(safePath.startsWith('/shop') ? 'active' : '') href="/shop") Shop
       a.nav-link(class=(safePath.startsWith('/admin') ? 'active' : '') href="/admin") Admin Panel
@@ -15,3 +43,8 @@ header.site-header
       else
         form.nav-form(action="/logout" method="POST")
           button.nav-logout(type="submit") Logout
+
+  .site-promo-strip
+    .header-row.header-row--promo
+      span.promo-label Up to 30% off
+      a.promo-link(href="/shop?featured=true") Shop featured picks →

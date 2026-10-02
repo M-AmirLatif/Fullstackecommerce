@@ -109,6 +109,43 @@ npm run make-admin -- user@example.com
 - Use a persistent session store (MongoDB sessions via `connect-mongo`).
 - If deploying behind a proxy, ensure `NODE_ENV=production` so `trust proxy` and secure cookies are enabled.
 
+## Recommended Deployment (Best Fit)
+This project is best deployed as **2 services**:
+
+1. **Web app (Express + Pug)** -> **Vercel**
+2. **AI service (FastAPI + FAISS)** -> **Render/Railway** (not Vercel serverless)
+
+Why: the AI service uses `sentence-transformers` + `faiss-cpu` and local index files, which are not a good fit for Vercel serverless runtime limits.
+
+### Deploy Web App to Vercel
+- Deploy folder: `EcommerceFullStackProject/`
+- Vercel uses:
+  - `vercel.json`
+  - `api/index.js`
+- Set Vercel env vars:
+  - `MONGO_URI`
+  - `MONGO_DB`
+  - `SESSION_SECRET`
+  - `AI_SERVICE_URL` (your deployed AI service URL)
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
+  - `APP_BASE_URL` (your Vercel domain)
+  - LLM keys (`GEMINI_API_KEY` / `OPENAI_API_KEY`) only if web routes need them directly
+
+### Deploy AI Service to Render/Railway
+- Deploy folder: `EcommerceFullStackProject/ai_service/`
+- Included helper files:
+  - `Procfile`
+  - `runtime.txt`
+  - `render.yaml`
+- Set env vars:
+  - `MONGO_URI`
+  - `MONGO_DB`
+  - `AI_LLM_PROVIDER`
+  - `AI_GEMINI_MODEL` / `AI_OPENAI_MODEL`
+  - `GEMINI_API_KEY` / `OPENAI_API_KEY`
+  - `AI_CHAT_MODE=llm`
+  - `AI_DEBUG=0` (recommended in production)
+
 ## Demo Payment Webhook
 - Orders now start as `Pending` and can be updated by webhook events.
 - Demo webhook endpoint: `POST /payments/webhook/demo`

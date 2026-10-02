@@ -12,6 +12,21 @@ function ensureCart(req) {
   return req.session.cart
 }
 
+function redirectBack(req, res, fallback = '/shop') {
+  const ref = req.get('referer') || req.get('referrer')
+  if (ref) {
+    try {
+      const url = new URL(ref)
+      if (url.host === req.get('host')) {
+        return res.redirect(303, `${url.pathname}${url.search}`)
+      }
+    } catch (_) {
+      if (ref.startsWith('/')) return res.redirect(303, ref)
+    }
+  }
+  return res.redirect(303, fallback)
+}
+
 // GET cart page
 router.get('/cart', (req, res) => {
   const cart = ensureCart(req)
@@ -45,7 +60,7 @@ router.post('/cart/add', forbidAdmin, async (req, res) => {
 
     if (product.inStock === false || Number(product.stock) <= 0) {
       req.session.flash = { type: 'error', text: 'This product is out of stock.' }
-      return res.redirect('back')
+      return redirectBack(req, res)
     }
 
     const existing = cart.find(
@@ -58,7 +73,7 @@ router.post('/cart/add', forbidAdmin, async (req, res) => {
           type: 'error',
           text: 'Not enough stock for that quantity.',
         }
-        return res.redirect('back')
+        return redirectBack(req, res)
       }
       existing.quantity += requestedQty
     } else {
@@ -72,7 +87,7 @@ router.post('/cart/add', forbidAdmin, async (req, res) => {
     }
 
     req.session.flash = { type: 'success', text: 'Added to cart!' }
-    return res.redirect('back')
+    return redirectBack(req, res)
   } catch (err) {
     console.error(err)
     req.session.flash = { type: 'error', text: 'Failed to add to cart' }
