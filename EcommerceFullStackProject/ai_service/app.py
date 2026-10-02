@@ -13,10 +13,11 @@ from bson import ObjectId
 from pymongo import MongoClient
 from sentence_transformers import SentenceTransformer
 
+load_dotenv()
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
-INDEX_PATH = os.getenv("AI_INDEX_PATH", "data/faiss.index")
-META_PATH = os.getenv("AI_META_PATH", "data/meta.json")
+INDEX_PATH = os.getenv("AI_INDEX_PATH", os.path.join(os.path.dirname(__file__), "data", "faiss.index"))
+META_PATH = os.getenv("AI_META_PATH", os.path.join(os.path.dirname(__file__), "data", "meta.json"))
 MODEL_NAME = os.getenv("AI_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB")
@@ -65,19 +66,27 @@ class GenerateRequest(BaseModel):
 @app.on_event("startup")
 def load_assets() -> None:
     global _index, _id_map, _model, _collection
-    if not os.path.exists(INDEX_PATH) or not os.path.exists(META_PATH):
-        return
-
-    _index = faiss.read_index(INDEX_PATH)
-    with open(META_PATH, "r", encoding="utf-8") as handle:
-        _id_map = json.load(handle)
-
-    _model = SentenceTransformer(MODEL_NAME)
     if MONGO_URI:
-        client = MongoClient(MONGO_URI)
-        db_name = MONGO_DB or client.get_database().name
-        if db_name:
-            _collection = client[db_name]["products"]
+        try:
+            client = MongoClient(MONGO_URI)
+            db_name = MONGO_DB or client.get_database().name
+            if db_name:
+                _collection = client[db_name]["products"]
+        except Exception as exc:
+            print(f"[Warning] Failed to connect to MongoDB in AI service: {exc}")
+
+    try:
+        _model = SentenceTransformer(MODEL_NAME)
+    except Exception as exc:
+        print(f"[Warning] Failed to load SentenceTransformer: {exc}")
+
+    if os.path.exists(INDEX_PATH) and os.path.exists(META_PATH):
+        try:
+            _index = faiss.read_index(INDEX_PATH)
+            with open(META_PATH, "r", encoding="utf-8") as handle:
+                _id_map = json.load(handle)
+        except Exception as exc:
+            print(f"[Warning] Failed to load FAISS index: {exc}")
 
 
 @app.get("/health")

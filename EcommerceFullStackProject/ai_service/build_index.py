@@ -6,12 +6,17 @@ import faiss
 import numpy as np
 from pymongo import MongoClient
 from sentence_transformers import SentenceTransformer
+from dotenv import load_dotenv
+
+# Load .env from current directory or parent directory
+load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB")
 MODEL_NAME = os.getenv("AI_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
-INDEX_PATH = os.getenv("AI_INDEX_PATH", "data/faiss.index")
-META_PATH = os.getenv("AI_META_PATH", "data/meta.json")
+INDEX_PATH = os.getenv("AI_INDEX_PATH", os.path.join(os.path.dirname(__file__), "data", "faiss.index"))
+META_PATH = os.getenv("AI_META_PATH", os.path.join(os.path.dirname(__file__), "data", "meta.json"))
 
 
 def build_text(doc: dict) -> str:
