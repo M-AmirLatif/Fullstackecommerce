@@ -1,4 +1,4 @@
-﻿const express = require('express')
+const express = require('express')
 const router = express.Router()
 const Product = require('../models/product')
 const mongoose = require('mongoose')
@@ -52,20 +52,25 @@ const cacheRender = (ttlMs) => (req, res, next) => {
 }
 
 const fetchSemanticResults = async (query) => {
-  const response = await fetch(`${AI_SERVICE_URL}/ai/search`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, top_k: AI_TOP_K }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`AI search failed: ${response.status}`)
+  if (!AI_SERVICE_URL || AI_SERVICE_URL.includes('127.0.0.1') || AI_SERVICE_URL.includes('localhost')) {
+    return []
   }
+  try {
+    const response = await fetch(`${AI_SERVICE_URL}/ai/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, top_k: AI_TOP_K }),
+    })
 
-  const data = await response.json()
-  if (!data || !Array.isArray(data.results)) return []
+    if (!response.ok) return []
 
-  return data.results.map((item) => String(item.id))
+    const data = await response.json()
+    if (!data || !Array.isArray(data.results)) return []
+
+    return data.results.map((item) => String(item.id))
+  } catch (err) {
+    return []
+  }
 }
 
 const buildSearchRegex = (query) => {

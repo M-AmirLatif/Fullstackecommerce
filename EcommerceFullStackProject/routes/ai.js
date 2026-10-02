@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router()
 
-const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8001'
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL
 const { adminOnly } = require('../middleware/auth')
+const geminiService = require('../services/geminiService')
 
 const isSmallTalk = (q) => {
   const text = String(q || '').trim().toLowerCase()
-  return ['thanks', 'thank you', 'ok', 'okay', 'great', 'nice'].includes(text)
+  return ['thanks', 'thank you', 'ok', 'okay', 'great', 'nice', 'hello', 'hi', 'hey'].includes(text)
 }
 
 const isShortFollowUp = (q) => {
@@ -26,7 +27,7 @@ router.post('/ai/chat', async (req, res) => {
 
     if (isSmallTalk(question)) {
       return res.json({
-        answer: "You're welcome. Ask me about any product, price, model, or features.",
+        answer: "Hello! I'm your AI shopping assistant. Ask me about any products, prices, specifications, or recommendations.",
         products: req.session?.aiChatState?.lastProducts || [],
       })
     }
@@ -38,29 +39,43 @@ router.post('/ai/chat', async (req, res) => {
         .slice(0, 4)
         .map((p, i) => `${i + 1}. ${p.name} (${p.category || 'N/A'}) - $${Number(p.price || 0).toFixed(2)}`)
         .join('\n')
-      questionForAi = `${question}\n\nConversation context (previous product results):\n${contextList}\nIf the user asks a vague follow-up like "feature" or "details", answer for the first product unless they specify another.`
+      questionForAi = `${question}\n\nConversation context (previous product results):\n${contextList}`
     }
 
-    const response = await fetch(`${AI_SERVICE_URL}/ai/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question: questionForAi,
-        top_k: Number(req.body.top_k) || 6,
-      }),
-    })
+    // 1. Try external AI service if configured
+    if (AI_SERVICE_URL && !AI_SERVICE_URL.includes('127.0.0.1') && !AI_SERVICE_URL.includes('localhost')) {
+      try {
+        const response = await fetch(`${AI_SERVICE_URL}/ai/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: questionForAi,
+            top_k: Number(req.body.top_k) || 6,
+          }),
+        })
 
-    if (!response.ok) {
-      return res.status(502).json({ error: 'AI service unavailable.' })
+        if (response.ok) {
+          const data = await response.json()
+          req.session.aiChatState = {
+            lastQuestion: question,
+            lastProducts: Array.isArray(data.products) ? data.products.slice(0, 6) : [],
+            updatedAt: Date.now(),
+          }
+          return res.json(data)
+        }
+      } catch (externalErr) {
+        console.warn('External AI service unavailable, falling back to native Gemini service:', externalErr.message)
+      }
     }
 
-    const data = await response.json()
+    // 2. Native Gemini service (runs directly on Vercel without external servers)
+    const result = await geminiService.chatWithAssistant(questionForAi, lastProducts)
     req.session.aiChatState = {
       lastQuestion: question,
-      lastProducts: Array.isArray(data.products) ? data.products.slice(0, 6) : [],
+      lastProducts: Array.isArray(result.products) ? result.products.slice(0, 6) : [],
       updatedAt: Date.now(),
     }
-    return res.json(data)
+    return res.json(result)
   } catch (err) {
     console.error('AI CHAT ERROR:', err.message)
     return res.status(500).json({ error: 'Failed to process AI request.' })
@@ -78,18 +93,27 @@ router.post('/ai/admin/generate', adminOnly, async (req, res) => {
       highlights: String(req.body.highlights || ''),
     }
 
-    const response = await fetch(`${AI_SERVICE_URL}/ai/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
+    // 1. Try external AI service if configured
+    if (AI_SERVICE_URL && !AI_SERVICE_URL.includes('127.0.0.1') && !AI_SERVICE_URL.includes('localhost')) {
+      try {
+        const response = await fetch(`${AI_SERVICE_URL}/ai/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
 
-    if (!response.ok) {
-      return res.status(502).json({ error: 'AI service unavailable.' })
+        if (response.ok) {
+          const data = await response.json()
+          return res.json(data)
+        }
+      } catch (externalErr) {
+        console.warn('External AI service unavailable, falling back to native Gemini:', externalErr.message)
+      }
     }
 
-    const data = await response.json()
-    return res.json(data)
+    // 2. Native Gemini Generator
+    const result = await geminiService.generateAdminContent(payload)
+    return res.json(result)
   } catch (err) {
     console.error('AI GENERATE ERROR:', err.message)
     return res.status(500).json({ error: 'Failed to generate content.' })
