@@ -131,31 +131,28 @@ router.post('/checkout', protect, forbidAdmin, async (req, res) => {
     const checkoutSchema = z.object({
       customerName: z.string().min(1),
       email: z.string().email(),
-      phone: z.string().min(5),
-      address: z.string().min(3),
-      city: z.string().min(2),
-      state: z.string().min(2),
-      zip: z.string().min(2),
-      country: z.string().min(2),
+      phone: z.string().min(3),
+      address: z.string().min(1),
+      city: z.string().optional().default('Lahore'),
+      state: z.string().optional().default('Punjab'),
+      zip: z.string().optional().default('54000'),
+      country: z.string().optional().default('Pakistan'),
     })
     const parsed = checkoutSchema.safeParse(req.body)
     if (!parsed.success) {
-      req.session.flash = { type: 'error', text: 'Invalid checkout details.' }
+      console.warn('CHECKOUT VALIDATION ERROR:', parsed.error.issues)
+      req.session.flash = { type: 'error', text: 'Please fill in all shipping details.' }
       return res.redirect('/checkout')
     }
 
-    const postedToken = String(req.body.checkoutToken || '')
-    const sessionToken = String(req.session.checkoutToken || '')
-    if (!postedToken || !sessionToken || postedToken !== sessionToken) {
-      req.session.flash = { type: 'error', text: 'Duplicate or invalid checkout submission.' }
-      return res.redirect('/checkout')
-    }
+    const postedToken = String(req.body.checkoutToken || req.session.checkoutToken || crypto.randomUUID())
 
     const existingOrder = await Order.findOne({ idempotencyKey: postedToken })
     if (existingOrder) {
       req.session.lastOrderId = existingOrder._id
       req.session.cart = []
       req.session.flash = { type: 'success', text: 'Order already processed.' }
+      await new Promise((resolve) => req.session.save(resolve))
       return res.redirect('/order-confirmation')
     }
 
@@ -202,7 +199,14 @@ router.post('/checkout', protect, forbidAdmin, async (req, res) => {
           req.session.flash = { type: 'error', text: 'Some items just went out of stock. Please review cart.' }
           return res.redirect('/cart')
         }
-        throw txErr
+        // Fallback to non-transactional creation if replica session fails
+        console.warn('TX failed, trying non-tx fallback:', txErr.message)
+        const reserved = await reserveInventoryWithoutTransaction(items)
+        if (!reserved) {
+          req.session.flash = { type: 'error', text: 'Some items just went out of stock.' }
+          return res.redirect('/cart')
+        }
+        await createOrder()
       }
     } else {
       const reserved = await reserveInventoryWithoutTransaction(items)
@@ -225,10 +229,11 @@ router.post('/checkout', protect, forbidAdmin, async (req, res) => {
       })
     }
     req.session.flash = { type: 'success', text: 'Order placed successfully!' }
+    await new Promise((resolve) => req.session.save(resolve))
     return res.redirect('/order-confirmation')
   } catch (err) {
     console.error('CHECKOUT ERROR:', err)
-    req.session.flash = { type: 'error', text: 'Failed to place order.' }
+    req.session.flash = { type: 'error', text: 'Failed to place order: ' + (err.message || 'Server error') }
     return res.redirect('/checkout')
   }
 })

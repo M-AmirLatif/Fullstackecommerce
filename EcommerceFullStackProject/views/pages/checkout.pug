@@ -1,94 +1,100 @@
 extends ../layout
 
 block content
-  .container
+  .container(style="padding: 1.5rem 1rem;")
     nav.breadcrumbs
       a(href="/") Home
       span.sep /
       a(href="/cart") Cart
       span.sep /
       span Checkout
-    h1(data-reveal="up") Secure Checkout
+    h1(data-reveal="up" style="margin-bottom: 1.5rem;") 💳 Secure Checkout
 
     .checkout-container(data-stagger="80")
       .checkout-form(data-reveal="up")
-        h2 Checkout
+        h2 Complete Your Order
         
         .checkout-steps
           span.step.active(data-step="1") 1. Shipping
           span.step(data-step="2") 2. Payment
-          span.step(data-step="3") 3. Review
+          span.step(data-step="3") 3. Review & Place
 
         form#checkout-form(action="/checkout" method="POST")
+          if csrfToken
+            input(type="hidden" name="_csrf" value=csrfToken)
           input(type="hidden" name="checkoutToken" value=checkoutToken)
+
+          // Step 1: Shipping
           .checkout-step(data-step="1")
             .form-row.full
               .form-group
-                label(for="customerName") Full Name
-                input#customerName(type="text" name="customerName" placeholder="John Doe" required)
+                label(for="customerName") 👤 Full Name *
+                input#customerName(type="text" name="customerName" placeholder="Your Name" value=(user && user.name ? user.name : '') required)
             
             .form-row
               .form-group
-                label(for="email") Email Address
-                input#email(type="email" name="email" placeholder="john@example.com" required)
+                label(for="email") ✉️ Email Address *
+                input#email(type="email" name="email" placeholder="your@email.com" value=(user && user.email ? user.email : '') required)
               .form-group
-                label(for="phone") Phone Number
-                input#phone(type="tel" name="phone" placeholder="+1 (555) 123-4567" required)
+                label(for="phone") 📞 Phone Number *
+                input#phone(type="tel" name="phone" placeholder="+92 300 1234567" required)
             
             .form-row.full
               .form-group
-                label(for="address") Shipping Address
-                textarea#address(name="address" placeholder="123 Main Street, Apt 4B, New York, NY 10001" required)
+                label(for="address") 🏠 Complete Shipping Address *
+                textarea#address(name="address" placeholder="House / Flat #, Street, Area / Colony" required style="min-height: 80px;")
             
             .form-row
               .form-group
-                label(for="city") City
-                input#city(type="text" name="city" placeholder="New York" required)
+                label(for="city") 🏙️ City *
+                input#city(type="text" name="city" placeholder="Lahore / Karachi / Islamabad" value="Lahore" required)
               .form-group
-                label(for="state") State
-                input#state(type="text" name="state" placeholder="NY" required)
+                label(for="state") 📍 Province / State
+                input#state(type="text" name="state" placeholder="Punjab / Sindh / KPK" value="Punjab")
             
             .form-row
               .form-group
-                label(for="zip") ZIP Code
-                input#zip(type="text" name="zip" placeholder="10001" required)
+                label(for="zip") 📮 Postal Code
+                input#zip(type="text" name="zip" placeholder="54000" value="54000")
               .form-group
-                label(for="country") Country
-                input#country(type="text" name="country" placeholder="United States" required)
+                label(for="country") 🇵🇰 Country
+                input#country(type="text" name="country" placeholder="Pakistan" value="Pakistan")
             
-            .step-actions
-              button.btn(type="button" data-step-next="2") Continue to Payment
+            .step-actions(style="margin-top: 1.5rem;")
+              button.btn(type="button" data-step-next="2" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") Continue to Payment ➔
 
+          // Step 2: Payment
           .checkout-step(data-step="2")
             .form-row.full
               .form-group
-                label Payment Method
-                p.text-muted Demo checkout - no card data is collected.
-            .payment-grid
+                label 💳 Payment Method
+                .card(style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.25rem; margin-top: 0.5rem;")
+                  strong(style="color: #10b981; display: flex; align-items: center; gap: 0.5rem;")
+                    span ⚡
+                    span Cash On Delivery & Demo Payment (Auto-Approved)
+                  p(style="margin: 0.5rem 0 0; color: rgba(255,255,255,0.8); font-size: 0.9rem;") Instant confirmation with free express shipping across Pakistan. No card required for demo orders.
+            
+            .payment-grid(style="margin-top: 1rem;")
               .form-group
-                label(for="cardName") Name on card
+                label(for="cardName") Cardholder Name (Optional)
                 input#cardName(type="text" name="cardName" placeholder="John Doe" autocomplete="cc-name")
               .form-group
-                label(for="cardNumber") Card number
-                input#cardNumber(type="text" name="cardNumber" placeholder="4242 4242 4242 4242" inputmode="numeric" autocomplete="cc-number")
-              .form-group
-                label(for="cardExpiry") Expiry
-                input#cardExpiry(type="text" name="cardExpiry" placeholder="MM/YY" inputmode="numeric" autocomplete="cc-exp")
-              .form-group
-                label(for="cardCvc") CVC
-                input#cardCvc(type="text" name="cardCvc" placeholder="123" inputmode="numeric" autocomplete="cc-csc")
-            p.payment-note We never store card details in demo mode.
-            .step-actions
-              button.btn.btn-outline(type="button" data-step-prev="1") Back
-              button.btn(type="button" data-step-next="3") Review Order
+                label(for="cardNumber") Card Number (Optional)
+                input#cardNumber(type="text" name="cardNumber" placeholder="4242 •••• •••• 4242" inputmode="numeric")
+            
+            .step-actions(style="margin-top: 1.5rem; display: flex; gap: 0.75rem;")
+              button.btn.btn-outline(type="button" data-step-prev="1") ⬅ Back to Shipping
+              button.btn(type="button" data-step-next="3" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") Review Order ➔
 
+          // Step 3: Review
           .checkout-step(data-step="3")
-            .card(style="margin-bottom: 1.5rem;")
-              h3 Review
-              p Confirm your shipping info and place the order.
-            .step-actions
-              button.btn.btn-outline(type="button" data-step-prev="2") Back
-              button.btn(type="submit") Place Order
+            .card(style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem;")
+              h3(style="margin-top: 0; margin-bottom: 0.5rem; color: #fff;") ✅ Ready to Place Order
+              p(style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.92rem;") Please verify your cart total and click the button below to confirm your order.
+            
+            .step-actions(style="display: flex; gap: 0.75rem;")
+              button.btn.btn-outline(type="button" data-step-prev="2") ⬅ Back to Payment
+              button.btn(type="submit" style="flex: 1; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 800; font-size: 1.05rem; padding: 0.85rem;") 🚀 Place Order Now
       
       .checkout-summary(data-reveal="up")
         h2 Order Summary
@@ -96,53 +102,31 @@ block content
         if cart && cart.length > 0
           each item in cart
             .summary-item
-              span #{item.name} x #{item.quantity}
-              span $#{((item.price || 0) * item.quantity).toFixed(2)}
+              span #{item.name} × #{item.quantity}
+              span Rs. #{(((item.price || 0) * item.quantity)).toLocaleString()} ($#{((item.price || 0) * item.quantity).toFixed(2)})
         else
           p.text-center Your cart is empty
 
         .summary-item
           span Subtotal
-          span $#{(total * 0.9).toFixed(2)}
+          span Rs. #{((total || 0)).toLocaleString()}
 
         .summary-item
-          span Shipping
-          span(style="color: var(--success);") FREE
+          span Express Shipping
+          span(style="color: #10b981; font-weight: 700;") FREE 🇵🇰
 
-        .summary-item
-          span Tax (10%)
-          span $#{(total * 0.1).toFixed(2)}
+        .summary-total(style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 1rem; margin-top: 1rem;")
+          span Total Payable
+          span.text-primary(style="color: #f97316; font-size: 1.35rem;") Rs. #{((total || 0)).toLocaleString()}
 
-        .summary-item
-          span Delivery estimate
-          span 3-5 business days
+        .trust-row(style="margin-top: 1.5rem;")
+          span 🔒 100% Secure Checkout
+          span 🚚 2-4 Day Delivery
+          span 💬 24/7 AI Support
 
-        .summary-total
-          span Total Amount
-          span $#{total.toFixed(2)}
-
-        .trust-row
-          span Secure checkout
-          span Free returns
-          span 24/7 support
-
-        .card.checkout-info
-          h3 Delivery & Support
-          ul.info-list
-            li Orders ship in 24-48 hours
-            li Free returns within 30 days
-            li Support: hello@eshop.dev
-
-        .card.checkout-note
-          p
-            | Secure payment
-            br
-            | Demo mode enabled
-            br
-            | Free shipping on this order
   if cart && cart.length > 0
     .mobile-cta
-      button.btn(type="button" data-submit-target="#checkout-form") Place Order
+      button.btn(type="button" data-submit-target="#checkout-form" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 800;") 🚀 Place Order Now
 
 block scripts
-  script(src="/js/checkout-steps.js")
+  script(src="/js/checkout-steps.js?v=20261007-tech-v14")

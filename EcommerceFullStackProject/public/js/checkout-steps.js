@@ -1,19 +1,8 @@
 (() => {
+  const form = document.querySelector('#checkout-form')
   const steps = Array.from(document.querySelectorAll('.checkout-step'))
   const indicators = Array.from(document.querySelectorAll('.checkout-steps .step'))
   if (!steps.length) return
-
-  const requiredFields = Array.from(
-    document.querySelectorAll('.checkout-step [required]'),
-  )
-
-  const updateRequired = (activeStep) => {
-    requiredFields.forEach((field) => {
-      const parentStep = field.closest('.checkout-step')
-      const isActive = parentStep?.getAttribute('data-step') === String(activeStep)
-      field.required = Boolean(isActive)
-    })
-  }
 
   const setStep = (target) => {
     steps.forEach((step) => {
@@ -24,14 +13,28 @@
       const isActive = indicator.getAttribute('data-step') === String(target)
       indicator.classList.toggle('active', isActive)
     })
-    updateRequired(target)
   }
 
   setStep(1)
 
   document.querySelectorAll('[data-step-next]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      setStep(btn.getAttribute('data-step-next'))
+      const currentStepEl = btn.closest('.checkout-step')
+      const targetStep = btn.getAttribute('data-step-next')
+
+      // Validate inputs in current step before progressing
+      if (currentStepEl) {
+        const inputs = Array.from(currentStepEl.querySelectorAll('input[required], textarea[required], select[required]'))
+        for (const input of inputs) {
+          if (!input.value.trim() || !input.checkValidity()) {
+            input.reportValidity()
+            input.focus()
+            return
+          }
+        }
+      }
+
+      setStep(targetStep)
     })
   })
 

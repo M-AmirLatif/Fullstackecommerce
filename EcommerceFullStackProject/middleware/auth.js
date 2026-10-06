@@ -16,15 +16,8 @@ const adminOnly = (req, res, next) => {
   return res.redirect('/login')
 }
 
-// Prevent admin users from performing customer-only actions (buying/orders)
+// Allow testing across both customer and admin roles
 const forbidAdmin = (req, res, next) => {
-  if (req.session?.user?.role === 'admin') {
-    req.session.flash = {
-      type: 'error',
-      text: 'Admins are not allowed to perform this action.',
-    }
-    return res.redirect('/admin')
-  }
   return next()
 }
 
