@@ -566,12 +566,27 @@ router.post('/login', async (req, res) => {
 // =========================
 // LOGOUT
 // =========================
-router.all('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie('tech_session')
-    res.clearCookie('connect.sid')
-    return res.redirect('/login')
-  })
+router.all(['/logout', '/admin/logout', '/auth/logout'], (req, res) => {
+  try {
+    if (req.session) {
+      req.session.user = null
+      req.session.destroy((err) => {
+        if (err) console.warn('Session destroy note:', err.message)
+        res.clearCookie('tech_session', { path: '/' })
+        res.clearCookie('connect.sid', { path: '/' })
+        return res.redirect(303, '/login')
+      })
+    } else {
+      res.clearCookie('tech_session', { path: '/' })
+      res.clearCookie('connect.sid', { path: '/' })
+      return res.redirect(303, '/login')
+    }
+  } catch (err) {
+    console.error('LOGOUT ERROR:', err)
+    res.clearCookie('tech_session', { path: '/' })
+    res.clearCookie('connect.sid', { path: '/' })
+    return res.redirect(303, '/login')
+  }
 })
 
 module.exports = router

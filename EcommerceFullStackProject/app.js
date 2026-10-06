@@ -105,6 +105,7 @@ const csrfProtection = csrf({
 })
 
 app.use((req, res, next) => {
+  if (req.path === '/logout' || req.path.startsWith('/logout')) return next()
   if (req.path.startsWith('/ai/')) return next()
   if (req.path.startsWith('/payments/webhook/')) return next()
   return csrfProtection(req, res, next)
