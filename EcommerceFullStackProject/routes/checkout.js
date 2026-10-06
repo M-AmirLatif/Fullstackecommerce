@@ -113,9 +113,10 @@ router.post('/checkout', async (req, res) => {
     req.session.cart = []
     req.session.checkoutToken = crypto.randomUUID()
     req.session.flash = { type: 'success', text: 'Order placed successfully! 🚀' }
+    res.locals.cartCount = 0
 
     await new Promise((resolve) => req.session.save(resolve))
-    return res.redirect(`/order-confirmation/${order._id}`)
+    return res.render('pages/order-confirmation', { order })
   } catch (err) {
     console.error('CHECKOUT ERROR:', err)
     req.session.flash = { type: 'error', text: 'Failed to place order: ' + (err.message || 'Server error') }

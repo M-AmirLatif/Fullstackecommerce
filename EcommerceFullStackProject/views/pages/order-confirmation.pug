@@ -13,36 +13,37 @@ block content
       .order-details(data-reveal="up" data-reveal-delay="120")
         p
           span Order Reference
-          strong ##{order._id.toString().slice(-8).toUpperCase()}
+          strong ##{(order && order._id) ? order._id.toString().slice(-8).toUpperCase() : 'CONFIRMED'}
         p
           span Fulfillment Status
-          strong.text-success #{order.status || 'Confirmed'}
+          strong.text-success #{(order && order.status) || 'Paid'}
         p
           span Payment Status
-          strong #{(order.payment && order.payment.status) || 'Paid (Demo)'}
+          strong #{(order && order.payment && order.payment.status) ? order.payment.status : 'Paid (Demo)'}
         p
           span Order Date
-          strong #{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+          strong #{new Date(order && order.createdAt ? order.createdAt : Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
         p
           span Total Paid
-          strong.text-primary Rs. #{(order.totalAmount || 0).toLocaleString()} ($#{(order.totalAmount || 0).toFixed(2)})
+          strong.text-primary Rs. #{((order && order.totalAmount) || 0).toLocaleString()} ($#{((order && order.totalAmount) || 0).toFixed(2)})
 
-      .card(style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); margin: 1.75rem 0; padding: 1.5rem; border-radius: 16px;" data-reveal="up")
-        h3(style="margin-top: 0; margin-bottom: 1rem; font-size: 1.15rem; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem;") 📦 Items in Order
-        each item in order.items
-          .summary-item(style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #fff; font-size: 0.95rem;")
-            span(style="font-weight: 600;") #{item.name} × #{item.quantity}
-            span(style="font-weight: 700; color: #f97316;") Rs. #{(((item.price || 0) * item.quantity)).toLocaleString()} ($#{((item.price || 0) * item.quantity).toFixed(2)})
+      if order && order.items && order.items.length > 0
+        .card(style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); margin: 1.75rem 0; padding: 1.5rem; border-radius: 16px;" data-reveal="up")
+          h3(style="margin-top: 0; margin-bottom: 1rem; font-size: 1.15rem; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem;") 📦 Items in Order
+          each item in order.items
+            .summary-item(style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #fff; font-size: 0.95rem;")
+              span(style="font-weight: 600;") #{item.name || 'Product'} × #{item.quantity || 1}
+              span(style="font-weight: 700; color: #f97316;") Rs. #{(((item.price || 0) * (item.quantity || 1))).toLocaleString()} ($#{(((item.price || 0) * (item.quantity || 1))).toFixed(2)})
 
-      if order.shipping
+      if order && order.shipping
         .card(style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); margin: 1.75rem 0; padding: 1.5rem; border-radius: 16px;" data-reveal="up")
           h3(style="margin-top: 0; margin-bottom: 0.75rem; font-size: 1.15rem; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem;") 📍 Delivery Details
           p(style="color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.7; font-size: 0.95rem;")
             strong(style="color: #fff; font-size: 1.05rem;") #{order.customerName || 'Valued Customer'}
             br
-            | 🏠 #{order.shipping.address}, #{order.shipping.city}, #{order.shipping.state} #{order.shipping.zip}
+            | 🏠 #{order.shipping.address || 'Standard Delivery'}, #{order.shipping.city || 'Lahore'}, #{order.shipping.state || 'Punjab'} #{order.shipping.zip || ''}
             br
-            | 📞 Phone: #{order.shipping.phone} | ✉ Email: #{order.email}
+            | 📞 Phone: #{order.shipping.phone || '+92 300 1234567'} | ✉ Email: #{order.email || 'customer@gmail.com'}
 
       .card(style="background: rgba(8, 22, 40, 0.9); border-left: 4px solid #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-left-width: 5px; margin: 1.75rem 0; padding: 1.25rem; border-radius: 14px;" data-reveal="up")
         p(style="margin: 0; color: rgba(255, 255, 255, 0.9); line-height: 1.6; font-size: 0.92rem;")
