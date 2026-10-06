@@ -82,29 +82,29 @@ const buildSearchRegex = (query) => {
 
 const infoPages = {
   about: {
-    title: 'About E-Shop',
-    lead: 'Bold UI, simple flows, and full-stack fundamentals you can extend.',
+    title: 'About Tech Innovation Store',
+    lead: 'We Deliver Best — Premium Tech & Smart Gadgets in Pakistan.',
     sections: [
-      { heading: 'What it is', text: 'An Express + MongoDB storefront with auth, cart, checkout, and admin.' },
-      { heading: 'What changed', points: ['Footer links now open real pages', 'Background is dark navy with violet accents', 'Cards show rating, colors, and discount'] },
-      { heading: 'Start here', text: 'See the updated product cards in the catalog.', link: { href: '/shop', label: 'Browse the shop' } },
+      { heading: 'Who We Are', text: 'Tech Innovation Store (Tech Innovation.pk) is your trusted destination for cutting-edge electronics, smart gadgets, and premium tech accessories.' },
+      { heading: 'Our Promise', points: ['100% Genuine & Quality Tested Products', 'Fast Nationwide Delivery Across Pakistan', '24/7 Dedicated Customer & AI Shopping Support'] },
+      { heading: 'Explore Collection', text: 'Explore our latest arrivals and top-rated gadgets.', link: { href: '/shop', label: 'Browse the shop' } },
     ],
   },
   blogs: {
-    title: 'Blogs & Updates',
-    lead: 'Dummy content, real routes. Use this for changelogs or guides later.',
+    title: 'Tech News & Updates',
+    lead: 'Stay ahead with the latest in gadgets, guides, and innovations.',
     sections: [
-      { heading: 'Design notes', points: ['Deep navy surfaces replace flat white blocks', 'Electric violet accents guide attention'] },
-      { heading: 'Commerce tips', points: ['Put ratings and colors on the card', 'Keep footer links useful even when placeholder'] },
+      { heading: 'Tech Insights', points: ['Flagship smartphone reviews & buying guides', 'Smart home audio & wearable accessories comparisons'] },
+      { heading: 'Exclusive Perks', points: ['Weekly flash sales with up to 30% off', 'VIP discounts for tech enthusiasts'] },
     ],
   },
   contact: {
-    title: 'Contact Us',
-    lead: 'No more dead links. This page is wired so it never 404s.',
+    title: 'Contact Tech Innovation Store',
+    lead: 'We are here to assist you with inquiries, orders, and recommendations.',
     sections: [
-      { heading: 'Reach us', points: ['Email: hello@eshop.dev', 'Phone: +1 (386) 688-3295', 'Hours: Mon-Fri, 9 AM to 6 PM'] },
-      { heading: 'Need help first?', text: 'Check the frequently asked questions.', link: { href: '/faqs', label: 'Read FAQs' } },
-      { heading: 'Returns & shipping', text: 'Policies are available for customers who need details before buying.', link: { href: '/returns', label: 'View returns' } },
+      { heading: 'Reach Us', points: ['Email: support@techinnovation.pk', 'Phone: +92 300 1234567', 'Hours: Mon-Sat, 9 AM to 9 PM PKT'] },
+      { heading: 'Need help first?', text: 'Check our frequently asked questions.', link: { href: '/faqs', label: 'Read FAQs' } },
+      { heading: 'Returns & Shipping', text: 'Clear policies for hassle-free shopping across Pakistan.', link: { href: '/returns', label: 'View returns' } },
     ],
   },
   faqs: {

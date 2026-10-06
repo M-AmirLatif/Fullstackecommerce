@@ -174,9 +174,9 @@ const sendOtpEmail = async (email, otp) => {
   await transporter.sendMail({
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
-    subject: 'Your E-Shop verification code',
-    text: `Your E-Shop verification code is: ${otp}. It expires in ${OTP_EXPIRES_MIN} minutes.`,
-    html: `<p>Your E-Shop verification code is:</p><h2>${otp}</h2><p>Expires in ${OTP_EXPIRES_MIN} minutes.</p>`,
+    subject: 'Your Tech Innovation verification code',
+    text: `Your Tech Innovation Store verification code is: ${otp}. It expires in ${OTP_EXPIRES_MIN} minutes.`,
+    html: `<p>Your Tech Innovation Store verification code is:</p><h2>${otp}</h2><p>Expires in ${OTP_EXPIRES_MIN} minutes.</p>`,
   })
 }
 
@@ -190,10 +190,10 @@ const sendResetPasswordEmail = async (req, email, token) => {
   await transporter.sendMail({
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
-    subject: 'Reset your E-Shop password',
-    text: `Reset your E-Shop password using this link (expires in ${RESET_PASSWORD_EXPIRES_MIN} minutes): ${resetUrl}`,
+    subject: 'Reset your Tech Innovation password',
+    text: `Reset your Tech Innovation password using this link (expires in ${RESET_PASSWORD_EXPIRES_MIN} minutes): ${resetUrl}`,
     html: `
-      <p>Reset your E-Shop password.</p>
+      <p>Reset your Tech Innovation password.</p>
       <p><a href="${resetUrl}">Reset Password</a></p>
       <p>This link expires in ${RESET_PASSWORD_EXPIRES_MIN} minutes.</p>
       <p>If you did not request this, you can ignore this email.</p>

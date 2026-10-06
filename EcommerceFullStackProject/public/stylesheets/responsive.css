@@ -466,124 +466,169 @@ img {
   }
 }
 
-@media (max-width: 600px) {
-  .site-header-utility {
+@media (max-width: 900px) {
+  .header-search-form {
     display: none !important;
   }
 
-  .navbar.navbar-main {
-    padding: 0.95rem 0.9rem !important;
-    gap: 0.75rem !important;
-    flex-wrap: nowrap !important;
+  .nav-toggle-btn {
+    display: flex !important;
   }
 
-  .header-main-center {
+  .header-actions .header-action-btn,
+  .user-menu-pill {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-announcement-bar .announcement-right {
     display: none !important;
   }
 
-  .site-categorybar {
-    background: rgba(5, 10, 20, 0.96) !important;
-  }
-
-  .site-categorybar .nav-links {
-    padding: 0.7rem 0.9rem 0.9rem !important;
-    gap: 0.5rem !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-    background: transparent !important;
-  }
-
-  .site-categorybar .nav-link {
-    width: 100% !important;
-    padding: 0.65rem 0.2rem !important;
-    border-bottom: 1px solid rgba(148, 167, 255, 0.08);
-  }
-
-  .site-categorybar .nav-form {
-    width: 100% !important;
-  }
-
-  .site-categorybar .nav-logout {
-    width: 100% !important;
+  .announcement-inner {
     justify-content: center !important;
+    text-align: center !important;
   }
 
-  .site-promo-strip {
-    display: none !important;
+  .header-main-container {
+    padding: 0.75rem 1rem !important;
+    gap: 0.75rem !important;
   }
 
+  .brand-logo-wrap {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .brand-name {
+    font-size: 1.15rem !important;
+  }
+
+  .brand-pk {
+    font-size: 1.15rem !important;
+  }
+
+  .brand-motto {
+    font-size: 0.6rem !important;
+  }
+
+  .cart-pill-btn {
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .category-subnav-container {
+    padding: 0.4rem 0.75rem !important;
+    gap: 0.45rem !important;
+  }
+
+  .subnav-link {
+    font-size: 0.8rem !important;
+    padding: 0.35rem 0.7rem !important;
+  }
+
+  /* ✅ Generous & Balanced Hero Margins on Mobile */
+  .hero,
   .hero.hero-showcase {
-    padding: 0.9rem !important;
+    width: calc(100% - 1.5rem) !important;
+    max-width: 100% !important;
+    margin: 1.15rem auto 2rem !important;
+    padding: 1.6rem 1.15rem !important;
+    border-radius: 20px !important;
+    box-sizing: border-box !important;
   }
 
   .hero.hero-showcase .hero-inner {
-    gap: 0.9rem !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
   }
 
   .hero.hero-showcase .hero-left {
-    padding: 0.35rem 0.2rem 0.2rem !important;
-    border-radius: 12px !important;
+    width: 100% !important;
+    padding: 0.5rem 0.25rem !important;
+    border-radius: 14px !important;
+    text-align: center !important;
+    align-items: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
   }
 
   .hero-eyebrow {
-    font-size: 0.68rem !important;
-    letter-spacing: 0.11em !important;
-    margin-bottom: 0.55rem !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.12em !important;
+    margin-bottom: 0.65rem !important;
+    color: #f97316 !important;
   }
 
   .hero.hero-showcase .hero-title {
     max-width: 100% !important;
-    font-size: 2.1rem !important;
+    font-size: 2rem !important;
+    line-height: 1.15 !important;
+    margin-bottom: 0.75rem !important;
+    text-align: center !important;
   }
 
   .hero.hero-showcase .hero-sub {
     max-width: 100% !important;
-    margin-bottom: 1rem !important;
-  }
-
-  .hero-mini-links {
-    justify-content: center !important;
-    margin-top: 0.35rem !important;
-    padding-top: 0.7rem !important;
-  }
-
-  .hero.hero-showcase .hero-actions .btn {
-    min-width: 0 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 1.25rem !important;
+    text-align: center !important;
+    color: rgba(255, 255, 255, 0.85) !important;
   }
 
   .hero.hero-showcase .hero-right {
     min-width: 0 !important;
     width: 100% !important;
+    margin-top: 0.5rem !important;
   }
 
   .hero-visual-card {
     min-height: 250px !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .hero-visual-copy {
     left: 0.75rem !important;
     right: 0.75rem !important;
     bottom: 0.75rem !important;
-    padding: 0.75rem 0.8rem !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 12px !important;
     text-align: center !important;
+    background: rgba(7, 21, 38, 0.92) !important;
+    backdrop-filter: blur(12px) !important;
   }
 
   .hero-visual-copy h3 {
     font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Global Containers & Cards Spacing */
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1rem 1rem 2.5rem !important;
+    box-sizing: border-box !important;
   }
 }
 
 @media (max-width: 420px) {
-  .navbar.navbar-main {
-    padding-inline: 0.75rem !important;
+  .brand-name {
+    font-size: 1.05rem !important;
   }
 
-  .brand {
-    font-size: 1.15rem !important;
+  .brand-pk {
+    font-size: 1.05rem !important;
   }
 
   .hero.hero-showcase .hero-title {
-    font-size: 1.8rem !important;
+    font-size: 1.75rem !important;
   }
 
   .hero-visual-card {

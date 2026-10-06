@@ -1,54 +1,144 @@
 - const safePath = currentPath || ''
-.site-header-utility
-  .header-row.header-row--utility
-    form.header-search(action="/shop" method="GET")
-      input#headerSearch(
-        type="search"
-        name="q"
-        placeholder="Search tech, gadgets, accessories..."
-        autocomplete="off"
-        aria-label="Search products"
-      )
-      button.header-search-btn(type="submit" aria-label="Search")
-        span.header-search-icon ⌕
-    .header-utility-links
-      a.header-utility-link(href="/shop?featured=true") Top Deals
-      a.header-utility-link(href="/shop?sort=newest") New Arrivals
-      if !user
-        a.header-utility-link(href="/login") Orders & Sign In
-      else if user.role === 'admin'
-        a.header-utility-link(href="/admin") Admin Panel
-      else
-        a.header-utility-link(href="/checkout") My Account
-      if !user || user.role !== 'admin'
-        a.header-utility-link(href="/cart") Cart
+- const count = cartCount || 0
 
+// Top Announcement Bar
+.top-announcement-bar
+  .announcement-inner
+    .announcement-left
+      span.announcement-badge ⚡ TECH INNOVATION
+      span.announcement-text We Deliver Best • Free Express Shipping on orders over Rs. 2,000 🇵🇰
+    .announcement-right
+      a.announcement-link(href="/contact") 📞 WhatsApp: +92 300 1234567
+      span.announcement-divider |
+      a.announcement-link(href="/faqs") Help & FAQs
+
+// Main Header Bar
 header.site-header
-  nav.navbar.navbar-main
-    a.brand(href="/")
-      img.brand-logo-img(src="/images/logo.png" alt="Tech Innovation Store" loading="eager")
-      span.brand-title
-        span.brand-name Tech Innovation
-        span.brand-tag .pk
-    .header-main-center
-      span.header-main-copy ⚡ We Deliver Best • Premium Tech & Gadgets
-    button.nav-toggle(type="button" aria-label="Toggle navigation") ☰
+  .header-main-wrap
+    .header-main-container
+      // Brand Identity
+      a.brand(href="/" aria-label="Tech Innovation Store Home")
+        .brand-logo-wrap
+          img.brand-logo-img(src="/images/logo.png" alt="Tech Innovation Logo" loading="eager")
+        .brand-text-group
+          .brand-title
+            span.brand-name Tech Innovation
+            span.brand-pk .pk
+          span.brand-motto We Deliver Best
 
-  .site-categorybar
-    .nav-links
-      a.nav-link(class=(safePath === '/' ? 'active' : '') href="/") Home
-      a.nav-link(class=(safePath.startsWith('/shop') ? 'active' : '') href="/shop") Shop All
-      a.nav-link(class=(safePath.startsWith('/admin') ? 'active' : '') href="/admin") Admin Panel
-      if !user || user.role !== 'admin'
-        a.nav-link(class=(safePath.startsWith('/cart') ? 'active' : '') href="/cart") Cart
-        a.nav-link(class=(safePath.startsWith('/checkout') ? 'active' : '') href="/checkout") Checkout
-      if !user
-        a.nav-link(class=(safePath.startsWith('/login') ? 'active' : '') href="/login") Login
-      else
-        form.nav-form(action="/logout" method="POST")
-          button.nav-logout(type="submit") Logout
+      // Main Search Bar
+      form.header-search-form(action="/shop" method="GET")
+        .search-input-wrap
+          span.search-icon 🔍
+          input#headerSearch(
+            type="search"
+            name="q"
+            placeholder="Search smartphones, headphones, smartwatches, gadgets..."
+            autocomplete="off"
+            aria-label="Search tech products"
+          )
+          button.search-submit-btn(type="submit" aria-label="Search") Search
 
-  .site-promo-strip
-    .header-row.header-row--promo
-      span.promo-label 🔥 SPECIAL OFFER
-      a.promo-link(href="/shop?featured=true") Up to 30% off on top trending tech picks →
+      // Right Action Hub
+      .header-actions
+        a.header-action-btn.action-deals(href="/shop?featured=true")
+          span.action-icon 🔥
+          span.action-label Deals
+
+        if user && user.role === 'admin'
+          a.header-action-btn.action-admin(href="/admin")
+            span.action-icon 🛡️
+            span.action-label Admin
+
+        if user
+          .user-menu-pill
+            span.user-avatar 👤
+            span.user-name= user.name.split(' ')[0]
+            form.header-logout-form(action="/logout" method="POST")
+              button.btn-logout-icon(type="submit" title="Log Out") 🚪
+        else
+          a.header-action-btn.action-user(href="/login")
+            span.action-icon 👤
+            span.action-label Sign In
+
+        if !user || user.role !== 'admin'
+          a.cart-pill-btn(href="/cart" aria-label="View Shopping Cart")
+            span.cart-icon 🛒
+            span.cart-label Cart
+            span.cart-counter(class=(count > 0 ? 'has-items' : ''))= count
+
+        // Mobile Menu Button
+        button.nav-toggle-btn(type="button" aria-label="Toggle navigation menu")
+          span.toggle-bar
+          span.toggle-bar
+          span.toggle-bar
+
+  // Category Sub-Navigation Bar
+  nav.category-subnav
+    .category-subnav-container
+      a.subnav-link(class=(safePath === '/' ? 'active' : '') href="/")
+        span 🏠
+        span Home
+      a.subnav-link(class=(safePath === '/shop' ? 'active' : '') href="/shop")
+        span ⚡
+        span Shop All
+      a.subnav-link(class=(safePath.includes('featured') ? 'active' : '') href="/shop?featured=true")
+        span 🔥
+        span Hot Deals
+      a.subnav-link(href="/shop?category=Smartphones")
+        span 📱
+        span Smartphones
+      a.subnav-link(href="/shop?category=Audio")
+        span 🎧
+        span Audio & Sound
+      a.subnav-link(href="/shop?category=Wearables")
+        span ⌚
+        span Smartwatches
+      a.subnav-link(href="/shop?category=Accessories")
+        span 🔌
+        span Accessories
+      a.subnav-link(class=(safePath === '/about' ? 'active' : '') href="/about")
+        span ℹ️
+        span About Us
+      a.subnav-link(class=(safePath === '/contact' ? 'active' : '') href="/contact")
+        span 💬
+        span Contact
+
+  // Mobile Slide-Down Drawer
+  .mobile-drawer#mobileDrawer
+    .mobile-drawer-content
+      form.mobile-drawer-search(action="/shop" method="GET")
+        input(type="search" name="q" placeholder="Search gadgets, accessories..." autocomplete="off")
+        button.btn(type="submit") Search
+
+      .mobile-drawer-section
+        p.drawer-kicker CATEGORIES
+        .mobile-drawer-grid
+          a.drawer-chip(href="/") 🏠 Home
+          a.drawer-chip(href="/shop") ⚡ Shop All
+          a.drawer-chip(href="/shop?featured=true") 🔥 Hot Deals
+          a.drawer-chip(href="/shop?category=Smartphones") 📱 Smartphones
+          a.drawer-chip(href="/shop?category=Audio") 🎧 Audio
+          a.drawer-chip(href="/shop?category=Wearables") ⌚ Wearables
+          a.drawer-chip(href="/shop?category=Accessories") 🔌 Accessories
+          a.drawer-chip(href="/about") ℹ️ About Us
+          a.drawer-chip(href="/contact") 💬 Contact
+
+      .mobile-drawer-section
+        p.drawer-kicker ACCOUNT & HELP
+        .mobile-drawer-list
+          if user
+            .mobile-user-card
+              span.avatar 👤
+              span.name Logged in as #{user.name}
+            if user.role === 'admin'
+              a.drawer-link(href="/admin") 🛡️ Admin Dashboard
+            else
+              a.drawer-link(href="/cart") 🛒 View Cart (#{count})
+              a.drawer-link(href="/checkout") 💳 Checkout
+            form.mobile-logout-form(action="/logout" method="POST")
+              button.btn.btn-outline(type="submit") Log Out
+          else
+            a.btn(href="/login") 👤 Sign In / Register
+            a.btn.btn-outline(href="/cart") 🛒 View Cart (#{count})
+

@@ -125,6 +125,8 @@ app.use((req, res, next) => {
 // ✅ Initialize cart safely (after session)
 app.use((req, res, next) => {
   if (!req.session.cart) req.session.cart = []
+  const items = Array.isArray(req.session.cart) ? req.session.cart : []
+  res.locals.cartCount = items.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0)
   next()
 })
 

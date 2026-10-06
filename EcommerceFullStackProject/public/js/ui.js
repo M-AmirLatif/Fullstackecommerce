@@ -1,16 +1,16 @@
 (() => {
   // Mobile navigation drawer toggle
-  const toggle = document.querySelector('.nav-toggle')
-  const links = document.querySelector('.nav-links')
-  if (toggle && links) {
-    toggle.addEventListener('click', (e) => {
+  const toggleBtn = document.querySelector('.nav-toggle-btn') || document.querySelector('.nav-toggle')
+  const drawer = document.getElementById('mobileDrawer') || document.querySelector('.nav-links')
+  if (toggleBtn && drawer) {
+    toggleBtn.addEventListener('click', (e) => {
       e.stopPropagation()
-      links.classList.toggle('open')
+      drawer.classList.toggle('open')
     })
 
     document.addEventListener('click', (e) => {
-      if (!links.contains(e.target) && !toggle.contains(e.target)) {
-        links.classList.remove('open')
+      if (!drawer.contains(e.target) && !toggleBtn.contains(e.target)) {
+        drawer.classList.remove('open')
       }
     })
   }
