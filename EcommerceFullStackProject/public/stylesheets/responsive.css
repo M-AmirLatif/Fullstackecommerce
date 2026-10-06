@@ -279,22 +279,32 @@ img {
 
   .footer-bottom {
     position: relative !important;
+    background: #061121 !important;
   }
 
   .footer-bottom-inner {
-    padding: 0.8rem 1.2rem 1rem !important;
+    padding: 1.1rem 1.2rem 4.5rem !important;
     flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 0.45rem !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 0.65rem !important;
   }
 
   .footer-copy {
-    font-size: 0.92rem !important;
-    line-height: 1.35 !important;
+    font-size: 0.88rem !important;
+    line-height: 1.45 !important;
+    text-align: center !important;
+    color: rgba(255, 255, 255, 0.8) !important;
   }
 
   .footer-mini-links {
-    gap: 0.85rem !important;
+    gap: 1.25rem !important;
+    justify-content: center !important;
+  }
+
+  .footer-mini-links a {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.85rem !important;
   }
 
   /* -------------------------
@@ -816,23 +826,32 @@ img {
   .cart-item {
     display: flex !important;
     flex-direction: row !important;
-    align-items: flex-start !important;
+    align-items: stretch !important;
     padding: 1rem !important;
-    gap: 1rem !important;
+    gap: 0.95rem !important;
     border-radius: 14px !important;
   }
 
   .cart-item-img-wrap {
-    width: 80px !important;
-    height: 80px !important;
+    width: 95px !important;
+    min-width: 95px !important;
+    height: auto !important;
+    align-self: stretch !important;
     flex-shrink: 0 !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: rgba(4, 14, 28, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .cart-item-img-wrap .cart-img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    display: block !important;
   }
 
   .cart-item-details {

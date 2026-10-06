@@ -1864,12 +1864,14 @@ textarea::placeholder {
 
 .cart-item-img-wrap {
   flex-shrink: 0;
-  width: 85px;
-  height: 85px;
+  width: 105px;
+  min-width: 105px;
+  align-self: stretch;
+  min-height: 105px;
   border-radius: 12px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(4, 14, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1879,6 +1881,7 @@ textarea::placeholder {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .cart-item-details {
@@ -4129,39 +4132,44 @@ footer {
 .footer-bottom {
   position: relative;
   z-index: 1;
-  border-top: 1px solid rgba(148, 167, 255, 0.18);
-  background: rgba(92, 78, 255, 0.92);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #061121;
 }
 
 .footer-bottom-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 2rem;
+  gap: 1.25rem;
+  padding: 1.15rem 1.5rem;
   flex-wrap: wrap;
 }
 
 .footer-copy {
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin: 0;
 }
 
 .footer-mini-links {
   display: inline-flex;
-  gap: 1.1rem;
+  align-items: center;
+  gap: 1.25rem;
   flex-wrap: wrap;
 }
 
 .footer-mini-links a {
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  font-weight: 700;
-  opacity: 0.95;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .footer-mini-links a:hover {
-  opacity: 1;
+  color: #f97316;
   text-decoration: underline;
 }
 
