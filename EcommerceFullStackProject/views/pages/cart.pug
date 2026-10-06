@@ -1,65 +1,72 @@
 extends ../layout
 
 block content
-  .container
+  .container.cart-page-container
     nav.breadcrumbs
       a(href="/") Home
       span.sep /
       span Cart
-    h1(data-reveal="up") Your Shopping Cart
+    h1.page-title(data-reveal="up") Your Shopping Cart
 
     if !cart || cart.length === 0
-      .card(data-reveal="up")
-        .text-center
+      .card.empty-cart-card(data-reveal="up")
+        .text-center(style="padding: 2.5rem 1rem;")
+          .empty-cart-icon(style="font-size: 3rem; margin-bottom: 1rem;") 🛒
           h3 Your cart is empty
-          p(style="color: var(--gray); margin-bottom: 1.5rem;") No products added yet. Time to start shopping!
+          p(style="color: var(--muted); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto;") Looks like you haven't added any items to your cart yet. Time to explore our collection!
           a.btn(href="/shop") Continue Shopping
     else
       .cart-grid(data-stagger="80")
-        .card(data-reveal="up")
-          h3 Order Items (#{cart.length} item#{cart.length !== 1 ? 's' : ''})
-          each item in cart
-            .cart-item
-              .cart-left
-                img.cart-img(src=(item.image || '/images/placeholder.png'), alt=item.name)
-                .cart-info
-                  strong= item.name
-                  span.cart-sub 
-                    | $#{(item.price || 0).toFixed(2)} x #{item.quantity}
-              .cart-actions
-                form(action="/cart/update" method="POST" style="display: inline-flex; gap: 0.4rem; align-items: center;")
-                  input(type="hidden" name="productId" value=item._id)
-                  input(type="hidden" name="quantity" value=(item.quantity - 1))
-                  button.btn.btn-outline(type="submit" aria-label="Decrease quantity") -
-                span.cart-qty #{item.quantity}
-                form(action="/cart/update" method="POST" style="display: inline-flex; gap: 0.4rem; align-items: center;")
-                  input(type="hidden" name="productId" value=item._id)
-                  input(type="hidden" name="quantity" value=(item.quantity + 1))
-                  button.btn.btn-outline(type="submit" aria-label="Increase quantity") +
-                form(action="/cart/remove" method="POST" onsubmit="return confirm('Remove this item?')")
-                  input(type="hidden" name="productId" value=item._id)
-                  button.btn.btn-danger(type="submit" style="min-height: auto; padding: 0.5rem 1rem;") Remove
+        .card.cart-items-card(data-reveal="up")
+          .card-header-row(style="margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;")
+            h3(style="margin: 0;") Order Items (#{cart.length} item#{cart.length !== 1 ? 's' : ''})
+          .cart-items-list
+            each item in cart
+              .cart-item
+                .cart-item-img-wrap
+                  img.cart-img(src=imageUrl(item.image), alt=item.name, loading="lazy")
+                .cart-item-details
+                  .cart-item-top
+                    strong.cart-item-title= item.name
+                    span.cart-item-unit-price $#{(item.price || 0).toFixed(2)} each
+                  .cart-item-controls
+                    .qty-stepper
+                      form(action="/cart/update" method="POST")
+                        input(type="hidden" name="productId" value=item._id)
+                        input(type="hidden" name="quantity" value=(item.quantity - 1))
+                        button.qty-btn(type="submit" aria-label="Decrease quantity") −
+                      span.qty-value #{item.quantity}
+                      form(action="/cart/update" method="POST")
+                        input(type="hidden" name="productId" value=item._id)
+                        input(type="hidden" name="quantity" value=(item.quantity + 1))
+                        button.qty-btn(type="submit" aria-label="Increase quantity") +
+                    .cart-item-subtotal
+                      span.subtotal-label Total:
+                      strong.subtotal-amount $#{((item.price || 0) * item.quantity).toFixed(2)}
+                    form.cart-remove-form(action="/cart/remove" method="POST" onsubmit="return confirm('Remove this item from your cart?')")
+                      input(type="hidden" name="productId" value=item._id)
+                      button.btn-remove(type="submit" aria-label="Remove item")
+                        span.remove-icon ✕
+                        span.remove-text Remove
 
-        .card(data-reveal="up")
-          h3 Order Summary
-          .summary-item
-            span Subtotal
-            span $#{(total * 0.9).toFixed(2)}
-          .summary-item
-            span Delivery estimate
-            span 3-5 business days
-          .summary-item
-            span Shipping
-            span(style="color: var(--success);") FREE
-          .summary-item
-            span Tax
-            span $#{(total * 0.1).toFixed(2)}
-          .summary-total
-            span Total
-            span $#{total.toFixed(2)}
-          a.btn(href="/checkout" style="width: 100%; margin-top: 1.5rem; text-align: center;") Proceed to Checkout
-          a.btn.btn-outline(href="/shop" style="width: 100%; margin-top: 0.5rem; text-align: center;") Continue Shopping
-
-  if cart && cart.length > 0
-    .mobile-cta
-      a.btn(href="/checkout") Checkout
+        .card.cart-summary-card(data-reveal="up")
+          h3.summary-card-title Order Summary
+          .summary-list
+            .summary-item
+              span Subtotal
+              strong $#{(total * 0.9).toFixed(2)}
+            .summary-item
+              span Estimated Tax (10%)
+              span $#{(total * 0.1).toFixed(2)}
+            .summary-item
+              span Shipping
+              span.badge.badge-trust FREE
+            .summary-item
+              span Delivery estimate
+              span.text-muted 3–5 business days
+            .summary-total
+              span Total
+              strong.total-price $#{total.toFixed(2)}
+          .summary-actions
+            a.btn.btn-checkout(href="/checkout") Proceed to Checkout →
+            a.btn.btn-outline(href="/shop") Continue Shopping
