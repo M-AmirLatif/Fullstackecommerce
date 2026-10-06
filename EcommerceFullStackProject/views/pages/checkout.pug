@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-  .container(style="padding: 1.5rem 1rem;")
+  .container(style="padding: 1.5rem 1rem; max-width: 1100px;")
     nav.breadcrumbs
       a(href="/") Home
       span.sep /
@@ -60,8 +60,8 @@ block content
                 label(for="country") 🇵🇰 Country
                 input#country(type="text" name="country" placeholder="Pakistan" value="Pakistan")
             
-            .step-actions(style="margin-top: 1.5rem;")
-              button.btn(type="button" data-step-next="2" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") Continue to Payment ➔
+            .step-actions(style="margin-top: 1.5rem; display: flex; width: 100%;")
+              button.btn(type="button" data-step-next="2" style="width: 100%; justify-content: center; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700; padding: 0.85rem;") Continue to Payment ➔
 
           // Step 2: Payment
           .checkout-step(data-step="2")
@@ -74,7 +74,7 @@ block content
                     span Cash On Delivery & Demo Payment (Auto-Approved)
                   p(style="margin: 0.5rem 0 0; color: rgba(255,255,255,0.8); font-size: 0.9rem;") Instant confirmation with free express shipping across Pakistan. No card required for demo orders.
             
-            .payment-grid(style="margin-top: 1rem;")
+            .payment-grid(style="margin-top: 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;")
               .form-group
                 label(for="cardName") Cardholder Name (Optional)
                 input#cardName(type="text" name="cardName" placeholder="John Doe" autocomplete="cc-name")
@@ -82,9 +82,9 @@ block content
                 label(for="cardNumber") Card Number (Optional)
                 input#cardNumber(type="text" name="cardNumber" placeholder="4242 •••• •••• 4242" inputmode="numeric")
             
-            .step-actions(style="margin-top: 1.5rem; display: flex; gap: 0.75rem;")
-              button.btn.btn-outline(type="button" data-step-prev="1") ⬅ Back to Shipping
-              button.btn(type="button" data-step-next="3" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") Review Order ➔
+            .step-actions(style="margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;")
+              button.btn.btn-outline(type="button" data-step-prev="1" style="justify-content: center;") ⬅ Back
+              button.btn(type="button" data-step-next="3" style="justify-content: center; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") Review Order ➔
 
           // Step 3: Review
           .checkout-step(data-step="3")
@@ -92,9 +92,9 @@ block content
               h3(style="margin-top: 0; margin-bottom: 0.5rem; color: #fff;") ✅ Ready to Place Order
               p(style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.92rem;") Please verify your cart total and click the button below to confirm your order.
             
-            .step-actions(style="display: flex; gap: 0.75rem;")
-              button.btn.btn-outline(type="button" data-step-prev="2") ⬅ Back to Payment
-              button.btn(type="submit" style="flex: 1; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 800; font-size: 1.05rem; padding: 0.85rem;") 🚀 Place Order Now
+            .step-actions(style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.75rem;")
+              button.btn.btn-outline(type="button" data-step-prev="2" style="justify-content: center;") ⬅ Back
+              button.btn(type="submit" style="justify-content: center; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 800; font-size: 1.05rem; padding: 0.85rem;") 🚀 Place Order Now
       
       .checkout-summary(data-reveal="up")
         h2 Order Summary
@@ -124,9 +124,5 @@ block content
           span 🚚 2-4 Day Delivery
           span 💬 24/7 AI Support
 
-  if cart && cart.length > 0
-    .mobile-cta
-      button.btn(type="button" data-submit-target="#checkout-form" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 800;") 🚀 Place Order Now
-
 block scripts
-  script(src="/js/checkout-steps.js?v=20261007-tech-v14")
+  script(src="/js/checkout-steps.js?v=20261007-tech-v15")
