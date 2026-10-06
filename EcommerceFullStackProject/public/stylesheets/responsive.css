@@ -482,6 +482,18 @@ img {
 }
 
 @media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
+  /* Compact 1-line top announcement strip on mobile */
+  .top-announcement-bar {
+    padding: 0.35rem 0.65rem !important;
+  }
+
+  .top-announcement-bar .announcement-desktop,
   .top-announcement-bar .announcement-right {
     display: none !important;
   }
@@ -489,43 +501,134 @@ img {
   .announcement-inner {
     justify-content: center !important;
     text-align: center !important;
+    width: 100% !important;
+  }
+
+  .announcement-mobile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .announcement-mobile-text {
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  /* Compact & Non-Overflowing Header Navbar */
+  .site-header {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
   }
 
   .header-main-container {
-    padding: 0.75rem 1rem !important;
-    gap: 0.75rem !important;
+    padding: 0.55rem 0.85rem !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+  }
+
+  .brand {
+    gap: 0.5rem !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
   }
 
   .brand-logo-wrap {
-    width: 38px !important;
-    height: 38px !important;
+    width: 34px !important;
+    height: 34px !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.4) !important;
   }
 
   .brand-name {
-    font-size: 1.15rem !important;
+    font-size: 1.05rem !important;
+    white-space: nowrap !important;
   }
 
   .brand-pk {
-    font-size: 1.15rem !important;
+    font-size: 1.05rem !important;
   }
 
   .brand-motto {
-    font-size: 0.6rem !important;
+    font-size: 0.56rem !important;
+    white-space: nowrap !important;
   }
 
+  .header-actions {
+    gap: 0.45rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Sleek Cart Capsule on Mobile */
   .cart-pill-btn {
-    padding: 0.45rem 0.85rem !important;
-    font-size: 0.85rem !important;
+    padding: 0.42rem 0.72rem !important;
+    font-size: 0.82rem !important;
+    gap: 0.35rem !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 2px 10px rgba(249, 115, 22, 0.35) !important;
+  }
+
+  .cart-pill-btn .cart-label {
+    display: none !important;
+  }
+
+  .cart-counter {
+    min-width: 18px !important;
+    height: 18px !important;
+    font-size: 0.68rem !important;
+    padding: 0 4px !important;
+  }
+
+  .nav-toggle-btn {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 6px !important;
+    flex-shrink: 0 !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  }
+
+  /* Category Subnav Scrolling Chips */
+  .category-subnav {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+    background: rgba(5, 12, 22, 0.95) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
   .category-subnav-container {
-    padding: 0.4rem 0.75rem !important;
+    padding: 0.45rem 0.85rem !important;
     gap: 0.45rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .subnav-link {
-    font-size: 0.8rem !important;
-    padding: 0.35rem 0.7rem !important;
+    font-size: 0.78rem !important;
+    padding: 0.32rem 0.72rem !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    flex-shrink: 0 !important;
+  }
+
+  .subnav-link.active {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.3) 0%, rgba(234, 88, 12, 0.3) 100%) !important;
+    border-color: #f97316 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.3) !important;
   }
 
   /* ✅ Generous & Balanced Hero Margins on Mobile */
@@ -533,7 +636,7 @@ img {
   .hero.hero-showcase {
     width: calc(100% - 1.5rem) !important;
     max-width: 100% !important;
-    margin: 1.15rem auto 2rem !important;
+    margin: 1.15rem auto 1.75rem !important;
     padding: 1.6rem 1.15rem !important;
     border-radius: 20px !important;
     box-sizing: border-box !important;
@@ -611,9 +714,24 @@ img {
 
   /* Global Containers & Cards Spacing */
   .container {
-    width: 100% !important;
+    width: calc(100% - 1.5rem) !important;
     max-width: 100% !important;
-    padding: 1rem 1rem 2.5rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 0 2rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .filter-card {
+    border-radius: 18px !important;
+    padding: 1.25rem 1rem !important;
+    margin-bottom: 1.25rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .breadcrumbs {
+    border-radius: 10px !important;
+    margin: 0.35rem 0 1rem !important;
     box-sizing: border-box !important;
   }
 }

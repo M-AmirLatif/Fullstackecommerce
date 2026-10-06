@@ -97,6 +97,10 @@ h3 {
   gap: 0.65rem;
 }
 
+.announcement-mobile {
+  display: none;
+}
+
 .announcement-badge {
   background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
   color: #fff;
