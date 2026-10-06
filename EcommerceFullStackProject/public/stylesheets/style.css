@@ -1199,20 +1199,75 @@ footer p {
   transform: translateY(-2px);
 }
 
-/* Trend Chips */
+/* Modern Popular Categories Capsule */
+.hero-popular-capsule {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.popular-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.popular-fire {
+  font-size: 0.95rem;
+  color: #f97316;
+}
+
+.popular-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.popular-grid {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 0.6rem;
+  width: fit-content;
+}
+
+.popular-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.48rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.popular-card .pop-icon {
+  font-size: 0.95rem;
+}
+
+.popular-card:hover {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(234, 88, 12, 0.15) 100%);
+  border-color: #f97316;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+}
+
+/* Fallback for trend chips */
 .hero-trend-chips {
   display: flex;
   align-items: center;
   gap: 0.65rem;
   flex-wrap: wrap;
-}
-
-.chips-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.55);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
 .trend-chip {

@@ -167,6 +167,30 @@ img {
     text-align: center !important;
   }
 
+  /* Popular Categories Mobile 2x2 Grid */
+  .hero-popular-capsule {
+    align-items: center !important;
+    margin-top: 0.5rem !important;
+  }
+
+  .popular-header {
+    justify-content: center !important;
+  }
+
+  .popular-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.55rem !important;
+    width: 100% !important;
+    max-width: 380px !important;
+  }
+
+  .popular-card {
+    justify-content: center !important;
+    padding: 0.55rem 0.75rem !important;
+    font-size: 0.82rem !important;
+  }
+
   .filter-card {
     margin-top: 0 !important;
   }
@@ -331,30 +355,35 @@ img {
     padding: 1rem !important;
   }
 
-  .admin-content th,
-  .admin-content td {
-    padding: 0.65rem 0.6rem !important;
-    font-size: 0.82rem !important;
-    white-space: nowrap;
-    vertical-align: middle;
+  .admin-content .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
   }
 
-  .admin-content td:first-child,
-  .admin-content th:first-child {
-    position: sticky;
-    left: 0;
-    background: inherit;
-    z-index: 1;
+  .admin-content .table-container table {
+    min-width: 640px !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .admin-content th,
+  .admin-content td {
+    padding: 0.75rem 0.85rem !important;
+    font-size: 0.84rem !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    position: static !important;
   }
 
   .action-buttons {
-    gap: 0.35rem !important;
-    align-items: flex-start !important;
+    gap: 0.4rem !important;
+    align-items: center !important;
   }
 
   .action-buttons .btn {
-    font-size: 0.78rem !important;
-    padding: 0.45rem 0.7rem !important;
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.75rem !important;
   }
 }
 

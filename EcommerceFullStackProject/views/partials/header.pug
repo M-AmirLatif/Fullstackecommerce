@@ -109,6 +109,15 @@ header.site-header
   // Mobile Slide-Down Drawer
   .mobile-drawer#mobileDrawer
     .mobile-drawer-content
+      .mobile-drawer-brand(style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.08);")
+        .brand-logo-wrap(style="width: 36px; height: 36px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(249, 115, 22, 0.45); flex-shrink: 0;")
+          img(src="/images/logo.png" alt="Tech Innovation Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #000;")
+        .brand-text-group
+          .brand-title(style="display: flex; align-items: baseline; gap: 0.15rem; line-height: 1.1;")
+            span.brand-name(style="font-size: 1.1rem; font-weight: 900; color: #fff;") Tech Innovation
+            span.brand-pk(style="color: #f97316; font-size: 1.1rem; font-weight: 900;") .pk
+          span.brand-motto(style="font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6);") We Deliver Best
+
       form.mobile-drawer-search(action="/shop" method="GET")
         input(type="search" name="q" placeholder="Search gadgets, accessories..." autocomplete="off")
         button.btn(type="submit") Search

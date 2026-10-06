@@ -38,12 +38,23 @@ block content
             span.btn-fire 🔥
             span.btn-text Flash Deals (Up to 30% Off)
 
-        .hero-trend-chips(data-reveal="up" data-reveal-delay="230")
-          span.chips-label Popular:
-          a.trend-chip(href='/shop?sort=newest') ✨ New Arrivals
-          a.trend-chip(href='/shop?category=Smartphones') 📱 Smartphones
-          a.trend-chip(href='/shop?category=Audio') 🎧 Audio
-          a.trend-chip(href='/shop?sort=rating') ⭐ Top Rated
+        .hero-popular-capsule(data-reveal="up" data-reveal-delay="230")
+          .popular-header
+            span.popular-fire ⚡
+            span.popular-title Popular Categories:
+          .popular-grid
+            a.popular-card(href='/shop?category=Smartphones')
+              span.pop-icon 📱
+              span.pop-label Smartphones
+            a.popular-card(href='/shop?category=Audio')
+              span.pop-icon 🎧
+              span.pop-label Audio & Sound
+            a.popular-card(href='/shop?category=Wearables')
+              span.pop-icon ⌚
+              span.pop-label Smartwatches
+            a.popular-card(href='/shop?sort=rating')
+              span.pop-icon ⭐
+              span.pop-label Top Rated
 
       .hero-right(data-reveal="up" data-reveal-delay="140")
         .hero-glass-card
