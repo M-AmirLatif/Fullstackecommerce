@@ -113,27 +113,35 @@ async function chatWithAssistant(question, sessionContext = []) {
     )
     .join('\n')
 
-  const prompt = `You are a helpful, premium AI shopping assistant for our ecommerce store.
-Ground truth product catalog:
+  const prompt = `You are a helpful, courteous, and smart AI Shopping Assistant for "Tech Innovation Store" (Tech Innovation.pk - "We Deliver Best").
+Available product catalog:
 ${productContext}
 
-Customer Question: "${question}"
+Customer message: "${question}"
 
 Instructions:
-1. Answer the customer directly, politely, and warmly in 2-4 sentences.
-2. Recommend or mention 1 to 3 relevant products from the catalog above with their names and exact prices.
-3. If the user asks about availability, colors, features, or prices, answer accurately using the data provided.
-4. End with a helpful short follow-up.`
+1. Understand the customer's intent naturally:
+   - If they are saying "Thanks", "Thank you", acknowledge warmly and politely (e.g., "You're very welcome! Let me know if you need anything else or want product advice.").
+   - If they say "Ok", "Okay", "Great", "Nice", "Cool", respond pleasantly and offer to help them explore any deals or gadget specs.
+   - If they are greeting ("Hi", "Hello", "Hey"), greet them warmly and ask how you can assist with our tech collection today.
+   - If they ask about specific products, categories, prices, stock, or recommendations, answer accurately with details from the catalog above.
+2. Keep your response conversational, concise (2 to 4 sentences), and natural.
+3. Do NOT repeat generic introductory greetings when acknowledging 'Ok' or 'Thanks'.`
 
   let answer = ''
   try {
     answer = await callGemini(prompt)
   } catch (err) {
     console.error('Gemini Assistant Fallback:', err.message)
-    if (products.length > 0) {
+    const lower = String(question || '').toLowerCase()
+    if (lower.includes('thank')) {
+      answer = "You're very welcome! Feel free to ask if you need any more recommendations or details on our products."
+    } else if (['ok', 'okay', 'great', 'nice', 'cool'].some(w => lower.includes(w))) {
+      answer = "Awesome! What kind of gadgets or deals would you like to check out today?"
+    } else if (products.length > 0) {
       answer = `Here are our top recommended products matching your inquiry: ${products.slice(0, 3).map((p) => `${p.name} ($${p.price})`).join(', ')}. Let me know if you would like more details!`
     } else {
-      answer = `I'm here to help you find the best items in our store! Browse our shop or search for any product name.`
+      answer = `Welcome to Tech Innovation Store! Ask me about any gadgets, specs, prices, or recommendations.`
     }
   }
 

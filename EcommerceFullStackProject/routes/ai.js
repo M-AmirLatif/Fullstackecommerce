@@ -25,13 +25,6 @@ router.post('/ai/chat', async (req, res) => {
       return res.status(400).json({ error: 'Question is required.' })
     }
 
-    if (isSmallTalk(question)) {
-      return res.json({
-        answer: "Hello! I'm your AI shopping assistant. Ask me about any products, prices, specifications, or recommendations.",
-        products: req.session?.aiChatState?.lastProducts || [],
-      })
-    }
-
     let questionForAi = question
     const lastProducts = req.session?.aiChatState?.lastProducts || []
     if (isShortFollowUp(question) && lastProducts.length) {
