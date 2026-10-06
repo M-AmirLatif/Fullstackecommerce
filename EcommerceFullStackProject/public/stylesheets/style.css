@@ -4543,20 +4543,43 @@ footer {
 }
 
 .assistant-message {
-  padding: 0.7rem 0.9rem;
+  padding: 0.75rem 0.95rem;
   border-radius: 12px;
   font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.assistant-message strong {
+  color: #f97316;
+  font-weight: 700;
+}
+
+.assistant-bullet {
+  margin: 0.25rem 0;
+  padding-left: 0.25rem;
   line-height: 1.4;
+}
+
+.assistant-spacer {
+  height: 0.5rem;
+}
+
+.assistant-loading {
+  font-style: italic;
+  opacity: 0.8;
 }
 
 .assistant-bot {
   background: rgba(124, 92, 255, 0.18);
   color: var(--text);
+  border: 1px solid rgba(148, 167, 255, 0.15);
 }
 
 .assistant-user {
-  background: rgba(34, 197, 255, 0.18);
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.25) 0%, rgba(234, 88, 12, 0.25) 100%);
   color: var(--text);
+  border: 1px solid rgba(249, 115, 22, 0.35);
   align-self: flex-end;
 }
 
