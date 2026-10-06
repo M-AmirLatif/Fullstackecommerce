@@ -33,6 +33,9 @@ img {
 
   .admin-mobile-bar {
     display: flex !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
   }
 
   .admin-content {
@@ -317,6 +320,9 @@ img {
 
   .admin-mobile-bar {
     display: flex !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
   }
 
   .admin-content {
