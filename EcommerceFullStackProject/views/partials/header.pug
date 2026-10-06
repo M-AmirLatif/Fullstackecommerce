@@ -53,7 +53,7 @@ header.site-header
         if user
           .user-menu-pill
             span.user-avatar 👤
-            span.user-name= user.name.split(' ')[0]
+            span.user-name= (user && user.name) ? String(user.name).split(' ')[0] : 'Account'
             form.header-logout-form(action="/logout" method="POST")
               button.btn-logout-icon(type="submit" title="Log Out") 🚪
         else
@@ -130,7 +130,7 @@ header.site-header
           if user
             .mobile-user-card
               span.avatar 👤
-              span.name Logged in as #{user.name}
+              span.name Logged in as #{(user && user.name) ? user.name : (user && user.email) ? user.email : 'User'}
             if user.role === 'admin'
               a.drawer-link(href="/admin") 🛡️ Admin Dashboard
             else
