@@ -206,10 +206,16 @@ router.get('/', cacheRender(60 * 1000), async (req, res) => {
 })
 
 router.get('/login', (req, res) => {
+  if (req.session?.user) {
+    return res.redirect(req.session.user.role === 'admin' ? '/admin' : '/')
+  }
   res.render('pages/login')
 })
 
 router.get('/register', (req, res) => {
+  if (req.session?.user) {
+    return res.redirect(req.session.user.role === 'admin' ? '/admin' : '/')
+  }
   res.render('pages/register')
 })
 

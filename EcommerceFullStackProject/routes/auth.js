@@ -326,9 +326,15 @@ router.post('/register/verify', async (req, res) => {
     })
     await PendingSignup.deleteOne({ _id: pending._id })
 
-    req.session.user = { id: user._id, email: user.email, role: user.role }
+    req.session.user = {
+      id: String(user._id),
+      email: user.email,
+      name: user.name || (user.email ? user.email.split('@')[0] : 'User'),
+      role: user.role,
+    }
     req.session.flash = { type: 'success', text: 'Account created successfully.' }
-    return res.redirect('/')
+    await new Promise((resolve) => req.session.save(resolve))
+    return res.redirect(303, '/')
   } catch (err) {
     console.error('REGISTER VERIFY ERROR:', err)
     req.session.flash = { type: 'error', text: 'Failed to verify OTP. Please try again.' }
@@ -531,8 +537,15 @@ router.post('/login', async (req, res) => {
     }
 
     clearLoginFailures(ip, email)
-    req.session.user = { id: user._id, email: user.email, role: user.role }
-    req.session.flash = { type: 'success', text: 'Logged in successfully.' }
+    req.session.user = {
+      id: String(user._id),
+      email: user.email,
+      name: user.name || (user.email ? user.email.split('@')[0] : 'User'),
+      role: user.role,
+    }
+    req.session.flash = { type: 'success', text: `Welcome back, ${user.name || 'User'}!` }
+
+    await new Promise((resolve) => req.session.save(resolve))
 
     // Force GET after login form POST (some clients may preserve POST on 302)
     return res.redirect(303, getSafePostLoginRedirect(req, user))
@@ -549,12 +562,12 @@ router.post('/login', async (req, res) => {
 // =========================
 // LOGOUT
 // =========================
-router.post('/logout', (req, res) => {
+router.all('/logout', (req, res) => {
   req.session.destroy(() => {
-    req.session = null
-    res.redirect('/login')
+    res.clearCookie('tech_session')
+    res.clearCookie('connect.sid')
+    return res.redirect('/login')
   })
 })
-
 
 module.exports = router

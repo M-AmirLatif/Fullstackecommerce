@@ -35,6 +35,9 @@ const sessionStore = process.env.MONGO_URI
   ? MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       collectionName: 'sessions',
+      ttl: 30 * 24 * 60 * 60, // 30 days
+      touchAfter: 24 * 3600, // lazy session update once per 24 hours
+      autoRemove: 'native',
     })
   : undefined
 
@@ -81,14 +84,18 @@ app.use(mongoSanitize())
 // ✅ SESSION MUST COME BEFORE ANY ROUTES
 app.use(
   session({
+    name: 'tech_session',
     secret: process.env.SESSION_SECRET || 'dev_secret_123',
     resave: false,
     saveUninitialized: false,
+    rolling: true,
+    proxy: process.env.NODE_ENV === 'production',
     store: sessionStore,
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days persistent session
     },
   }),
 )
