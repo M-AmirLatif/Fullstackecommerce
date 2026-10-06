@@ -31,7 +31,7 @@ html(lang="en")
         a.admin-mobile-link(href="/admin/products" class=(currentPath === '/admin/products' ? 'active' : '')) 📦 Products
         a.admin-mobile-link(href="/admin/products/add" class=(currentPath === '/admin/products/add' ? 'active' : '')) ➕ Add
         a.admin-mobile-link(href="/admin/orders" class=(currentPath === '/admin/orders' ? 'active' : '')) 📋 Orders
-        a.admin-mobile-link(href="/") 🏠 Store
+        a.admin-mobile-link(href="/" target="_blank" rel="noopener noreferrer") 🏠 Store ↗
 
     .admin-layout
       // Sidebar Section (Desktop)
@@ -59,11 +59,11 @@ html(lang="en")
             span.nav-label Products List
           a.nav-item(href="/admin/products/add" class=(currentPath === '/admin/products/add' ? 'active' : ''))
             span.nav-icon ➕
-            span.nav-label Add New Product
+            span.nav-label Add Product
           a.nav-item(href="/admin/orders" class=(currentPath === '/admin/orders' ? 'active' : ''))
             span.nav-icon 📋
-            span.nav-label Orders Management
-          a.nav-item(href="/" target="_blank" rel="noopener")
+            span.nav-label Orders
+          a.nav-item(href="/" target="_blank" rel="noopener noreferrer")
             span.nav-icon 🏠
             span.nav-label View Live Store ↗
         

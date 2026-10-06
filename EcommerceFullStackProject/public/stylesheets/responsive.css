@@ -39,11 +39,15 @@ img {
     padding: 1.25rem 1rem !important;
     width: 100% !important;
     min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
   }
 
   .admin-content .table-container {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .admin-content .table-container table {
@@ -317,6 +321,10 @@ img {
 
   .admin-content {
     padding: 0.9rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
   }
 
   .admin-header {

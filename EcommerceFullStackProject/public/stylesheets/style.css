@@ -2494,22 +2494,40 @@ textarea::placeholder {
 /* Desktop Admin Layout */
 .admin-layout {
   display: grid;
-  grid-template-columns: 270px 1fr;
+  grid-template-columns: 260px minmax(0, 1fr);
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .admin-sidebar {
   background: #071526;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 1.75rem 1.25rem;
+  padding: 1.5rem 1.15rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   position: sticky;
   top: 0;
   height: 100vh;
   box-sizing: border-box;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.admin-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
 }
 
 .admin-sidebar-header {
@@ -2622,6 +2640,11 @@ textarea::placeholder {
   border-radius: 12px;
   transition: all 0.2s ease;
   border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.admin-nav .nav-label {
+  white-space: nowrap;
 }
 
 .admin-nav .nav-item:hover {
@@ -2665,22 +2688,26 @@ textarea::placeholder {
 
 /* Admin Main Content */
 .admin-content {
-  padding: 2.5rem;
-  max-width: 1400px;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .admin-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 1rem;
+  width: 100%;
 }
 
 .admin-header h1 {
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
   color: #ffffff;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -2804,15 +2831,37 @@ textarea::placeholder {
   background: rgba(8, 22, 40, 0.9);
   border-radius: 14px;
   overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.4) rgba(255, 255, 255, 0.05);
+}
+
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.4);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 680px;
 }
 
 thead {
