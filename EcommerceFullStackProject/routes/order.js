@@ -4,10 +4,24 @@ const mongoose = require('mongoose')
 
 const Order = require('../models/order')
 
-// Order confirmation page - handles /order-confirmation, /order-confirmation/:id, /order/:id
-router.get(['/order-confirmation', '/order-confirmation/:id', '/order/:id'], async (req, res) => {
+// Order confirmation & tracking - handles all URL variants (/order, /order-confirmation, /order/:id, /orders/:id, /checkout/success, /track-order, etc.)
+router.get([
+  '/order-confirmation',
+  '/order-confirmation/:id',
+  '/order',
+  '/order/:id',
+  '/orders/:id',
+  '/order-success',
+  '/order-success/:id',
+  '/checkout/success',
+  '/checkout/success/:id',
+  '/checkout-success',
+  '/checkout-success/:id',
+  '/track-order',
+  '/track-order/:id',
+], async (req, res) => {
   try {
-    const rawId = req.params.id || req.query.id || req.session.lastOrderId
+    const rawId = req.params.id || req.query.id || req.session?.lastOrderId
     let order = null
 
     if (rawId && mongoose.Types.ObjectId.isValid(String(rawId))) {
@@ -38,8 +52,8 @@ router.get(['/order-confirmation', '/order-confirmation/:id', '/order/:id'], asy
   }
 })
 
-// Customer's Orders History
-router.get('/orders', async (req, res) => {
+// Customer's Orders History / Account Hub
+router.get(['/orders', '/my-orders', '/account', '/account/orders', '/profile'], async (req, res) => {
   try {
     if (req.session?.user?.role === 'admin') {
       return res.redirect('/admin/orders')

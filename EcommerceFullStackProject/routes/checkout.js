@@ -28,6 +28,9 @@ const getTotalAmount = (items) =>
 // GET checkout page
 router.get('/checkout', (req, res) => {
   const cart = req.session.cart || []
+  if (cart.length === 0 && req.session.lastOrderId) {
+    return res.redirect(`/order-confirmation/${req.session.lastOrderId}`)
+  }
   const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0)
   if (!req.session.checkoutToken) req.session.checkoutToken = crypto.randomUUID()
   return res.render('pages/checkout', { cart, total, checkoutToken: req.session.checkoutToken })
