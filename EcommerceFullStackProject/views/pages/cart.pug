@@ -27,9 +27,15 @@ block content
                   img.cart-img(src=imageUrl(item.image), alt=item.name, loading="lazy")
                 .cart-item-details
                   .cart-item-top
-                    strong.cart-item-title= item.name
-                    span.cart-item-unit-price $#{(item.price || 0).toFixed(2)} each
-                  .cart-item-controls
+                    .cart-item-meta
+                      strong.cart-item-title= item.name
+                      span.cart-item-unit-price $#{(item.price || 0).toFixed(2)} each
+                    form.cart-remove-form(action="/cart/remove" method="POST" onsubmit="return confirm('Remove this item from your cart?')")
+                      input(type="hidden" name="productId" value=item._id)
+                      button.btn-remove(type="submit" title="Remove item" aria-label="Remove item")
+                        span.remove-icon 🗑️
+                        span.remove-text Remove
+                  .cart-item-bottom
                     .qty-stepper
                       form(action="/cart/update" method="POST")
                         input(type="hidden" name="productId" value=item._id)
@@ -43,11 +49,6 @@ block content
                     .cart-item-subtotal
                       span.subtotal-label Total:
                       strong.subtotal-amount $#{((item.price || 0) * item.quantity).toFixed(2)}
-                    form.cart-remove-form(action="/cart/remove" method="POST" onsubmit="return confirm('Remove this item from your cart?')")
-                      input(type="hidden" name="productId" value=item._id)
-                      button.btn-remove(type="submit" aria-label="Remove item")
-                        span.remove-icon ✕
-                        span.remove-text Remove
 
         .card.cart-summary-card(data-reveal="up")
           h3.summary-card-title Order Summary
