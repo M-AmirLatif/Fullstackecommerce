@@ -2493,12 +2493,9 @@ textarea::placeholder {
 
 /* Desktop Admin Layout */
 .admin-layout {
-  display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  display: block;
   min-height: 100vh;
   width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
 }
 
 .admin-sidebar {
@@ -2508,11 +2505,15 @@ textarea::placeholder {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
   height: 100vh;
   box-sizing: border-box;
   overflow-y: auto;
+  z-index: 500;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
@@ -2688,12 +2689,11 @@ textarea::placeholder {
 
 /* Admin Main Content */
 .admin-content {
+  margin-left: 260px;
   padding: 2rem 2.5rem;
-  width: 100%;
+  width: calc(100% - 260px);
   min-width: 0;
-  max-width: 100%;
   box-sizing: border-box;
-  overflow-x: hidden;
 }
 
 .admin-header {

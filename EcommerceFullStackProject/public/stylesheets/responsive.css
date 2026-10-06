@@ -39,6 +39,7 @@ img {
   }
 
   .admin-content {
+    margin-left: 0 !important;
     padding: 1.25rem 1rem !important;
     width: 100% !important;
     min-width: 0 !important;
@@ -326,6 +327,7 @@ img {
   }
 
   .admin-content {
+    margin-left: 0 !important;
     padding: 0.9rem !important;
     width: 100% !important;
     min-width: 0 !important;
