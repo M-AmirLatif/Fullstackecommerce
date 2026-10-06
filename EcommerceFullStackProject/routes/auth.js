@@ -144,6 +144,10 @@ const getSafePostLoginRedirect = (req, user) => {
     return fallback
   }
 
+  if (candidate.startsWith('/admin') && user?.role !== 'admin') {
+    return '/'
+  }
+
   return candidate
 }
 
