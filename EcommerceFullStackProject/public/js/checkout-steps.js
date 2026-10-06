@@ -4,7 +4,20 @@
   const indicators = Array.from(document.querySelectorAll('.checkout-steps .step'))
   if (!steps.length) return
 
-  const setStep = (target) => {
+  const scrollToCheckoutTop = () => {
+    const targetEl = document.querySelector('.checkout-steps') || document.querySelector('.checkout-container') || form
+    if (targetEl) {
+      const topOffset = targetEl.getBoundingClientRect().top + window.pageYOffset - 90
+      window.scrollTo({
+        top: Math.max(0, topOffset),
+        behavior: 'smooth',
+      })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  const setStep = (target, shouldScroll = true) => {
     steps.forEach((step) => {
       const isActive = step.getAttribute('data-step') === String(target)
       step.classList.toggle('active', isActive)
@@ -13,9 +26,14 @@
       const isActive = indicator.getAttribute('data-step') === String(target)
       indicator.classList.toggle('active', isActive)
     })
+
+    if (shouldScroll) {
+      // Small timeout ensures DOM layout reflow has completed before scrolling
+      setTimeout(scrollToCheckoutTop, 30)
+    }
   }
 
-  setStep(1)
+  setStep(1, false)
 
   document.querySelectorAll('[data-step-next]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -34,13 +52,13 @@
         }
       }
 
-      setStep(targetStep)
+      setStep(targetStep, true)
     })
   })
 
   document.querySelectorAll('[data-step-prev]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      setStep(btn.getAttribute('data-step-prev'))
+      setStep(btn.getAttribute('data-step-prev'), true)
     })
   })
 })()
