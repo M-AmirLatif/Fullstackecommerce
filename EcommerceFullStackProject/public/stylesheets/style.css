@@ -2051,27 +2051,6 @@ textarea::placeholder {
   font-weight: 800;
   font-size: 1.15rem;
 }
-  color: var(--text);
-}
-
-.cart-item:hover {
-  background-color: var(--surface);
-  box-shadow: none;
-}
-
-.cart-left {
-  display: flex;
-  gap: 1.5rem;
-  flex: 1;
-  align-items: center;
-}
-
-.cart-img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 8px;
-}
 
 .cart-info {
   display: flex;
