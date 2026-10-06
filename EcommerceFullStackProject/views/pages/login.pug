@@ -23,20 +23,29 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/login" method="POST" autocomplete="off")
+        form.auth-form(action="/login" method="POST" autocomplete="on")
+          if csrfToken
+            input(type="hidden" name="_csrf" value=csrfToken)
+
           .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="off")
+            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="username email")
 
           .auth-field
             label(for="password") 🔐 Password
-            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password")
+            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="current-password")
 
           p.auth-bottom(style="margin-top: -0.35rem; margin-bottom: 0.6rem;")
             a(href="/forgot-password") Forgot password?
 
           button.auth-submit(type="submit") 🔓 Sign In
 
-        p.auth-bottom
+        .quick-login-hints(style="margin-top: 1.25rem; padding: 0.85rem; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 12px;")
+          p(style="margin: 0 0 0.5rem 0; font-size: 0.78rem; color: rgba(255,255,255,0.7); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;") ⚡ Quick Select Saved Account:
+          .hints-btns(style="display: flex; gap: 0.5rem; flex-wrap: wrap;")
+            button.btn.btn-outline(type="button" onclick="document.getElementById('email').value='admin123@gmail.com';document.getElementById('password').value='admin123';" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 8px;") 🛡️ Admin (admin123@gmail.com)
+            button.btn.btn-outline(type="button" onclick="document.getElementById('email').value='amirlatif2288@gmail.com';document.getElementById('password').value='123456';" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 8px;") 👤 Customer (amirlatif2288@gmail.com)
+
+        p.auth-bottom(style="margin-top: 1rem;")
           | Don't have an account? 
           a(href="/register") Create One

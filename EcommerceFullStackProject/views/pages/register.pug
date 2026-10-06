@@ -24,14 +24,17 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/register/start" method="POST" autocomplete="off")
+        form.auth-form(action="/register/start" method="POST" autocomplete="on")
+          if csrfToken
+            input(type="hidden" name="_csrf" value=csrfToken)
+
           .auth-field
             label(for="name") 👤 Full Name
-            input#name(type="text" name="name" placeholder="John Doe" required)
+            input#name(type="text" name="name" placeholder="John Doe" required autocomplete="name")
 
           .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="off")
+            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="email")
 
           .auth-field
             label(for="password") 🔐 Password
