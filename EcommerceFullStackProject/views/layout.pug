@@ -3,16 +3,17 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    meta(name="description" content="E-Shop - Your Ultimate Online Store for Quality Products")
+    meta(name="description" content="Tech Innovation Store (Tech Innovation.pk) - We Deliver Best. Premium Electronics, Smart Gadgets & Tech Accessories.")
     meta(name="theme-color" content="#0b1f36")
     if csrfToken
       meta(name="csrf-token" content=csrfToken)
-    title E-Shop - Your Ultimate Online Store
+    title Tech Innovation Store - We Deliver Best
+    link(rel="icon" type="image/png" href="/images/favicon.png")
     link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap")
-    link(rel="stylesheet", href="/stylesheets/style.css?v=20261006-mobile-polish")
-    link(rel="stylesheet", href="/stylesheets/responsive.css?v=20261006-mobile-polish")
+    link(rel="stylesheet", href="/stylesheets/style.css?v=20261006-tech-v2")
+    link(rel="stylesheet", href="/stylesheets/responsive.css?v=20261006-tech-v2")
 
   body
     include partials/header
@@ -27,15 +28,15 @@ html(lang="en")
     include partials/footer
 
     .assistant-widget
-      button.assistant-toggle(type="button") Chat
+      button.assistant-toggle(type="button" aria-label="AI Shopping Assistant") 💬 AI Assistant
       .assistant-panel
         .assistant-header
-          span Shop Assistant
+          span ⚡ Tech Innovation Assistant
           button.assistant-close(type="button") Close
         .assistant-messages
-          .assistant-message.assistant-bot Ask me about products, pricing, or gifting ideas.
+          .assistant-message.assistant-bot Welcome to Tech Innovation Store! Ask me about any gadgets, specs, prices, or recommendations.
         form.assistant-form
-          input.assistant-input(type="text" name="question" placeholder="Ask about products..." autocomplete="off")
+          input.assistant-input(type="text" name="question" placeholder="Ask about tech products..." autocomplete="off")
           button.btn(type="submit") Send
 
     block scripts
