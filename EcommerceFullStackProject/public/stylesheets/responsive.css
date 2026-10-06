@@ -978,3 +978,151 @@ img {
   }
 }
 
+/* ===================================================
+   HERO TECH SHOWCASE - RESPONSIVE STYLES
+   =================================================== */
+@media (max-width: 1024px) {
+  .hero.hero-tech-showcase .hero-inner {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.75rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .hero.hero-tech-showcase {
+    padding: 2.2rem 1.4rem;
+    margin: 1.25rem auto 1.75rem;
+  }
+
+  .hero.hero-tech-showcase .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  .hero.hero-tech-showcase .hero-left {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .hero-pill-badge {
+    margin-inline: auto;
+  }
+
+  .hero.hero-tech-showcase .hero-title-main,
+  .hero.hero-tech-showcase .hero-title-highlight {
+    text-align: center;
+  }
+
+  .hero-features-strip {
+    justify-content: center;
+  }
+
+  .hero-actions {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero-trend-chips {
+    justify-content: center;
+  }
+
+  .hero.hero-tech-showcase .hero-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero-glass-card {
+    max-width: 440px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero.hero-tech-showcase {
+    padding: 1.6rem 1rem !important;
+    border-radius: 20px !important;
+    margin: 0.85rem auto 1.5rem !important;
+  }
+
+  .hero.hero-tech-showcase .hero-title {
+    font-size: 1.95rem !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .hero-pill-badge {
+    font-size: 0.72rem !important;
+    padding: 0.35rem 0.75rem !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.3 !important;
+  }
+
+  .hero-features-strip {
+    flex-direction: column !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+  }
+
+  .hero-feature-chip {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.82rem !important;
+    padding: 0.45rem 0.75rem !important;
+  }
+
+  .hero-actions {
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+  }
+
+  .hero-actions .btn {
+    width: 100% !important;
+    min-height: 48px !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+  }
+
+  .hero-trend-chips {
+    gap: 0.4rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  .hero-trend-chips .trend-chip {
+    padding: 0.3rem 0.65rem !important;
+    font-size: 0.76rem !important;
+  }
+
+  .hero-glass-card {
+    padding: 1rem !important;
+    border-radius: 18px !important;
+  }
+
+  .hero-glass-card .card-media-wrap {
+    height: 190px !important;
+  }
+
+  .hero-glass-card .card-title {
+    font-size: 1.1rem !important;
+  }
+
+  .hero-glass-card .card-specs-row {
+    gap: 0.35rem !important;
+  }
+
+  .hero-glass-card .card-specs-row span {
+    font-size: 0.72rem !important;
+    padding: 0.2rem 0.5rem !important;
+  }
+
+  .hero-glass-card .price-current {
+    font-size: 1.25rem !important;
+  }
+}
+
+

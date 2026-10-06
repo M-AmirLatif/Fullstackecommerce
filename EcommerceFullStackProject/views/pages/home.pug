@@ -1,26 +1,69 @@
 extends ../layout
 
 block content
-  section.hero.hero-showcase
+  section.hero.hero-tech-showcase
+    .hero-glow-blob.hero-glow-1
+    .hero-glow-blob.hero-glow-2
+    .hero-grid-pattern
     .hero-inner
       .hero-left
-        p.hero-eyebrow(data-reveal="fade") ⚡ WE DELIVER BEST • PREMIUM TECH & INNOVATION
-        h1.hero-title(data-reveal="up") Tech Innovation Store
-        p.hero-sub(data-reveal="up" data-reveal-delay="90") Discover cutting-edge gadgets, smart accessories, and premium electronics at unbeatable prices. Quality delivered to your doorstep.
+        .hero-pill-badge(data-reveal="fade")
+          span.live-dot
+          span.pill-text ⚡ OFFICIAL TECH INNOVATION STORE • WE DELIVER BEST
+          span.pill-flag 🇵🇰
+
+        h1.hero-title(data-reveal="up")
+          span.hero-title-main Next-Gen Tech.
+          span.hero-title-highlight Unmatched Innovation.
+
+        p.hero-sub(data-reveal="up" data-reveal-delay="90")
+          | Discover cutting-edge smart gadgets, flagship audio, and premium accessories engineered for high performance. 100% genuine quality delivered to your doorstep.
+
+        .hero-features-strip(data-reveal="up" data-reveal-delay="130")
+          .hero-feat-item
+            span.feat-icon 🚀
+            span.feat-label Express Delivery Across PK
+          .hero-feat-item
+            span.feat-icon 🛡️
+            span.feat-label 100% Genuine & Tested
+          .hero-feat-item
+            span.feat-icon ⭐
+            span.feat-label 4.9/5 Rating (5K+ Happy Customers)
+
         .hero-actions(data-reveal="up" data-reveal-delay="170")
-          a.btn(href='/shop') Explore All Products
-          a.btn.btn-outline(href='/shop?featured=true') View Special Deals
-        .hero-mini-links(data-reveal="up" data-reveal-delay="230")
-          a(href='/shop?sort=newest') New arrivals
-          a(href='/shop?featured=true') Deals of the week
-          a(href='/shop?sort=rating') Top rated
+          a.btn.btn-hero-primary(href='/shop')
+            span.btn-text Explore All Products
+            span.btn-arrow →
+          a.btn.btn-hero-secondary(href='/shop?featured=true')
+            span.btn-fire 🔥
+            span.btn-text Flash Deals (Up to 30% Off)
+
+        .hero-trend-chips(data-reveal="up" data-reveal-delay="230")
+          span.chips-label Popular:
+          a.trend-chip(href='/shop?sort=newest') ✨ New Arrivals
+          a.trend-chip(href='/shop?category=Smartphones') 📱 Smartphones
+          a.trend-chip(href='/shop?category=Audio') 🎧 Audio
+          a.trend-chip(href='/shop?sort=rating') ⭐ Top Rated
+
       .hero-right(data-reveal="up" data-reveal-delay="140")
-        .hero-visual-card
-          img(src='/images/webcam.jpg', alt='Featured tech collection', loading='lazy', decoding='async')
-          .hero-visual-copy
-            p.hero-visual-kicker ⚡ Hot Tech Picks
-            h3 Up to 30% Off Trending Gadgets
-            a.btn.btn-ink(href='/shop?featured=true') Shop Deals →
+        .hero-glass-card
+          .card-badge-top
+            span.deal-tag 🔥 HOT TECH PICK
+            span.discount-pill -30% OFF
+          .card-media-wrap
+            img.card-img-hero(src='/images/webcam.jpg', alt='Featured Tech Gadget', loading='eager')
+            .card-floating-badge
+              span.badge-pulse
+              span 4K Ultra HD
+          .card-info-wrap
+            p.card-kicker ⚡ Trending This Week
+            h3.card-title 4K Pro Ultra-Clear StreamCam
+            p.card-specs Dual AI Mics • HDR 60FPS • Plug & Play
+            .card-price-row
+              .price-group
+                span.price-curr $159.99
+                span.price-old $219.99
+              a.btn.btn-claim(href='/shop?featured=true') Claim Deal →
 
   section.container
     .section-head(data-reveal="fade")
