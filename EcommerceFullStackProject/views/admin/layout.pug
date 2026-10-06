@@ -5,33 +5,80 @@ html(lang="en")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     if csrfToken
       meta(name="csrf-token" content=csrfToken)
-    title Tech Innovation Store - Admin Panel
+    title Tech Innovation Store - Admin Control Center
     link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap")
-    // Favicon link
     link(rel="icon" href="/images/favicon.png" type="image/png")
-    // Stylesheets
-    link(rel="stylesheet", href="/stylesheets/style.css?v=20261006-tech-v3")
-    link(rel="stylesheet", href="/stylesheets/responsive.css?v=20261006-tech-v3")
+    link(rel="stylesheet", href="/stylesheets/style.css?v=20261007-tech-v14")
+    link(rel="stylesheet", href="/stylesheets/responsive.css?v=20261007-tech-v14")
 
-  body
+  body.admin-body
+    if flash
+      .toast-container
+        .toast(class=flash.type)= flash.text
+
+    // Mobile Admin Top Navigation Bar
+    header.admin-mobile-bar
+      .admin-mobile-brand
+        .admin-logo-badge
+          img(src="/images/logo.png" alt="Tech Innovation Logo")
+        .admin-brand-info
+          span.admin-brand-title Tech Innovation Admin
+          span.admin-brand-sub Portal Control
+      nav.admin-mobile-nav
+        a.admin-mobile-link(href="/admin" class=(currentPath === '/admin' ? 'active' : '')) 📊 Dashboard
+        a.admin-mobile-link(href="/admin/products" class=(currentPath === '/admin/products' ? 'active' : '')) 📦 Products
+        a.admin-mobile-link(href="/admin/products/add" class=(currentPath === '/admin/products/add' ? 'active' : '')) ➕ Add
+        a.admin-mobile-link(href="/admin/orders" class=(currentPath === '/admin/orders' ? 'active' : '')) 📋 Orders
+        a.admin-mobile-link(href="/") 🏠 Store
+
     .admin-layout
-      // Sidebar Section
+      // Sidebar Section (Desktop)
       aside.admin-sidebar
-        h3 ⚡ Tech Innovation Admin
+        .admin-sidebar-header
+          a.admin-brand-link(href="/admin")
+            .admin-logo-badge
+              img(src="/images/logo.png" alt="Tech Innovation Logo")
+            .admin-sidebar-title-wrap
+              h3.admin-sidebar-title Tech Innovation
+              span.admin-sidebar-tagline Admin Console
+        
+        .admin-sidebar-user
+          span.admin-user-icon 🛡️
+          .admin-user-details
+            span.admin-user-name #{(user && user.name) ? user.name : 'Administrator'}
+            span.admin-user-email #{(user && user.email) ? user.email : 'admin123@gmail.com'}
+
         nav.admin-nav
-          a.nav-item(href="/admin") 📊 Dashboard
-          a.nav-item(href="/admin/products") 📦 Products
-          a.nav-item(href="/admin/products/add") ➕ Add Product
-          a.nav-item(href="/admin/orders") 📋 Orders
-          a.nav-item(href="/") 🏠 Back to Store
+          a.nav-item(href="/admin" class=(currentPath === '/admin' ? 'active' : ''))
+            span.nav-icon 📊
+            span.nav-label Dashboard
+          a.nav-item(href="/admin/products" class=(currentPath === '/admin/products' ? 'active' : ''))
+            span.nav-icon 📦
+            span.nav-label Products List
+          a.nav-item(href="/admin/products/add" class=(currentPath === '/admin/products/add' ? 'active' : ''))
+            span.nav-icon ➕
+            span.nav-label Add New Product
+          a.nav-item(href="/admin/orders" class=(currentPath === '/admin/orders' ? 'active' : ''))
+            span.nav-icon 📋
+            span.nav-label Orders Management
+          a.nav-item(href="/" target="_blank" rel="noopener")
+            span.nav-icon 🏠
+            span.nav-label View Live Store ↗
+        
+        .admin-sidebar-footer
+          form.admin-logout-form(action="/logout" method="POST")
+            button.btn.btn-outline.admin-btn-logout(type="submit")
+              span 🚪
+              span Sign Out
 
       // Main Content Section
       main.admin-content
         block content
 
     block scripts
-    script(src="/js/csrf.js")
-    script(src="/js/admin-ai.js")
-    script(src="/js/motion.js")
+    script(src="/js/csrf.js?v=20261007-tech-v14")
+    script(src="/js/admin-ai.js?v=20261007-tech-v14")
+    script(src="/js/motion.js?v=20261007-tech-v14")
+    script(src="/js/ui.js?v=20261007-tech-v14")

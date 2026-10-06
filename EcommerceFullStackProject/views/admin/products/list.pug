@@ -1,42 +1,59 @@
 extends ../layout
 
 block content
-  .admin-header
-    h1 📋 Product Management
-    a.btn(href="/admin/products/add") ➕ Add New Product
+  .admin-header(data-reveal="up")
+    div
+      h1 📦 Product Catalog Management
+      p(style="color: var(--muted); margin-top: 0.25rem;") Manage store inventory, update prices, and edit AI descriptions.
+    .admin-header-actions
+      a.btn(href="/admin/products/add" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") ➕ Add New Product
 
-  .card
-    h3 📦 Products List
+  .card(data-reveal="up" style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 1.5rem;")
+    h3(style="margin-top: 0; margin-bottom: 1.25rem; color: #fff; font-size: 1.2rem;") All Catalog Products
     
     if !products || products.length === 0
-      p.text-center No products found. 
-        a(href="/admin/products/add") Create one now
+      .text-center(style="padding: 3rem 1rem;")
+        p.text-muted No products found in the catalog.
+        a.btn(href="/admin/products/add" style="margin-top: 1rem; display: inline-flex;") ➕ Create Your First Product
     else
       .table-container
         table
           thead
             tr
-              th Name
+              th Product
               th Category
-              th Model / SKU
-              th Price
-              th Stock
+              th Model & SKU
+              th Price (PKR / USD)
+              th Stock Status
               th Actions
           tbody
             each product in products
               tr
                 td
-                  strong= product.name
+                  .admin-product-cell(style="display: flex; align-items: center; gap: 0.85rem;")
+                    img(src=product.image || '/images/placeholder.png' alt=product.name style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #000; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;")
+                    div
+                      strong= product.name
+                      if product.rating
+                        br
+                        small.text-warning ⭐ #{product.rating} (#{product.reviewCount || 0} reviews)
                 td
-                  span.badge= product.category || 'N/A'
+                  span.badge= product.category || 'General'
                 td
-                  | #{product.model || '-'}
+                  span= product.model || '-'
                   if product.sku
                     br
                     small.text-muted SKU: #{product.sku}
-                td $#{(product.price || 0).toFixed(2)}
-                td= product.stock || '-'
+                td
+                  strong.text-primary Rs. #{(product.price || 0).toLocaleString()}
+                  br
+                  small.text-muted $#{(product.price || 0).toFixed(2)}
+                td
+                  if product.inStock !== false && product.stock > 0
+                    span.badge.success #{product.stock} in stock
+                  else
+                    span.badge.danger Out of stock
                 td
                   .action-buttons
-                    a.btn(href=`/admin/products/edit/${product._id}`, style="padding: 0.5rem 1rem; font-size: 0.85rem;") ✍️ Edit
-                    a.btn.btn-danger(href=`/admin/products/delete/${product._id}`, onclick="return confirm('Are you sure?')", style="padding: 0.5rem 1rem; font-size: 0.85rem; margin-top: 0.25rem;") 🗑 Delete
+                    a.btn(href=`/admin/products/edit/${product._id}`, style="padding: 0.45rem 0.85rem; font-size: 0.82rem; background: #0284c7; border: 0;") ✍️ Edit
+                    a.btn.btn-danger(href=`/admin/products/delete/${product._id}`, onclick="return confirm('Are you sure you want to delete ' + " + JSON.stringify(product.name) + " + '?')", style="padding: 0.45rem 0.85rem; font-size: 0.82rem;") 🗑 Delete

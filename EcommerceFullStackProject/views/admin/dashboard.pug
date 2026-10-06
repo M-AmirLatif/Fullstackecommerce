@@ -4,108 +4,138 @@ block content
   .admin-hero(data-reveal="up")
     .admin-hero-inner
       .admin-hero-text
-        h1 Admin Dashboard
-        p Manage products, orders, and performance from one place.
+        h1 ⚡ Admin Control Dashboard
+        p Real-time storefront metrics, catalog management, and order fulfillment.
       .admin-hero-actions
-        a.btn(href="/admin/products/add") Add New Product
-        a.btn.btn-outline(href="/admin/orders") View Orders
+        a.btn(href="/admin/products/add" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") ➕ Add Product
+        a.btn.btn-outline(href="/admin/orders" style="font-weight: 600;") 📋 View Orders
+        a.btn.btn-outline(href="/" target="_blank" rel="noopener" style="font-weight: 600;") 🏠 Visit Store
 
-  // Stats Section
+  // Dynamic Real-Time Stats Section
   .stats-grid(data-stagger="70")
     .stat-card(data-reveal="scale")
-      .stat-label Total Products
-      .stat-value 245
+      .stat-header
+        .stat-label Total Products
+        span.stat-icon 📦
+      .stat-value #{productCount !== undefined ? productCount : 0}
+      .stat-meta In active store catalog
+
     .stat-card.secondary(data-reveal="scale")
-      .stat-label Total Orders
-      .stat-value 1,248
+      .stat-header
+        .stat-label Total Orders Placed
+        span.stat-icon 🛒
+      .stat-value #{orderCount !== undefined ? orderCount : 0}
+      .stat-meta Processed customer orders
+
     .stat-card.success(data-reveal="scale")
-      .stat-label Total Revenue
-      .stat-value $45,320
+      .stat-header
+        .stat-label Total Store Revenue
+        span.stat-icon 💰
+      .stat-value Rs. #{((totalRevenue || 0)).toLocaleString()}
+      .stat-meta ($#{(totalRevenue || 0).toFixed(2)})
+
     .stat-card.warning(data-reveal="scale")
-      .stat-label Pending Orders
-      .stat-value 23
+      .stat-header
+        .stat-label Pending / Processing
+        span.stat-icon ⏳
+      .stat-value #{pendingOrdersCount !== undefined ? pendingOrdersCount : 0}
+      .stat-meta Orders awaiting shipment
 
-  // Quick Actions
-  .card(data-reveal="up")
-    h3 Quick Actions
-    .action-buttons(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;")
-      a.btn(href="/admin/products") Manage Products
-      a.btn(href="/admin/orders") View Orders
-      a.btn.btn-outline(href="/") View Store
+  // Quick Action Buttons
+  .card(data-reveal="up" style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); margin-bottom: 2rem; border-radius: 16px; padding: 1.5rem;")
+    h3(style="margin-top: 0; margin-bottom: 1rem; color: #fff; font-size: 1.15rem;") 🚀 Quick Management Shortcuts
+    .action-buttons(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;")
+      a.btn(href="/admin/products/add" style="justify-content: center; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700;") ➕ Add Product
+      a.btn(href="/admin/products" style="justify-content: center; background: rgba(255, 255, 255, 0.08); font-weight: 600;") 📦 Manage Catalog
+      a.btn(href="/admin/orders" style="justify-content: center; background: rgba(255, 255, 255, 0.08); font-weight: 600;") 📋 View All Orders
+      a.btn.btn-outline(href="/" target="_blank" rel="noopener" style="justify-content: center; font-weight: 600;") 🏠 Front Storefront
 
-  // Recent Orders
-  .card(data-reveal="up")
-    h3 Recent Orders
-    .table-container
-      table
-        thead
-          tr
-            th Order ID
-            th Customer
-            th Amount
-            th Status
-            th Date
-            th Action
-        tbody
-          tr
-            td #ORD-001
-            td John Doe
-            td $150.00
-            td
-              span.badge.success Completed
-            td 2025-01-20
-            td
-              .action-buttons
-                a.btn(href="#" style="padding: 0.5rem 1rem; font-size: 0.85rem;") View
-          tr
-            td #ORD-002
-            td Jane Smith
-            td $320.50
-            td
-              span.badge.warning Processing
-            td 2025-01-21
-            td
-              .action-buttons
-                a.btn(href="#" style="padding: 0.5rem 1rem; font-size: 0.85rem;") View
-          tr
-            td #ORD-003
-            td Mike Johnson
-            td $89.99
-            td
-              span.badge.danger Pending
-            td 2025-01-22
-            td
-              .action-buttons
-                a.btn(href="#" style="padding: 0.5rem 1rem; font-size: 0.85rem;") View
-  
-  // Top Products
-  .card(data-reveal="up")
-    h3 Top Selling Products
-    .table-container
-      table
-        thead
-          tr
-            th Product Name
-            th SKU
-            th Stock
-            th Sold
-            th Price
-        tbody
-          tr
-            td Wireless Headphones
-            td WH-001
-            td 45
-            td 234
-            td $79.99
-          tr
-            td USB-C Cable
-            td UCC-001
-            td 120
-            td 512
-            td $12.99
-          tr
-            td Phone Case
-            td PC-001
-            td 200
-            td 189
-            td $24.99
+  // Recent Orders Table
+  .card(data-reveal="up" style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); margin-bottom: 2rem; border-radius: 16px; padding: 1.5rem;")
+    .section-head(style="margin-top: 0; margin-bottom: 1.25rem;")
+      h3(style="margin: 0; color: #fff; font-size: 1.2rem;") 📋 Recent Customer Orders
+      a.section-link(href="/admin/orders") View All Orders →
+    
+    if !recentOrders || recentOrders.length === 0
+      p.text-muted(style="text-align: center; padding: 2rem;") No orders placed yet.
+    else
+      .table-container
+        table
+          thead
+            tr
+              th Order Ref
+              th Customer
+              th Amount
+              th Status
+              th Date
+              th Actions
+          tbody
+            each order in recentOrders
+              tr
+                td
+                  strong ##{order._id.toString().slice(-6).toUpperCase()}
+                td
+                  strong= order.customerName || 'Customer'
+                  if order.email
+                    br
+                    small.text-muted= order.email
+                td
+                  strong.text-primary Rs. #{(order.totalAmount || 0).toLocaleString()}
+                td
+                  if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Delivered'
+                    span.badge.success= order.status
+                  else if order.status === 'Shipped'
+                    span.badge.secondary= order.status
+                  else if order.status === 'Cancelled'
+                    span.badge.danger= order.status
+                  else
+                    span.badge.warning= order.status || 'Pending'
+                td= new Date(order.createdAt).toLocaleDateString()
+                td
+                  .action-buttons
+                    if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Pending'
+                      form(method="POST", action=`/admin/orders/${order._id}/ship`, style="display:inline;")
+                        button.btn(type="submit", style="padding: 0.4rem 0.85rem; font-size: 0.82rem; background: #0284c7; border: 0;") 🚚 Ship
+                    if order.status === 'Shipped'
+                      form(method="POST", action=`/admin/orders/${order._id}/deliver`, style="display:inline;")
+                        button.btn(type="submit", style="padding: 0.4rem 0.85rem; font-size: 0.82rem; background: #059669; border: 0;") ✅ Deliver
+                    a.btn.btn-outline(href="/admin/orders", style="padding: 0.4rem 0.85rem; font-size: 0.82rem;") Details
+
+  // Recent Catalog Products
+  .card(data-reveal="up" style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 1.5rem;")
+    .section-head(style="margin-top: 0; margin-bottom: 1.25rem;")
+      h3(style="margin: 0; color: #fff; font-size: 1.2rem;") 📦 Catalog Overview
+      a.section-link(href="/admin/products") Manage All Products →
+    
+    if !recentProducts || recentProducts.length === 0
+      p.text-muted(style="text-align: center; padding: 2rem;") No products found in catalog.
+    else
+      .table-container
+        table
+          thead
+            tr
+              th Product
+              th Category
+              th Stock
+              th Price
+              th Actions
+          tbody
+            each prod in recentProducts
+              tr
+                td
+                  strong= prod.name
+                  if prod.model
+                    br
+                    small.text-muted Model: #{prod.model}
+                td
+                  span.badge= prod.category || 'General'
+                td
+                  if prod.inStock !== false && prod.stock > 0
+                    span.badge.success #{prod.stock} in stock
+                  else
+                    span.badge.danger Out of stock
+                td
+                  strong.text-primary Rs. #{(prod.price || 0).toLocaleString()} ($#{(prod.price || 0).toFixed(2)})
+                td
+                  .action-buttons
+                    a.btn(href=`/admin/products/edit/${prod._id}`, style="padding: 0.4rem 0.85rem; font-size: 0.82rem;") ✍️ Edit

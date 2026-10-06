@@ -1,15 +1,18 @@
 extends layout
 
 block content
-  .admin-header
-    h1 📋 Orders Management
-    p View and manage all customer orders
+  .admin-header(data-reveal="up")
+    div
+      h1 📋 Orders Management
+      p(style="color: var(--muted); margin-top: 0.25rem;") Track customer orders, update delivery progress, and handle cancellations.
+    .admin-header-actions
+      a.btn(href="/admin" style="font-weight: 600;") 📊 Dashboard
 
-  .card
-    h3 All Orders
+  .card(data-reveal="up" style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 1.5rem;")
+    h3(style="margin-top: 0; margin-bottom: 1.25rem; color: #fff; font-size: 1.2rem;") All Customer Orders
     
     if !orders || orders.length === 0
-      p.text-center No orders found.
+      p.text-center.text-muted(style="padding: 3rem 1rem;") No customer orders placed yet.
     else
       .table-container
         table
@@ -17,18 +20,33 @@ block content
             tr
               th Order ID
               th Customer
+              th Contact / Shipping
               th Total Amount
               th Status
               th Date
-              th Actions
+              th Quick Actions
           tbody
             each order in orders
               tr
                 td
                   strong ##{order._id.toString().slice(-6).toUpperCase()}
-                td= order.customerName || 'Unknown'
                 td
-                  strong.text-primary $#{(order.totalAmount || 0).toFixed(2)}
+                  strong= order.customerName || 'Customer'
+                  if order.email
+                    br
+                    small.text-muted= order.email
+                td
+                  if order.shipping
+                    span #{order.shipping.city || ''}, #{order.shipping.state || ''}
+                    if order.shipping.phone
+                      br
+                      small.text-muted 📞 #{order.shipping.phone}
+                  else
+                    span.text-muted Direct Purchase
+                td
+                  strong.text-primary Rs. #{(order.totalAmount || 0).toLocaleString()}
+                  br
+                  small.text-muted ($#{(order.totalAmount || 0).toFixed(2)})
                 td
                   if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Delivered'
                     span.badge.success= order.status
@@ -41,12 +59,12 @@ block content
                 td= new Date(order.createdAt).toLocaleDateString()
                 td
                   .action-buttons
-                    if order.status === 'Paid' || order.status === 'Confirmed'
+                    if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Pending'
                       form(method="POST", action=`/admin/orders/${order._id}/ship`, style="display:inline;")
-                        button.btn(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") 🚚 Mark Shipped
+                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; background: #0284c7; border: 0;") 🚚 Ship
                     if order.status === 'Shipped'
                       form(method="POST", action=`/admin/orders/${order._id}/deliver`, style="display:inline;")
-                        button.btn(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") ✅ Mark Delivered
-                    if order.status === 'Pending' || order.status === 'Paid' || order.status === 'Confirmed'
-                      form(method="POST", action=`/admin/orders/${order._id}/cancel`, style="display:inline; margin-top: 0.25rem;", onclick="return confirm('Cancel this order?')")
-                        button.btn.btn-danger(type="submit", style="padding: 0.5rem 1rem; font-size: 0.85rem;") ❌ Cancel
+                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; background: #059669; border: 0;") ✅ Deliver
+                    if order.status === 'Pending' || order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Shipped'
+                      form(method="POST", action=`/admin/orders/${order._id}/cancel`, style="display:inline;", onclick="return confirm('Are you sure you want to cancel order #" + order._id.toString().slice(-6).toUpperCase() + "?')")
+                        button.btn.btn-danger(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem;") ❌ Cancel

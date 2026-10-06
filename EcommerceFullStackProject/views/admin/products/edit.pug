@@ -1,104 +1,113 @@
-﻿extends ../layout
+extends ../layout
 
 block content
-  .admin-header
-    h1 Edit Product
+  .admin-header(data-reveal="up")
+    div
+      h1 ✍️ Edit Product: #{product.name}
+      p(style="color: var(--muted); margin-top: 0.25rem;") Update catalog details, pricing, stock levels, or regenerate content with AI.
+    .admin-header-actions
+      a.btn.btn-outline(href="/admin/products" style="font-weight: 600;") ⬅ Back to Products
 
-  .card
+  .card(data-reveal="up" style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 2rem;")
     form(method="POST", action=`/admin/products/edit/${product._id}`)
+      // AI Tools Toolbar
+      .form-row.full(style="margin-bottom: 1.5rem;")
+        .admin-ai-panel(style="background: rgba(249, 115, 22, 0.08); border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 1.25rem; width: 100%;")
+          div(style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;")
+            strong(style="color: #f97316; display: flex; align-items: center; gap: 0.4rem; font-size: 0.95rem;")
+              span ⚡
+              span Google Gemini AI Product Assistant
+            small(style="color: rgba(255,255,255,0.6);") Click any tool to generate or enhance fields:
+          .ai-tools(style="display: flex; flex-wrap: wrap; gap: 0.6rem;")
+            button.btn.btn-outline.btn-ai(type="button" data-ai="description" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;") 🤖 Generate Description
+            button.btn.btn-outline.btn-ai(type="button" data-ai="highlights" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;") ✨ Key Highlights
+            button.btn.btn-outline.btn-ai(type="button" data-ai="seo" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;") 🔍 SEO & Tags
+            button.btn.btn-outline.btn-ai(type="button" data-ai="faqs" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;") ❓ FAQs
+            button.btn.btn-outline.btn-ai(type="button" data-ai="autofill" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;") 🎯 Auto-Fill All Fields
+
       .form-row.full
         .form-group
-          label(for="name") Product Name
-          input#name(type="text", name="name", value=product.name, placeholder="Enter product name", required)
+          label(for="name") 🏷️ Product Title *
+          input#name(type="text", name="name", value=product.name, placeholder="Product name", required)
 
       .form-row
         .form-group
-          label(for="price") Price ($)
+          label(for="price") 💵 Sale Price (Rs. / USD) *
           input#price(type="number", name="price", value=product.price, placeholder="0.00", step="0.01", required)
         .form-group
-          label(for="originalPrice") Original Price ($)
+          label(for="originalPrice") 🏷️ Original / Retail Price
           input#originalPrice(type="number", name="originalPrice", value=product.originalPrice || '', placeholder="0.00", step="0.01")
 
       .form-row
         .form-group
-          label(for="stock") Stock Quantity
-          input#stock(type="number", name="stock", value=product.stock || 0, placeholder="0")
-        .form-group
-          label(for="rating") Rating (0-5)
-          input#rating(type="number", name="rating", value=product.rating || 0, min="0", max="5", step="0.1")
-
-      .form-row
-        .form-group
-          label(for="reviewCount") Review Count
-          input#reviewCount(type="number", name="reviewCount", value=product.reviewCount || 0, min="0")
-        .form-group
-          label(for="category") Category
+          label(for="category") 📁 Category *
           select#category(name="category", required)
-            option(value=product.category)= product.category || 'Select'
+            option(value=product.category selected)= product.category || 'Select'
+            option(value="Smartphones") Smartphones
+            option(value="Audio") Audio & Sound
+            option(value="Wearables") Wearables & Smartwatches
             option(value="Electronics") Electronics
-            option(value="Clothing") Clothing
             option(value="Accessories") Accessories
-            option(value="Shoes") Shoes
+            option(value="Clothing") Lifestyle & Apparel
             option(value="Other") Other
+        .form-group
+          label(for="stock") 📦 Stock Count
+          input#stock(type="number", name="stock", value=product.stock || 0, placeholder="0")
 
       .form-row
         .form-group
-          label(for="model") Model (optional)
-          input#model(type="text", name="model", value=product.model || '', placeholder="WH-1000XM5 / Series 9")
+          label(for="model") 🔢 Model Name / Number
+          input#model(type="text", name="model", value=product.model || '', placeholder="Model name")
         .form-group
-          label(for="sku") SKU (optional)
-          input#sku(type="text", name="sku", value=product.sku || '', placeholder="WH-001")
+          label(for="sku") 🔖 SKU Code
+          input#sku(type="text", name="sku", value=product.sku || '', placeholder="SKU code")
 
       .form-row
         .form-group
-          label(for="image") Image URL
-          input#image(type="text", name="image", value=product.image, placeholder="/images/jacket.jpg")
+          label(for="rating") ⭐ Rating (0 - 5.0)
+          input#rating(type="number", name="rating", value=product.rating || 0, min="0", max="5", step="0.1")
         .form-group
-          label(for="colors") Colors (comma separated)
-          input#colors(type="text", name="colors", value=(product.colors || []).join(', '), placeholder="#111827, #2563eb, #e5e7eb")
+          label(for="reviewCount") 💬 Review Count
+          input#reviewCount(type="number", name="reviewCount", value=product.reviewCount || 0, min="0")
+
+      .form-row
+        .form-group
+          label(for="image") 🖼️ Image URL or Path
+          input#image(type="text", name="image", value=product.image, placeholder="/images/headphones.jpg")
+        .form-group
+          label(for="colors") 🎨 Colors (Comma Separated)
+          input#colors(type="text", name="colors", value=(product.colors || []).join(', '), placeholder="Black, Silver, Blue")
 
       .form-row.full
         .form-group
-          label(for="highlights") Highlights (comma separated)
-          textarea#highlights(name="highlights", placeholder="Free shipping, 2 year warranty, Lightweight build", style="min-height: 90px;")= (product.highlights || []).join(', ')
+          label(for="highlights") ✨ Feature Highlights (Comma or Newline Separated)
+          textarea#highlights(name="highlights", placeholder="Key features", style="min-height: 80px;")= (product.highlights || []).join(', ')
 
       .form-row.full
         .form-group
-          label(for="seoTitle") SEO Title
-          input#seoTitle(type="text", name="seoTitle", value=product.seoTitle || '', placeholder="SEO-friendly title for search")
+          label(for="description") 📝 Detailed Product Description
+          textarea#description(name="description", placeholder="Enter description", style="min-height: 140px;")= product.description
+
+      .form-row
+        .form-group
+          label(for="seoTitle") 🔍 SEO Title
+          input#seoTitle(type="text", name="seoTitle", value=product.seoTitle || '', placeholder="SEO Title")
+        .form-group
+          label(for="tags") 🏷️ Tags (Comma Separated)
+          input#tags(type="text", name="tags", value=(product.tags || []).join(', '), placeholder="tags")
 
       .form-row.full
         .form-group
-          label(for="tags") Tags (comma separated)
-          input#tags(type="text", name="tags", value=(product.tags || []).join(', '), placeholder="gift, running, lightweight")
+          label(for="faqs") ❓ Frequently Asked Questions
+          textarea#faqs(name="faqs", placeholder="FAQs", style="min-height: 90px;")= (product.faqs || []).join('\n')
 
       .form-row.full
         .form-group
-          label(for="faqs") FAQs (comma or newline separated)
-          textarea#faqs(name="faqs", placeholder="Is it giftable? Yes, it ships ready to gift.", style="min-height: 120px;")= (product.faqs || []).join(', ')
-
-      .form-row.full
-        .form-group
-          label(for="description") Description
-          textarea#description(name="description", placeholder="Enter detailed product description", style="min-height: 150px;")= product.description
-
-      .form-row.full
-        .form-group
-          label AI Tools
-          .ai-tools
-            button.btn.btn-outline(type="button" data-ai="description") Generate description
-            button.btn.btn-outline(type="button" data-ai="highlights") Generate highlights
-            button.btn.btn-outline(type="button" data-ai="seo") Generate SEO title + tags
-            button.btn.btn-outline(type="button" data-ai="faqs") Generate product FAQs
-            button.btn.btn-outline(type="button" data-ai="autofill") Auto-fill colors & category
-
-      .form-row.full
-        .form-group
-          label(for="inStock") Product Status
+          label(for="inStock") 📊 Inventory Status
           select#inStock(name="inStock")
-            option(value="true", selected=(product.inStock !== false)) In Stock
-            option(value="false", selected=(product.inStock === false)) Out of Stock
+            option(value="true", selected=(product.inStock !== false)) ✅ In Stock & Available for Order
+            option(value="false", selected=(product.inStock === false)) ❌ Out of Stock
 
-      .form-row.full(style="gap: 1rem;")
-        button.btn(type="submit", style="flex: 1;") Update Product
-        a.btn.btn-outline(href="/admin/products", style="flex: 1; text-align: center;") Cancel
+      .form-row.full(style="gap: 1rem; margin-top: 1.5rem;")
+        button.btn(type="submit", style="flex: 1; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700; padding: 0.85rem;") 💾 Update Product
+        a.btn.btn-outline(href="/admin/products", style="flex: 1; text-align: center; padding: 0.85rem;") Cancel

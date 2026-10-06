@@ -1,45 +1,53 @@
 extends ../layout
 
 block content
-  .container
+  .container(style="max-width: 820px; padding: 2rem 1.25rem;")
     .confirmation-container(data-reveal="scale")
-      .confirmation-icon ✅
-      h2.confirmation-title= order.payment && order.payment.status === 'succeeded' ? 'Payment Successful!' : 'Order Received!'
-      p.confirmation-text= order.payment && order.payment.status === 'succeeded' ? 'Your payment is confirmed and we are preparing shipment.' : 'Your order is created and payment is pending confirmation.'
+      .confirmation-icon 🚀
+      h2.confirmation-title= order.payment && order.payment.status === 'succeeded' ? 'Payment & Order Confirmed!' : 'Order Placed Successfully!'
+      p.confirmation-text= order.payment && order.payment.status === 'succeeded' ? 'Thank you for shopping at Tech Innovation Store! Your payment is confirmed and our warehouse team is preparing your package.' : 'Thank you for your order! We have received your order details and are preparing shipment.'
 
       .order-details(data-reveal="up" data-reveal-delay="120")
         p
-          span Order ID
+          span Order Reference
           strong ##{order._id.toString().slice(-8).toUpperCase()}
         p
-          span Status
-          strong.text-success #{order.status || 'Processing'}
+          span Fulfillment Status
+          strong.text-success #{order.status || 'Confirmed'}
         p
-          span Payment
-          strong #{(order.payment && order.payment.status) || 'pending'}
+          span Payment Status
+          strong #{(order.payment && order.payment.status) || 'Paid (Demo)'}
         p
           span Order Date
-          strong #{new Date(order.createdAt).toLocaleDateString()}
+          strong #{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
         p
-          span Total Amount
-          strong.text-primary $#{(order.totalAmount || 0).toFixed(2)}
+          span Total Paid
+          strong.text-primary Rs. #{(order.totalAmount || 0).toLocaleString()} ($#{(order.totalAmount || 0).toFixed(2)})
 
-      .card(style="background: var(--surface-strong); margin: 2rem 0;" data-reveal="up")
-        h3(style="margin-top: 0;") Order Items
+      .card(style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); margin: 1.75rem 0; padding: 1.5rem; border-radius: 16px;" data-reveal="up")
+        h3(style="margin-top: 0; margin-bottom: 1rem; font-size: 1.15rem; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem;") 📦 Items in Order
         each item in order.items
-          .summary-item(style="padding: 0.75rem 0;")
-            span #{item.name} × #{item.quantity}
-            span $#{((item.price || 0) * item.quantity).toFixed(2)}
+          .summary-item(style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #fff; font-size: 0.95rem;")
+            span(style="font-weight: 600;") #{item.name} × #{item.quantity}
+            span(style="font-weight: 700; color: #f97316;") Rs. #{(((item.price || 0) * item.quantity)).toLocaleString()} ($#{((item.price || 0) * item.quantity).toFixed(2)})
 
-      .card(style="background: var(--surface-strong); border-left: 4px solid var(--success); margin: 2rem 0;" data-reveal="up")
-        p(style="margin: 0; color: var(--text);")
-          | 📧 We'll email your receipt if notifications are enabled.
+      if order.shipping
+        .card(style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); margin: 1.75rem 0; padding: 1.5rem; border-radius: 16px;" data-reveal="up")
+          h3(style="margin-top: 0; margin-bottom: 0.75rem; font-size: 1.15rem; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem;") 📍 Delivery Details
+          p(style="color: rgba(255, 255, 255, 0.9); margin: 0; line-height: 1.7; font-size: 0.95rem;")
+            strong(style="color: #fff; font-size: 1.05rem;") #{order.customerName || 'Valued Customer'}
+            br
+            | 🏠 #{order.shipping.address}, #{order.shipping.city}, #{order.shipping.state} #{order.shipping.zip}
+            br
+            | 📞 Phone: #{order.shipping.phone} | ✉ Email: #{order.email}
+
+      .card(style="background: rgba(8, 22, 40, 0.9); border-left: 4px solid #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-left-width: 5px; margin: 1.75rem 0; padding: 1.25rem; border-radius: 14px;" data-reveal="up")
+        p(style="margin: 0; color: rgba(255, 255, 255, 0.9); line-height: 1.6; font-size: 0.92rem;")
+          | 🚚 <strong>Estimated Express Delivery:</strong> 2-4 business days across Pakistan.
           br
-          | 📍 You will receive shipping details shortly.
-          br
-          | 🚚 Estimated delivery: 3-5 business days.
+          | ⚡ <strong>Support:</strong> Have questions? Use the AI Shopping Assistant anytime or contact us at <a href="/contact" style="color: #f97316; font-weight: 700; text-decoration: underline;">support@techinnovation.pk</a>.
 
       .action-buttons(style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;" data-reveal="up")
-        a.btn(href="/") 🏠 Return to Home
-        a.btn.btn-secondary(href="/shop") 🛍️ Continue Shopping
-        a.btn.btn-outline(href="/cart") 🛒 View Cart
+        a.btn(href="/" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); font-weight: 700; padding: 0.75rem 1.75rem;") 🏠 Return to Home
+        a.btn.btn-secondary(href="/shop" style="font-weight: 700; padding: 0.75rem 1.5rem;") 🛍️ Continue Shopping
+        a.btn.btn-outline(href="/cart" style="font-weight: 700; padding: 0.75rem 1.5rem;") 🛒 View Cart

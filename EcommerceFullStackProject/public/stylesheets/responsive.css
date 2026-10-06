@@ -20,50 +20,23 @@ img {
     gap: 1rem !important;
   }
 
-  /* Admin layout should stay usable on tablet/mobile */
+  /* Admin layout on tablet / mobile */
   .admin-layout {
-    /* Stack sidebar above content instead of shrinking both columns */
     display: grid !important;
     grid-template-columns: 1fr !important;
     min-height: auto !important;
-    align-items: start !important;
   }
 
   .admin-sidebar {
-    display: block !important;
-    padding: 0.9rem 1rem 0.75rem !important;
-    border-bottom: 1px solid rgba(148, 167, 255, 0.18);
-    width: 100% !important;
-    min-width: 0 !important;
+    display: none !important;
   }
 
-  .admin-sidebar h3 {
-    margin: 0 0 0.65rem !important;
-    font-size: 1rem !important;
-  }
-
-  .admin-nav {
-    flex-direction: row !important;
-    gap: 0.6rem !important;
-    overflow-x: auto !important;
-    padding-bottom: 0.2rem;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .admin-nav a {
-    flex: 0 0 auto !important;
-    white-space: nowrap !important;
-    padding: 0.6rem 0.85rem !important;
-  }
-
-  .admin-nav a:hover,
-  .admin-nav a.active {
-    padding-left: 0.85rem !important;
-    transform: none !important;
+  .admin-mobile-bar {
+    display: flex !important;
   }
 
   .admin-content {
-    padding: 1.1rem !important;
+    padding: 1.25rem 1rem !important;
     width: 100% !important;
     min-width: 0 !important;
   }
@@ -74,7 +47,7 @@ img {
   }
 
   .admin-content .table-container table {
-    min-width: 720px !important;
+    min-width: 600px !important;
   }
 }
 
@@ -311,24 +284,11 @@ img {
      Admin mobile layout tightening
      ------------------------- */
   .admin-sidebar {
-    position: static !important;
-    padding: 0.85rem 0.85rem 0.65rem !important;
+    display: none !important;
   }
 
-  .admin-sidebar h3 {
-    line-height: 1.2 !important;
-  }
-
-  .admin-nav {
-    gap: 0.55rem !important;
-    scrollbar-width: thin;
-  }
-
-  .admin-nav a {
-    flex: 0 0 auto !important;
-    white-space: nowrap !important;
-    padding: 0.55rem 0.8rem !important;
-    font-size: 0.92rem !important;
+  .admin-mobile-bar {
+    display: flex !important;
   }
 
   .admin-content {
