@@ -1311,7 +1311,8 @@ footer p {
   background: linear-gradient(150deg, rgba(8, 22, 40, 0.95), rgba(12, 30, 54, 0.95));
   border: 1px solid rgba(249, 115, 22, 0.3);
   border-radius: 22px;
-  padding: 1.25rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(16px);
   overflow: hidden;
@@ -1430,8 +1431,10 @@ footer p {
   justify-content: space-between;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.85rem 0.85rem 0.25rem 0.25rem;
+  padding: 0.85rem 0 0.25rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .price-group {
@@ -1463,7 +1466,7 @@ footer p {
   color: #ffffff !important;
   font-size: 0.88rem !important;
   font-weight: 700 !important;
-  padding: 0.48rem 1.05rem !important;
+  padding: 0.5rem 1.15rem !important;
   min-height: 38px !important;
   max-height: 40px !important;
   height: auto !important;
@@ -1472,7 +1475,6 @@ footer p {
   transition: all 0.2s ease !important;
   text-decoration: none;
   flex-shrink: 0;
-  margin-right: 0.75rem !important;
   width: auto;
 }
 

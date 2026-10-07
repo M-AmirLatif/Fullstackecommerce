@@ -69,14 +69,14 @@ block content
             p.card-kicker ⚡ Trending This Week
             h3.card-title 4K Pro Ultra-Clear StreamCam
             p.card-specs Dual AI Mics • HDR 60FPS • Plug & Play
-            .card-price-row(style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.85rem; padding-right: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.08);")
+            .card-price-row
               .price-group
                 span.price-curr $159.99
                 span.price-old $219.99
               if user && user.role === 'admin'
-                a.btn-claim(href='/admin/products' style="margin-right: 0.75rem; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; border-color: #0284c7 !important;") ⚙️ Manage Deals
+                a.btn-claim(href='/admin/products' style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; border-color: #0284c7 !important; padding: 0.5rem 1.1rem;") ⚙️ Manage Deals
               else
-                a.btn-claim(href='/claim-deal' style="margin-right: 0.75rem;") Claim Deal →
+                a.btn-claim(href='/claim-deal' style="padding: 0.5rem 1.1rem;") Claim Deal →
 
   section.container
     .section-head(data-reveal="fade")

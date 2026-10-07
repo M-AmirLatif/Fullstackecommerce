@@ -1309,7 +1309,7 @@ img {
     max-width: 100% !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
-    padding: 1rem !important;
+    padding: 1.25rem 1.25rem !important;
     border-radius: 18px !important;
   }
 
@@ -1335,7 +1335,12 @@ img {
   }
 
   .card-price-row {
-    padding-right: 0.85rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.85rem 0 0.25rem 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .card-price-row .btn-claim,
@@ -1346,7 +1351,7 @@ img {
     justify-content: center !important;
     white-space: nowrap !important;
     gap: 0.35rem !important;
-    padding: 0.45rem 0.95rem !important;
+    padding: 0.48rem 1rem !important;
     min-height: 36px !important;
     max-height: 40px !important;
     height: auto !important;
@@ -1355,7 +1360,6 @@ img {
     border-radius: 10px !important;
     width: auto !important;
     flex-shrink: 0 !important;
-    margin-right: 0.75rem !important;
   }
 
   /* Section heading enhancements on mobile */
