@@ -200,42 +200,116 @@ router.get('/reset-password', (req, res) => {
 
 router.get('/shop', async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 12
+    const page = Math.max(1, parseInt(req.query.page) || 1)
+    const limit = Math.max(1, parseInt(req.query.limit) || 12)
     const skip = (page - 1) * limit
 
-    const { category, minPrice, maxPrice } = req.query
+    const categoryRaw = String(req.query.category || '').trim()
+    const isFeatured = req.query.featured === 'true' || req.query.deals === 'true'
+    const { minPrice, maxPrice } = req.query
     const q = String(req.query.q || '').trim()
     const sortKey = String(req.query.sort || '').trim()
 
-    const query = {}
+    const andConditions = []
 
-    if (category) {
-      query.category = category
+    if (isFeatured) {
+      andConditions.push({
+        $or: [
+          { featured: true },
+          { $expr: { $gt: ['$originalPrice', '$price'] } },
+        ],
+      })
+    }
+
+    if (categoryRaw && categoryRaw.toLowerCase() !== 'all') {
+      const catLower = categoryRaw.toLowerCase()
+      if (['smartphones', 'smartphone', 'phones', 'phone', 'mobile'].includes(catLower)) {
+        andConditions.push({
+          $or: [
+            { category: /^smartphones?/i },
+            { category: /^phones?/i },
+            { name: /\bphones?\b|smartphone|galaxy|iphone|pixel|redmi|mobile/i },
+          ],
+        })
+      } else if (['audio', 'audio & sound', 'sound', 'headphones', 'speakers'].includes(catLower)) {
+        andConditions.push({
+          $or: [
+            { category: /^audio/i },
+            { category: /^sound/i },
+            { name: /headphone|speaker|earbud|airpod|sound|audio/i },
+          ],
+        })
+      } else if (['wearables', 'wearable', 'smartwatches', 'smartwatch', 'watches', 'watch'].includes(catLower)) {
+        andConditions.push({
+          $or: [
+            { category: /^(wearables?|smartwatches?|watches?)/i },
+            { name: /watch|band|wearable|tracker/i },
+          ],
+        })
+      } else if (['accessories', 'accessory'].includes(catLower)) {
+        andConditions.push({
+          $or: [
+            { category: /^accessories/i },
+            { name: /cable|charger|adapter|wallet|sunglasses|backpack|cap|case/i },
+          ],
+        })
+      } else if (['electronics', 'electronic', 'gadgets'].includes(catLower)) {
+        andConditions.push({
+          $or: [
+            { category: /^electronics/i },
+            { name: /webcam|speaker|watch|cable|charger|camera|keyboard/i },
+          ],
+        })
+      } else if (['clothing', 'apparel', 'lifestyle'].includes(catLower)) {
+        andConditions.push({
+          $or: [
+            { category: /^(clothing|apparel|lifestyle)/i },
+            { name: /shirt|jean|hoodie|jacket|wear/i },
+          ],
+        })
+      } else if (['shoes', 'footwear'].includes(catLower)) {
+        andConditions.push({
+          $or: [
+            { category: /^(shoes|footwear)/i },
+            { name: /shoe|sneaker|runner|boot/i },
+          ],
+        })
+      } else {
+        const escaped = categoryRaw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        andConditions.push({ category: new RegExp(`^${escaped}$`, 'i') })
+      }
     }
 
     if (minPrice || maxPrice) {
-      query.price = {}
-      if (minPrice) query.price.$gte = Number(minPrice)
-      if (maxPrice) query.price.$lte = Number(maxPrice)
+      const priceFilter = {}
+      if (minPrice && !isNaN(Number(minPrice))) priceFilter.$gte = Number(minPrice)
+      if (maxPrice && !isNaN(Number(maxPrice))) priceFilter.$lte = Number(maxPrice)
+      if (Object.keys(priceFilter).length > 0) {
+        andConditions.push({ price: priceFilter })
+      }
     }
-
-    let totalProducts = 0
-    let products = []
-    let aiError = false
 
     const sortMap = {
       price_asc: { price: 1 },
       price_desc: { price: -1 },
       rating: { rating: -1 },
+      bestseller: { rating: -1, reviewCount: -1 },
       newest: { createdAt: -1 },
     }
+    const sortOptions = sortMap[sortKey] || { createdAt: -1 }
+
+    let totalProducts = 0
+    let products = []
+    let aiError = false
 
     if (q) {
       try {
         const semanticIds = await fetchSemanticResults(q)
         if (semanticIds.length > 0) {
-          const searchQuery = { ...query, _id: { $in: semanticIds } }
+          const searchQuery = andConditions.length > 0
+            ? { $and: [...andConditions, { _id: { $in: semanticIds } }] }
+            : { _id: { $in: semanticIds } }
+
           const matches = await Product.find(searchQuery)
           const orderMap = new Map(semanticIds.map((id, idx) => [id, idx]))
           const ordered = matches.sort(
@@ -244,7 +318,7 @@ router.get('/shop', async (req, res) => {
           const sorted = sortMap[sortKey]
             ? ordered.sort((a, b) => {
                 if (sortKey === 'newest') return b.createdAt - a.createdAt
-                if (sortKey === 'rating') return (b.rating || 0) - (a.rating || 0)
+                if (sortKey === 'rating' || sortKey === 'bestseller') return (b.rating || 0) - (a.rating || 0)
                 if (sortKey === 'price_desc') return (b.price || 0) - (a.price || 0)
                 if (sortKey === 'price_asc') return (a.price || 0) - (b.price || 0)
                 return 0
@@ -256,17 +330,20 @@ router.get('/shop', async (req, res) => {
         } else {
           const regex = buildSearchRegex(q)
           if (regex) {
-            const fuzzyQuery = {
-              ...query,
+            const fuzzySearchCondition = {
               $or: [
                 { name: regex },
                 { description: regex },
                 { category: regex },
+                { tags: regex },
               ],
             }
-            totalProducts = await Product.countDocuments(fuzzyQuery)
-            const sortOptions = sortMap[sortKey] || {}
-            products = await Product.find(fuzzyQuery)
+            const fullQuery = andConditions.length > 0
+              ? { $and: [...andConditions, fuzzySearchCondition] }
+              : fuzzySearchCondition
+
+            totalProducts = await Product.countDocuments(fullQuery)
+            products = await Product.find(fullQuery)
               .sort(sortOptions)
               .skip(skip)
               .limit(limit)
@@ -278,11 +355,12 @@ router.get('/shop', async (req, res) => {
       }
     }
 
-    if (!q || aiError) {
-      totalProducts = await Product.countDocuments(query)
-      const sortOptions = sortMap[sortKey] || {}
-      products = await Product.find(query).sort(sortOptions).skip(skip).limit(limit)
+    if (!q || aiError || (products.length === 0 && !aiError && andConditions.length > 0 && !q)) {
+      const finalQuery = andConditions.length > 0 ? { $and: andConditions } : {}
+      totalProducts = await Product.countDocuments(finalQuery)
+      products = await Product.find(finalQuery).sort(sortOptions).skip(skip).limit(limit)
     }
+
     const categories = await Product.distinct('category')
 
     const totalPages = Math.max(1, Math.ceil(totalProducts / limit))
@@ -292,11 +370,12 @@ router.get('/shop', async (req, res) => {
       currentPage: page,
       totalPages,
       limit,
-      category,
+      category: categoryRaw,
+      isFeatured,
       minPrice,
       maxPrice,
       categories: categories || [],
-      selectedCategory: category || '',
+      selectedCategory: categoryRaw || '',
       q,
       sort: sortKey,
       aiError,

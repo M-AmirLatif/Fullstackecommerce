@@ -135,6 +135,8 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.user = req.session?.user || null
   res.locals.currentPath = req.path || ''
+  res.locals.currentUrl = req.originalUrl || req.url || ''
+  res.locals.query = req.query || {}
   try {
     res.locals.csrfToken = req.csrfToken ? req.csrfToken() : null
   } catch (_) {

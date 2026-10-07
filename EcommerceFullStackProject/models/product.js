@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
 const productSchema = new mongoose.Schema(
   {
@@ -42,6 +42,10 @@ const productSchema = new mongoose.Schema(
     inStock: {
       type: Boolean,
       default: true,
+    },
+    featured: {
+      type: Boolean,
+      default: false,
     },
     rating: {
       type: Number,

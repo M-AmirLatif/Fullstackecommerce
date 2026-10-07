@@ -1,21 +1,35 @@
 extends ../layout
 
 block content
+  - const displayTitle = isFeatured ? '🔥 Hot Tech Deals & Discounts' : selectedCategory ? `${selectedCategory} Collection` : q ? `Search: "${q}"` : 'Premium Tech Collection'
+  - const displaySub = isFeatured ? 'Exclusive limited-time savings on flagship smart gadgets and accessories.' : selectedCategory ? `Explore high-performance ${selectedCategory.toLowerCase()} with 100% genuine quality assurance.` : q ? `Showing matched tech products for "${q}".` : 'Explore flagship electronics, smart gadgets, audio, and accessories at competitive prices across Pakistan.'
+
   section.hero
     .hero-inner(style="flex-direction: column; text-align: center;")
       .hero-left(style="flex: none;")
         p.hero-eyebrow(data-reveal="fade") ⚡ TECH INNOVATION • PREMIUM SELECTION
-        h1.hero-title(data-reveal="up") Premium Tech Collection
-        p.hero-sub(data-reveal="up" data-reveal-delay="90") Explore flagship electronics, smart gadgets, audio, and accessories at competitive prices across Pakistan.
+        h1.hero-title(data-reveal="up")= displayTitle
+        p.hero-sub(data-reveal="up" data-reveal-delay="90")= displaySub
 
   .container
     nav.breadcrumbs
       a(href="/") Home
       span.sep /
-      span Shop
+      a(href="/shop") Shop
+      if isFeatured
+        span.sep /
+        span Hot Deals
+      else if selectedCategory
+        span.sep /
+        span= selectedCategory
+      else if q
+        span.sep /
+        span "#{q}"
     .card.filter-card(data-reveal="up")
       h3(data-reveal="fade") Filter Products
       form.shop-filters(action="/shop" method="GET")
+        if isFeatured
+          input(type="hidden" name="featured" value="true")
         .filter-grid(data-stagger="60")
           .form-group(data-reveal="up")
             label(for="q") Semantic Search
@@ -27,13 +41,14 @@ block content
               option(value="price_asc", selected=(sort === 'price_asc')) Price: Low to High
               option(value="price_desc", selected=(sort === 'price_desc')) Price: High to Low
               option(value="rating", selected=(sort === 'rating')) Top Rated
+              option(value="bestseller", selected=(sort === 'bestseller')) Best Sellers
               option(value="newest", selected=(sort === 'newest')) Newest
           .form-group(data-reveal="up")
             label(for="category") Category
             select#category(name="category")
               option(value="") All Categories
               each c in categories
-                option(value=c, selected=(c === selectedCategory))= c
+                option(value=c, selected=(c.toLowerCase() === (selectedCategory || '').toLowerCase()))= c
           .form-group(data-reveal="up")
             label(for="minPrice") Minimum Price
             input#minPrice(type="number" name="minPrice" placeholder="$0" value=minPrice || '')
@@ -130,6 +145,6 @@ block content
         span.text-muted Page #{currentPage} of #{totalPages}
         .pagination-links
           if currentPage > 1
-            a.btn.btn-outline(href=`/shop?page=${currentPage-1}&q=${q||''}&sort=${sort||''}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) <- Previous
+            a.btn.btn-outline(href=`/shop?page=${currentPage-1}&q=${q||''}&sort=${sort||''}&category=${selectedCategory||''}&featured=${isFeatured ? 'true' : ''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) <- Previous
           if currentPage < totalPages
-            a.btn(href=`/shop?page=${currentPage+1}&q=${q||''}&sort=${sort||''}&category=${selectedCategory||''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) Next ->
+            a.btn(href=`/shop?page=${currentPage+1}&q=${q||''}&sort=${sort||''}&category=${selectedCategory||''}&featured=${isFeatured ? 'true' : ''}&minPrice=${minPrice||''}&maxPrice=${maxPrice||''}`) Next ->

@@ -80,28 +80,32 @@ header.site-header
           span.toggle-bar
           span.toggle-bar
 
+  - const currentCat = query && query.category ? String(query.category).toLowerCase() : ''
+  - const isDeals = query && (query.featured === 'true' || query.deals === 'true')
+  - const isShopAll = safePath === '/shop' && !currentCat && !isDeals && !(query && query.q)
+
   // Category Sub-Navigation Bar
   nav.category-subnav
     .category-subnav-container
       a.subnav-link(class=(safePath === '/' ? 'active' : '') href="/")
         span 🏠
         span Home
-      a.subnav-link(class=(safePath === '/shop' ? 'active' : '') href="/shop")
+      a.subnav-link(class=(isShopAll ? 'active' : '') href="/shop")
         span ⚡
         span Shop All
-      a.subnav-link(class=(safePath.includes('featured') ? 'active' : '') href="/shop?featured=true")
+      a.subnav-link(class=(isDeals ? 'active' : '') href="/shop?featured=true")
         span 🔥
         span Hot Deals
-      a.subnav-link(href="/shop?category=Smartphones")
+      a.subnav-link(class=(['smartphones', 'smartphone', 'phones', 'phone'].includes(currentCat) ? 'active' : '') href="/shop?category=Smartphones")
         span 📱
         span Smartphones
-      a.subnav-link(href="/shop?category=Audio")
+      a.subnav-link(class=(['audio', 'audio & sound', 'sound', 'headphones'].includes(currentCat) ? 'active' : '') href="/shop?category=Audio")
         span 🎧
         span Audio & Sound
-      a.subnav-link(href="/shop?category=Wearables")
+      a.subnav-link(class=(['wearables', 'wearable', 'smartwatches', 'smartwatch', 'watches'].includes(currentCat) ? 'active' : '') href="/shop?category=Wearables")
         span ⌚
         span Smartwatches
-      a.subnav-link(href="/shop?category=Accessories")
+      a.subnav-link(class=(['accessories', 'accessory'].includes(currentCat) ? 'active' : '') href="/shop?category=Accessories")
         span 🔌
         span Accessories
       a.subnav-link(class=(safePath === '/about' ? 'active' : '') href="/about")
@@ -130,15 +134,15 @@ header.site-header
       .mobile-drawer-section
         p.drawer-kicker CATEGORIES
         .mobile-drawer-grid
-          a.drawer-chip(href="/") 🏠 Home
-          a.drawer-chip(href="/shop") ⚡ Shop All
-          a.drawer-chip(href="/shop?featured=true") 🔥 Hot Deals
-          a.drawer-chip(href="/shop?category=Smartphones") 📱 Smartphones
-          a.drawer-chip(href="/shop?category=Audio") 🎧 Audio
-          a.drawer-chip(href="/shop?category=Wearables") ⌚ Wearables
-          a.drawer-chip(href="/shop?category=Accessories") 🔌 Accessories
-          a.drawer-chip(href="/about") ℹ️ About Us
-          a.drawer-chip(href="/contact") 💬 Contact
+          a.drawer-chip(class=(safePath === '/' ? 'active' : '') href="/") 🏠 Home
+          a.drawer-chip(class=(isShopAll ? 'active' : '') href="/shop") ⚡ Shop All
+          a.drawer-chip(class=(isDeals ? 'active' : '') href="/shop?featured=true") 🔥 Hot Deals
+          a.drawer-chip(class=(['smartphones', 'smartphone', 'phones', 'phone'].includes(currentCat) ? 'active' : '') href="/shop?category=Smartphones") 📱 Smartphones
+          a.drawer-chip(class=(['audio', 'audio & sound', 'sound', 'headphones'].includes(currentCat) ? 'active' : '') href="/shop?category=Audio") 🎧 Audio
+          a.drawer-chip(class=(['wearables', 'wearable', 'smartwatches', 'smartwatch', 'watches'].includes(currentCat) ? 'active' : '') href="/shop?category=Wearables") ⌚ Wearables
+          a.drawer-chip(class=(['accessories', 'accessory'].includes(currentCat) ? 'active' : '') href="/shop?category=Accessories") 🔌 Accessories
+          a.drawer-chip(class=(safePath === '/about' ? 'active' : '') href="/about") ℹ️ About Us
+          a.drawer-chip(class=(safePath === '/contact' ? 'active' : '') href="/contact") 💬 Contact
 
       .mobile-drawer-section
         p.drawer-kicker ACCOUNT & HELP
