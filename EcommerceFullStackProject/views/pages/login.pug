@@ -23,18 +23,22 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/login" method="POST" autocomplete="on")
+        form.auth-form(action="/login" method="POST" autocomplete="off")
           if csrfToken
             input(type="hidden" name="_csrf" value=csrfToken)
 
+          //- Decoy inputs absorb browser password manager auto-population on load
+          input(type="text" name="fake_username" tabindex="-1" aria-hidden="true" autocomplete="username" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; opacity: 0.001; pointer-events: none;")
+          input(type="password" name="fake_password" tabindex="-1" aria-hidden="true" autocomplete="current-password" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; opacity: 0.001; pointer-events: none;")
+
           .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" list="saved-emails-list" placeholder="your@email.com" required autocomplete="email")
+            input#email(type="email" name="email" list="saved-emails-list" placeholder="your@email.com" required autocomplete="off")
             datalist#saved-emails-list
 
           .auth-field
             label(for="password") 🔐 Password
-            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="current-password")
+            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password")
 
           p.auth-bottom(style="margin-top: -0.35rem; margin-bottom: 0.6rem;")
             a(href="/forgot-password") Forgot password?
@@ -47,11 +51,46 @@ block content
 
     script.
       (function() {
+        function resetAuthInputs() {
+          var em = document.getElementById('email');
+          var pw = document.getElementById('password');
+          if (em && !em.dataset.touched) em.value = '';
+          if (pw && !pw.dataset.touched) pw.value = '';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
           var emailInput = document.getElementById('email');
+          var passInput = document.getElementById('password');
           var datalist = document.getElementById('saved-emails-list');
           var form = document.querySelector('form.auth-form');
 
+          resetAuthInputs();
+
+          if (emailInput) {
+            emailInput.addEventListener('input', function() { emailInput.dataset.touched = 'true'; });
+            emailInput.addEventListener('focus', function() {
+              // Ensure datalist opens cleanly on click
+              try {
+                var stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
+                if (datalist && Array.isArray(stored) && stored.length > 0) {
+                  datalist.innerHTML = '';
+                  stored.forEach(function(em) {
+                    if (em && typeof em === 'string' && em.trim()) {
+                      var opt = document.createElement('option');
+                      opt.value = em.trim();
+                      datalist.appendChild(opt);
+                    }
+                  });
+                }
+              } catch (e) {}
+            });
+          }
+
+          if (passInput) {
+            passInput.addEventListener('input', function() { passInput.dataset.touched = 'true'; });
+          }
+
+          // Populate datalist initially from localStorage
           try {
             var stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
             if (datalist && Array.isArray(stored)) {
@@ -81,5 +120,14 @@ block content
               } catch (e) {}
             });
           }
+        });
+
+        window.addEventListener('load', function() {
+          resetAuthInputs();
+          setTimeout(resetAuthInputs, 60);
+        });
+
+        window.addEventListener('pageshow', function() {
+          resetAuthInputs();
         });
       })();
