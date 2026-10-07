@@ -161,14 +161,18 @@ router.post('/orders/:id/cancel', async (req, res) => {
 
 router.get('/products', async (req, res) => {
   try {
-    const products = await Product.find()
+    const products = await Product.find().sort({ createdAt: -1 })
     res.render('admin/products/list', {
       layout: 'admin/layout',
-      products,
+      products: products || [],
     })
   } catch (error) {
-    console.error(error)
-    res.status(500).send('Failed to load products')
+    console.error('ADMIN PRODUCTS LIST ERROR:', error)
+    req.session.flash = { type: 'error', text: 'Failed to load products list.' }
+    res.render('admin/products/list', {
+      layout: 'admin/layout',
+      products: [],
+    })
   }
 })
 

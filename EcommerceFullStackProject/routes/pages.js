@@ -8,9 +8,6 @@ const { protect, forbidAdmin } = require('../middleware/auth')
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8001'
 const AI_TOP_K = 200
 
-const pageCache = new Map()
-const buildCacheKey = (req) => req.originalUrl
-
 const redirectBack = (req, res, fallback = '/shop') => {
   const ref = req.get('referer') || req.get('referrer')
   if (ref) {
@@ -24,31 +21,6 @@ const redirectBack = (req, res, fallback = '/shop') => {
     }
   }
   return res.redirect(303, fallback)
-}
-
-const cacheRender = (ttlMs) => (req, res, next) => {
-  if (req.method !== 'GET') return next()
-  if (req.session?.user) return next()
-
-  const key = buildCacheKey(req)
-  const cached = pageCache.get(key)
-  if (cached && cached.expiresAt > Date.now()) {
-    res.set('Cache-Control', 'public, max-age=60')
-    res.set('X-Cache', 'HIT')
-    return res.send(cached.html)
-  }
-
-  const render = res.render.bind(res)
-  res.render = (view, locals) => {
-    render(view, locals, (err, html) => {
-      if (err) return next(err)
-      pageCache.set(key, { html, expiresAt: Date.now() + ttlMs })
-      res.set('Cache-Control', 'public, max-age=60')
-      res.set('X-Cache', 'MISS')
-      return res.send(html)
-    })
-  }
-  return next()
 }
 
 const fetchSemanticResults = async (query) => {
@@ -187,17 +159,17 @@ const infoPages = {
   },
 }
 
-router.get('/', cacheRender(60 * 1000), async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const products = await Product.find().limit(8)
     const bestSellers = await Product.find().limit(4)
 
     res.render('pages/home', {
-      products,
-      bestSellers,
+      products: products || [],
+      bestSellers: bestSellers || [],
     })
   } catch (error) {
-    console.error(error)
+    console.error('HOME ROUTE ERROR:', error)
     res.render('pages/home', {
       products: [],
       bestSellers: [],
@@ -226,7 +198,7 @@ router.get('/reset-password', (req, res) => {
   return res.render('pages/reset-password', { token })
 })
 
-router.get('/shop', cacheRender(60 * 1000), async (req, res) => {
+router.get('/shop', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 12
@@ -313,62 +285,78 @@ router.get('/shop', cacheRender(60 * 1000), async (req, res) => {
     }
     const categories = await Product.distinct('category')
 
-    const totalPages = Math.ceil(totalProducts / limit)
+    const totalPages = Math.max(1, Math.ceil(totalProducts / limit))
 
     res.render('pages/shop', {
-      products,
+      products: products || [],
       currentPage: page,
       totalPages,
       limit,
       category,
       minPrice,
       maxPrice,
-      categories,
+      categories: categories || [],
       selectedCategory: category || '',
       q,
       sort: sortKey,
       aiError,
     })
   } catch (error) {
-    console.error(error)
-    res.status(500).send('Failed to load products')
+    console.error('SHOP ROUTE ERROR:', error)
+    res.render('pages/shop', {
+      products: [],
+      currentPage: 1,
+      totalPages: 1,
+      limit: 12,
+      category: '',
+      minPrice: '',
+      maxPrice: '',
+      categories: [],
+      selectedCategory: '',
+      q: '',
+      sort: '',
+      aiError: false,
+    })
   }
 })
 
-router.get('/product/:id', cacheRender(60 * 1000), async (req, res) => {
+router.get('/product/:id', async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(404).render('error', { message: 'Product not found' })
+      req.session.flash = { type: 'error', text: 'Product not found.' }
+      return res.redirect('/shop')
     }
 
     const product = await Product.findById(req.params.id)
 
     if (!product) {
-      return res.status(404).render('error', {
-        message: 'Product not found',
-      })
+      req.session.flash = { type: 'error', text: 'Product not found.' }
+      return res.redirect('/shop')
     }
 
     const priceValue = Number(product.price || 0)
     const priceMin = Math.max(priceValue * 0.8, 0)
     const priceMax = priceValue * 1.2
 
-    const recommendations = await Product.find({
-      _id: { $ne: product._id },
-      category: product.category,
-      price: { $gte: priceMin, $lte: priceMax },
-    })
-      .limit(6)
+    let recommendations = []
+    try {
+      recommendations = await Product.find({
+        _id: { $ne: product._id },
+        category: product.category,
+        price: { $gte: priceMin, $lte: priceMax },
+      }).limit(6)
+    } catch (_) {
+      recommendations = []
+    }
 
     res.render('pages/product', {
       product,
-      recommendations,
+      recommendations: recommendations || [],
     })
   } catch (error) {
-    console.error(error)
-    res.status(500).render('error', {
-      message: 'Failed to load product',
-    })
+    console.error('PRODUCT ROUTE ERROR:', error)
+    req.session.flash = { type: 'error', text: 'Unable to load product.' }
+    return res.redirect('/shop')
   }
 })
 

@@ -31,15 +31,26 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 
-const sessionStore = process.env.MONGO_URI
-  ? MongoStore.create({
+let sessionStore = undefined
+if (process.env.MONGO_URI) {
+  try {
+    sessionStore = MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       collectionName: 'sessions',
       ttl: 30 * 24 * 60 * 60, // 30 days
       touchAfter: 24 * 3600, // lazy session update once per 24 hours
       autoRemove: 'native',
     })
-  : undefined
+    if (sessionStore && typeof sessionStore.on === 'function') {
+      sessionStore.on('error', (err) => {
+        console.warn('MongoStore warning:', err.message)
+      })
+    }
+  } catch (storeErr) {
+    console.warn('Failed to initialize MongoStore, falling back to memory store:', storeErr.message)
+    sessionStore = undefined
+  }
+}
 
 // View engine
 app.set('views', path.join(__dirname, 'views'))
@@ -113,8 +124,10 @@ app.use((req, res, next) => {
 
 // Flash message middleware (simple)
 app.use((req, res, next) => {
-  res.locals.flash = req.session.flash || null
-  delete req.session.flash
+  res.locals.flash = req.session?.flash || null
+  if (req.session?.flash) {
+    delete req.session.flash
+  }
   next()
 })
 
@@ -132,8 +145,8 @@ app.use((req, res, next) => {
 
 // ✅ Initialize cart safely (after session)
 app.use((req, res, next) => {
-  if (!req.session.cart) req.session.cart = []
-  const items = Array.isArray(req.session.cart) ? req.session.cart : []
+  if (req.session && !req.session.cart) req.session.cart = []
+  const items = Array.isArray(req.session?.cart) ? req.session.cart : []
   res.locals.cartCount = items.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0)
   next()
 })
@@ -142,38 +155,25 @@ app.use(cartRoutes)
 
 /**
  * ✅ IMAGE PATH HELPER (available in all PUG pages)
- * Supports:
- * - Full URLs: https://...
- * - /images/file.jpg
- * - images/file.jpg
- * - public/images/file.jpg
- * - file.jpg   -> becomes /images/file.jpg
  */
 app.use((req, res, next) => {
-  res.locals.imageUrl = (img) => {
-    if (!img) return '/images/placeholder.png'
-
-    // keep external URLs as-is
-    if (/^https?:\/\//i.test(img)) return img
-
-    let p = String(img).trim().replace(/\\/g, '/')
-
-    // remove leading public/
-    p = p.replace(/^public\//, '')
-
-    // ensure leading slash
-    if (!p.startsWith('/')) p = `/${p}`
-
-    // if not already under /images, map it there
-    if (!p.startsWith('/images/')) {
-      // if it's like "/jacket.jpg" -> "/images/jacket.jpg"
-      p = `/images/${p.replace(/^\//, '')}`
-    }
-
-    return p
-  }
-
+  res.locals.imageUrl = formatImageUrl
   next()
+})
+
+// ✅ Ensure DB connection before routes
+app.use(async (req, res, next) => {
+  try {
+    const mongoose = require('mongoose')
+    if (process.env.MONGO_URI && mongoose.connection.readyState !== 1) {
+      const connectDB = require('./config/db')
+      await connectDB()
+    }
+    next()
+  } catch (err) {
+    console.error('DB connection check note:', err.message)
+    next()
+  }
 })
 
 // ✅ ROUTES (after session)
@@ -185,26 +185,49 @@ app.use(orderRoutes)
 app.use(aiRoutes)
 app.use(paymentRoutes)
 
+// CSRF error handler
 app.use((err, req, res, next) => {
   if (err && err.code === 'EBADCSRFTOKEN') {
-    req.session.flash = { type: 'error', text: 'Session expired. Please try again.' }
+    if (req.session) {
+      req.session.flash = { type: 'error', text: 'Session expired. Please try again.' }
+    }
     const back = req.get('referer')
-    return res.redirect(back || '/')
+    return res.redirect(303, back || '/')
   }
   return next(err)
 })
 
-// Error handler
+// Global Error handler
 app.use((err, req, res, next) => {
-  console.error(err)
-  res.status(err.status || 500).render('error', {
-    message: 'Something went wrong. Please try again.',
+  if (res.headersSent) {
+    return next(err)
+  }
+
+  console.error('GLOBAL ERROR HANDLER on', req.method, req.originalUrl, ':', err)
+
+  // If this is a standard GET page navigation, recover gracefully instead of breaking the UI
+  if (req.method === 'GET' && !req.xhr && !req.headers.accept?.includes('application/json')) {
+    if (req.session) {
+      req.session.flash = { type: 'error', text: 'An unexpected error occurred. Please try again.' }
+    }
+    const back = req.get('referer')
+    if (back && !back.includes('/error') && !back.includes(req.originalUrl)) {
+      return res.redirect(303, back)
+    }
+    return res.redirect(303, '/shop')
+  }
+
+  return res.status(err.status || 500).render('error', {
+    message: err.message || 'Something went wrong. Please try again.',
   })
 })
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('error', { message: 'Page Not Found' })
+  if (req.method === 'GET') {
+    return res.status(404).render('error', { message: 'Page Not Found' })
+  }
+  return res.status(404).json({ error: 'Page Not Found' })
 })
 
 module.exports = app
