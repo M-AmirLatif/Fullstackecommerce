@@ -58,7 +58,9 @@ app.set('view engine', 'pug')
 
 const formatImageUrl = (img) => {
   if (!img) return '/images/placeholder.png'
-  if (/^https?:\/\//i.test(img)) return img
+  if (/^https?:\/\//i.test(img)) {
+    return `/api/image-proxy?url=${encodeURIComponent(img)}`
+  }
   let p = String(img).trim().replace(/\\/g, '/')
   p = p.replace(/^public\//, '')
   if (!p.startsWith('/')) p = `/${p}`
