@@ -23,17 +23,21 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/login" method="POST")
+        form.auth-form(action="/login" method="POST" autocomplete="off")
           if csrfToken
             input(type="hidden" name="_csrf" value=csrfToken)
 
+          //- Decoy hidden inputs to absorb browser autofill
+          input(type="text" name="fake_username_autofill" style="position:absolute;opacity:0;height:0;width:0;pointer-events:none;z-index:-1;" tabindex="-1" autocomplete="username")
+          input(type="password" name="fake_password_autofill" style="position:absolute;opacity:0;height:0;width:0;pointer-events:none;z-index:-1;" tabindex="-1" autocomplete="current-password")
+
           .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" placeholder="your@email.com" required)
+            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="chrome-off")
 
           .auth-field
             label(for="password") 🔐 Password
-            input#password(type="password" name="password" placeholder="••••••••" required)
+            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password")
 
           p.auth-bottom(style="margin-top: -0.35rem; margin-bottom: 0.6rem;")
             a(href="/forgot-password") Forgot password?
@@ -43,3 +47,19 @@ block content
         p.auth-bottom(style="margin-top: 1.5rem;")
           | Don't have an account? 
           a(href="/register") Create One
+
+    script.
+      (function() {
+        function clearAutofill() {
+          var em = document.getElementById('email');
+          var pw = document.getElementById('password');
+          if (em && em.value && !document.activeElement.isSameNode(em)) em.value = '';
+          if (pw && pw.value && !document.activeElement.isSameNode(pw)) pw.value = '';
+        }
+        window.addEventListener('pageshow', clearAutofill);
+        document.addEventListener('DOMContentLoaded', function() {
+          clearAutofill();
+          setTimeout(clearAutofill, 50);
+          setTimeout(clearAutofill, 250);
+        });
+      })();
