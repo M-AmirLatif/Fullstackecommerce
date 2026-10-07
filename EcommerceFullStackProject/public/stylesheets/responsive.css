@@ -491,7 +491,9 @@ img {
   }
 
   .header-actions .header-action-btn,
-  .user-menu-pill {
+  .user-logged-hub,
+  .user-menu-pill,
+  .header-logout-pill {
     display: none !important;
   }
 }
@@ -590,29 +592,9 @@ img {
   .header-actions {
     display: flex !important;
     align-items: center !important;
-    gap: 0.4rem !important;
+    gap: 0.45rem !important;
     flex-shrink: 0 !important;
     margin-left: auto !important;
-  }
-
-  .user-logged-hub {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.35rem !important;
-    flex-shrink: 0 !important;
-  }
-
-  .header-logout-pill {
-    height: 36px !important;
-    padding: 0 0.65rem !important;
-    font-size: 0.78rem !important;
-    gap: 0.25rem !important;
-    flex-shrink: 0 !important;
-    box-sizing: border-box !important;
-    border-radius: 999px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
   }
 
   /* Sleek Cart Capsule on Mobile */
@@ -795,27 +777,11 @@ img {
   .brand-motto {
     font-size: 0.52rem !important;
   }
-  .header-logout-pill {
-    padding: 0 0.55rem !important;
-    font-size: 0.74rem !important;
-    gap: 0.2rem !important;
-  }
 }
 
 @media (max-width: 380px) {
   .brand-motto {
     display: none !important;
-  }
-  .header-logout-pill .logout-text {
-    display: none !important;
-  }
-  .header-logout-pill {
-    width: 36px !important;
-    height: 36px !important;
-    padding: 0 !important;
-    border-radius: 50% !important;
-    font-size: 0.95rem !important;
-    justify-content: center !important;
   }
 }
 
