@@ -24,7 +24,7 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/register/start" method="POST" autocomplete="on")
+        form.auth-form(action="/register" method="POST" autocomplete="on")
           if csrfToken
             input(type="hidden" name="_csrf" value=csrfToken)
 

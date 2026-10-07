@@ -208,11 +208,16 @@ const sendResetPasswordEmail = async (req, email, token) => {
 // =========================
 // REGISTER
 // =========================
-router.post('/register/start', async (req, res) => {
+router.get(['/register', '/signup', '/auth/register'], (req, res) => {
+  if (req.session?.user) return res.redirect('/')
+  return res.render('pages/register')
+})
+
+router.post(['/register', '/register/start', '/signup'], async (req, res) => {
   try {
     const parsed = registerSchema.safeParse(req.body)
     if (!parsed.success) {
-      req.session.flash = { type: 'error', text: 'All fields are required.' }
+      req.session.flash = { type: 'error', text: 'All fields are required (password must be at least 6 characters).' }
       return res.redirect('/register')
     }
     const { name, password } = parsed.data
@@ -222,52 +227,41 @@ router.post('/register/start', async (req, res) => {
     if (existingUser) {
       req.session.flash = {
         type: 'error',
-        text: 'Email already exists. Please log in.',
+        text: 'Email already exists. Please sign in.',
       }
       return res.redirect('/login')
     }
 
-    const otp = createOtp()
     const salt = await bcrypt.genSalt(10)
     const passwordHash = await bcrypt.hash(password, salt)
-    const otpHash = await bcrypt.hash(otp, salt)
-    const expiresAt = new Date(Date.now() + OTP_EXPIRES_MIN * 60 * 1000)
-    const now = Date.now()
 
-    const existingPending = await PendingSignup.findOne({ email })
-    if (existingPending && now - new Date(existingPending.updatedAt).getTime() < OTP_RESEND_COOLDOWN_SEC * 1000) {
-      req.session.flash = {
-        type: 'error',
-        text: `Please wait ${OTP_RESEND_COOLDOWN_SEC} seconds before requesting another OTP.`,
-      }
-      return res.redirect(`/register/verify?email=${encodeURIComponent(email)}`)
+    const user = await User.create({
+      name: name.trim(),
+      email,
+      password: passwordHash,
+      role: 'user',
+    })
+
+    req.session.user = {
+      id: String(user._id),
+      email: user.email,
+      name: user.name || (user.email ? user.email.split('@')[0] : 'User'),
+      role: user.role,
     }
 
-    await PendingSignup.findOneAndUpdate(
-      { email },
-      {
-        name,
-        email,
-        passwordHash,
-        otpHash,
-        otpExpiresAt: expiresAt,
-        attempts: 0,
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
-    )
-
-    await sendOtpEmail(email, otp)
-
+    // Also remember email in local storage list
     req.session.flash = {
       type: 'success',
-      text: 'OTP sent to your email. Enter it to complete signup.',
+      text: `Welcome to Tech Innovation Store, ${user.name}! Your account has been created. 🚀`,
     }
-    return res.redirect(`/register/verify?email=${encodeURIComponent(email)}`)
+
+    await new Promise((resolve) => req.session.save(resolve))
+    return res.redirect(303, '/')
   } catch (err) {
-    console.error('REGISTER START ERROR:', err)
+    console.error('REGISTER ERROR:', err)
     req.session.flash = {
       type: 'error',
-      text: err.message || 'Failed to send OTP. Please try again.',
+      text: err.message || 'Failed to create account. Please try again.',
     }
     return res.redirect('/register')
   }
