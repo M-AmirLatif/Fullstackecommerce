@@ -32,6 +32,7 @@ html(lang="en")
         a.admin-mobile-link(href="/admin/products/add" class=(currentPath === '/admin/products/add' ? 'active' : '')) ➕ Add
         a.admin-mobile-link(href="/admin/orders" class=(currentPath === '/admin/orders' ? 'active' : '')) 📋 Orders
         a.admin-mobile-link(href="/") 🏠 Store
+        a.admin-mobile-link(href="/logout" style="background: #dc2626; color: #fff; font-weight: 800; border-radius: 6px; padding: 0.35rem 0.65rem;") 🚪 Log Out
 
     .admin-layout
       // Sidebar Section (Desktop)
@@ -49,6 +50,9 @@ html(lang="en")
           .admin-user-details
             span.admin-user-name #{(user && user.name) ? user.name : 'Administrator'}
             span.admin-user-email #{(user && user.email) ? user.email : 'admin123@gmail.com'}
+            a(href="/logout" style="color: #f87171; font-size: 0.78rem; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.35rem;")
+              span 🚪
+              span Sign Out
 
         nav.admin-nav
           a.nav-item(href="/admin" class=(currentPath === '/admin' ? 'active' : ''))
@@ -71,9 +75,9 @@ html(lang="en")
           form.admin-logout-form(action="/logout" method="POST")
             if csrfToken
               input(type="hidden" name="_csrf" value=csrfToken)
-            button.btn.btn-outline.admin-btn-logout(type="submit")
+            button.btn(type="submit" style="background: #dc2626; color: #fff; font-weight: 800; width: 100%; border-radius: 8px; padding: 0.75rem 1rem; border: 1px solid #ef4444; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4); display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.15s ease;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'")
               span 🚪
-              span Sign Out
+              span Log Out
 
       // Main Content Section
       main.admin-content

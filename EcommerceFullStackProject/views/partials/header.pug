@@ -53,13 +53,16 @@ header.site-header
             span.action-label Admin
 
         if user
-          .user-menu-pill
-            span.user-avatar 👤
-            span.user-name= (user && user.name) ? String(user.name).split(' ')[0] : 'Account'
-            form.header-logout-form(action="/logout" method="POST")
+          .user-logged-hub(style="display: inline-flex; align-items: center; gap: 0.4rem;")
+            .user-menu-pill(style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.75rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 999px; color: #fff; font-size: 0.85rem; font-weight: 700;")
+              span.user-avatar 👤
+              span.user-name= (user && user.name) ? String(user.name).split(' ')[0] : 'Account'
+            form.header-logout-form(action="/logout" method="POST" style="margin: 0;")
               if csrfToken
                 input(type="hidden" name="_csrf" value=csrfToken)
-              button.btn-logout-icon(type="submit" title="Log Out") 🚪
+              button.header-logout-pill(type="submit" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.85rem; background: #dc2626; color: #fff; font-weight: 800; font-size: 0.82rem; border-radius: 999px; border: 1px solid #ef4444; cursor: pointer; box-shadow: 0 2px 10px rgba(220,38,38,0.4); transition: transform 0.15s ease, background 0.15s ease;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'")
+                span 🚪
+                span Log Out
         else
           a.header-action-btn.action-user(href="/login")
             span.action-icon 👤
@@ -149,10 +152,12 @@ header.site-header
             else
               a.drawer-link(href="/cart") 🛒 View Cart (#{count})
               a.drawer-link(href="/checkout") 💳 Checkout
-            form.mobile-logout-form(action="/logout" method="POST")
+            form.mobile-logout-form(action="/logout" method="POST" style="margin-top: 0.75rem;")
               if csrfToken
                 input(type="hidden" name="_csrf" value=csrfToken)
-              button.btn.btn-outline(type="submit") Log Out
+              button.btn(type="submit" style="background: #dc2626; color: #fff; font-weight: 800; width: 100%; border-radius: 8px; padding: 0.75rem 1rem; border: none; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4); display: flex; align-items: center; justify-content: center; gap: 0.45rem;")
+                span 🚪
+                span Log Out
           else
             a.btn(href="/login") 👤 Sign In / Register
             a.btn.btn-outline(href="/cart") 🛒 View Cart (#{count})
