@@ -339,11 +339,19 @@ h3 {
   color: #a5b4fc;
 }
 
-.user-logged-hub {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
+.user-logged-hub,
+.desktop-user-hub {
+  display: none !important;
+}
+
+@media (min-width: 901px) {
+  .user-logged-hub,
+  .desktop-user-hub {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
 }
 
 .user-menu-pill {

@@ -53,7 +53,7 @@ header.site-header
             span.action-label Admin
 
         if user
-          .user-logged-hub
+          .user-logged-hub.desktop-user-hub
             .user-menu-pill
               span.user-avatar 👤
               span.user-name= (user && user.name) ? String(user.name).split(' ')[0] : 'Account'
