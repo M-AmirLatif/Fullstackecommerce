@@ -74,9 +74,9 @@ block content
                 span.price-curr $159.99
                 span.price-old $219.99
               if user && user.role === 'admin'
-                a.btn-claim(href='/admin/products' style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; border-color: #0284c7 !important; padding: 0.5rem 1.1rem;") ⚙️ Manage Deals
+                a.btn-claim(href='/admin/products' style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; border-color: #0284c7 !important; padding: 0.42rem 0.85rem; font-size: 0.82rem;") ⚙️ Manage
               else
-                a.btn-claim(href='/claim-deal' style="padding: 0.5rem 1.1rem;") Claim Deal →
+                a.btn-claim(href='/claim-deal' style="padding: 0.42rem 0.85rem; font-size: 0.82rem;") Claim Deal →
 
   section.container
     .section-head(data-reveal="fade")
