@@ -23,18 +23,17 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/login" method="POST" autocomplete="off")
+        form.auth-form(action="/login" method="POST" autocomplete="on")
           if csrfToken
             input(type="hidden" name="_csrf" value=csrfToken)
 
           .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" list="saved-emails-list" placeholder="your@email.com" required autocomplete="off")
-            datalist#saved-emails-list
+            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="username")
 
           .auth-field
             label(for="password") 🔐 Password
-            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password")
+            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="current-password")
 
           p.auth-bottom(style="margin-top: -0.35rem; margin-bottom: 0.6rem;")
             a(href="/forgot-password") Forgot password?
@@ -47,93 +46,46 @@ block content
 
     script.
       (function() {
-        var userInteracted = false;
+        var userClicked = false;
 
-        function wipePreload() {
-          if (userInteracted) return;
+        function clearIfNotClicked() {
+          if (userClicked) return;
           var em = document.getElementById('email');
           var pw = document.getElementById('password');
-          if (em && document.activeElement !== em && !em.dataset.touched) em.value = '';
-          if (pw && document.activeElement !== pw && !pw.dataset.touched) pw.value = '';
+          if (em && document.activeElement !== em) em.value = '';
+          if (pw && document.activeElement !== pw) pw.value = '';
         }
 
-        // Run wipe at multiple intervals to defeat delayed browser auto-injection on page load
-        [0, 30, 80, 150, 300, 600, 1000].forEach(function(t) {
-          setTimeout(wipePreload, t);
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
-          var emailInput = document.getElementById('email');
-          var passInput = document.getElementById('password');
-          var datalist = document.getElementById('saved-emails-list');
-          var form = document.querySelector('form.auth-form');
+          var em = document.getElementById('email');
+          var pw = document.getElementById('password');
 
-          function renderDatalist() {
-            try {
-              var stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
-              if (datalist && Array.isArray(stored) && stored.length > 0) {
-                datalist.innerHTML = '';
-                stored.forEach(function(em) {
-                  if (em && typeof em === 'string' && em.trim()) {
-                    var opt = document.createElement('option');
-                    opt.value = em.trim();
-                    datalist.appendChild(opt);
-                  }
-                });
-              }
-            } catch (e) {}
+          clearIfNotClicked();
+
+          function markClicked() {
+            userClicked = true;
           }
 
-          renderDatalist();
-
-          function onEmailInteract() {
-            userInteracted = true;
-            if (emailInput) {
-              emailInput.dataset.touched = 'true';
-              emailInput.setAttribute('autocomplete', 'username');
-              renderDatalist();
-            }
+          if (em) {
+            em.addEventListener('focus', markClicked);
+            em.addEventListener('click', markClicked);
+            em.addEventListener('mousedown', markClicked);
+            em.addEventListener('input', markClicked);
           }
 
-          function onPassInteract() {
-            userInteracted = true;
-            if (passInput) {
-              passInput.dataset.touched = 'true';
-              passInput.setAttribute('autocomplete', 'current-password');
-            }
-          }
-
-          if (emailInput) {
-            emailInput.addEventListener('focus', onEmailInteract);
-            emailInput.addEventListener('click', onEmailInteract);
-            emailInput.addEventListener('pointerdown', onEmailInteract);
-            emailInput.addEventListener('input', onEmailInteract);
-          }
-
-          if (passInput) {
-            passInput.addEventListener('focus', onPassInteract);
-            passInput.addEventListener('click', onPassInteract);
-            passInput.addEventListener('pointerdown', onPassInteract);
-            passInput.addEventListener('input', onPassInteract);
-          }
-
-          if (form && emailInput) {
-            form.addEventListener('submit', function() {
-              try {
-                var val = (emailInput.value || '').trim().toLowerCase();
-                if (val && val.includes('@')) {
-                  var stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
-                  if (!Array.isArray(stored)) stored = [];
-                  stored = stored.filter(function(e) { return e !== val; });
-                  stored.unshift(val);
-                  stored = stored.slice(0, 5);
-                  localStorage.setItem('tech_saved_emails', JSON.stringify(stored));
-                }
-              } catch (e) {}
-            });
+          if (pw) {
+            pw.addEventListener('focus', markClicked);
+            pw.addEventListener('click', markClicked);
+            pw.addEventListener('mousedown', markClicked);
+            pw.addEventListener('input', markClicked);
           }
         });
 
-        window.addEventListener('load', wipePreload);
-        window.addEventListener('pageshow', wipePreload);
+        window.addEventListener('load', function() {
+          clearIfNotClicked();
+        });
+
+        window.addEventListener('pageshow', function() {
+          clearIfNotClicked();
+        });
       })();
