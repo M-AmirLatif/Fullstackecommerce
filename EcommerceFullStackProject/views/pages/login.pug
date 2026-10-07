@@ -23,18 +23,18 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/login" method="POST" autocomplete="on")
+        form.auth-form(action="/login" method="POST" autocomplete="off")
           if csrfToken
             input(type="hidden" name="_csrf" value=csrfToken)
 
           .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" list="saved-emails-list" placeholder="your@email.com" required autocomplete="username email")
+            input#email(type="email" name="email" list="saved-emails-list" placeholder="your@email.com" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" onpointerdown="this.removeAttribute('readonly');" onclick="this.removeAttribute('readonly');")
             datalist#saved-emails-list
 
           .auth-field
             label(for="password") 🔐 Password
-            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="current-password")
+            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" onpointerdown="this.removeAttribute('readonly');" onclick="this.removeAttribute('readonly');")
 
           p.auth-bottom(style="margin-top: -0.35rem; margin-bottom: 0.6rem;")
             a(href="/forgot-password") Forgot password?
@@ -46,43 +46,64 @@ block content
           a(href="/register") Create One
 
     script.
-      document.addEventListener('DOMContentLoaded', function() {
-        const emailInput = document.getElementById('email');
-        const passInput = document.getElementById('password');
-        const datalist = document.getElementById('saved-emails-list');
-        const form = document.querySelector('form.auth-form');
+      (function() {
+        function clearInputsIfIdle() {
+          const emailInput = document.getElementById('email');
+          const passInput = document.getElementById('password');
+          if (emailInput && document.activeElement !== emailInput) {
+            emailInput.value = '';
+          }
+          if (passInput && document.activeElement !== passInput) {
+            passInput.value = '';
+          }
+        }
 
-        // Always keep fields clean/empty on page load & refresh
-        if (emailInput) emailInput.value = '';
-        if (passInput) passInput.value = '';
+        document.addEventListener('DOMContentLoaded', function() {
+          const emailInput = document.getElementById('email');
+          const passInput = document.getElementById('password');
+          const datalist = document.getElementById('saved-emails-list');
+          const form = document.querySelector('form.auth-form');
 
-        try {
-          const stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
-          if (datalist && Array.isArray(stored)) {
-            datalist.innerHTML = '';
-            stored.forEach(function(em) {
-              if (em && typeof em === 'string' && em.trim()) {
-                const opt = document.createElement('option');
-                opt.value = em.trim();
-                datalist.appendChild(opt);
-              }
+          clearInputsIfIdle();
+
+          try {
+            const stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
+            if (datalist && Array.isArray(stored)) {
+              datalist.innerHTML = '';
+              stored.forEach(function(em) {
+                if (em && typeof em === 'string' && em.trim()) {
+                  const opt = document.createElement('option');
+                  opt.value = em.trim();
+                  datalist.appendChild(opt);
+                }
+              });
+            }
+          } catch (e) {}
+
+          if (form && emailInput) {
+            form.addEventListener('submit', function() {
+              try {
+                const val = (emailInput.value || '').trim().toLowerCase();
+                if (val && val.includes('@')) {
+                  let stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
+                  if (!Array.isArray(stored)) stored = [];
+                  stored = stored.filter(function(e) { return e !== val; });
+                  stored.unshift(val);
+                  stored = stored.slice(0, 5);
+                  localStorage.setItem('tech_saved_emails', JSON.stringify(stored));
+                }
+              } catch (e) {}
             });
           }
-        } catch (e) {}
+        });
 
-        if (form && emailInput) {
-          form.addEventListener('submit', function() {
-            try {
-              const val = (emailInput.value || '').trim().toLowerCase();
-              if (val && val.includes('@')) {
-                let stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
-                if (!Array.isArray(stored)) stored = [];
-                stored = stored.filter(function(e) { return e !== val; });
-                stored.unshift(val);
-                stored = stored.slice(0, 5);
-                localStorage.setItem('tech_saved_emails', JSON.stringify(stored));
-              }
-            } catch (e) {}
-          });
-        }
-      });
+        window.addEventListener('load', function() {
+          clearInputsIfIdle();
+          setTimeout(clearInputsIfIdle, 100);
+          setTimeout(clearInputsIfIdle, 300);
+        });
+
+        window.addEventListener('pageshow', function() {
+          clearInputsIfIdle();
+        });
+      })();
