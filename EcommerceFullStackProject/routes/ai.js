@@ -22,7 +22,10 @@ router.post('/ai/chat', async (req, res) => {
   try {
     const question = String(req.body.question || '').trim()
     if (!question) {
-      return res.status(400).json({ error: 'Question is required.' })
+      return res.json({
+        answer: 'Hello! 👋 How can I assist you with our tech gadgets, specs, or deals today?',
+        products: [],
+      })
     }
 
     let questionForAi = question
@@ -49,29 +52,36 @@ router.post('/ai/chat', async (req, res) => {
 
         if (response.ok) {
           const data = await response.json()
-          req.session.aiChatState = {
-            lastQuestion: question,
-            lastProducts: Array.isArray(data.products) ? data.products.slice(0, 6) : [],
-            updatedAt: Date.now(),
+          if (req.session) {
+            req.session.aiChatState = {
+              lastQuestion: question,
+              lastProducts: Array.isArray(data.products) ? data.products.slice(0, 6) : [],
+              updatedAt: Date.now(),
+            }
           }
           return res.json(data)
         }
       } catch (externalErr) {
-        console.warn('External AI service unavailable, falling back to native Gemini service:', externalErr.message)
+        console.warn('External AI service unavailable, falling back to native service:', externalErr.message)
       }
     }
 
-    // 2. Native Gemini service (runs directly on Vercel without external servers)
+    // 2. Native assistant service (runs reliably on Vercel)
     const result = await geminiService.chatWithAssistant(questionForAi, lastProducts)
-    req.session.aiChatState = {
-      lastQuestion: question,
-      lastProducts: Array.isArray(result.products) ? result.products.slice(0, 6) : [],
-      updatedAt: Date.now(),
+    if (req.session) {
+      req.session.aiChatState = {
+        lastQuestion: question,
+        lastProducts: Array.isArray(result.products) ? result.products.slice(0, 6) : [],
+        updatedAt: Date.now(),
+      }
     }
     return res.json(result)
   } catch (err) {
     console.error('AI CHAT ERROR:', err.message)
-    return res.status(500).json({ error: 'Failed to process AI request.' })
+    return res.json({
+      answer: 'Hello! 👋 Welcome to Tech Innovation Store. Ask me about any gadgets, specs, prices, or recommendations across our store!',
+      products: [],
+    })
   }
 })
 

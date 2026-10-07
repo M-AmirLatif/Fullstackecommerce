@@ -65,48 +65,67 @@ async function callGemini(prompt, systemInstruction = '') {
  * Smart product retrieval based on customer query
  */
 async function retrieveRelevantProducts(question, limit = 6) {
-  const terms = String(question || '')
-    .trim()
-    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    .split(/\s+/)
-    .filter((t) => t.length >= 2)
-    .slice(0, 6)
+  try {
+    const terms = String(question || '')
+      .trim()
+      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      .split(/\s+/)
+      .filter((t) => t.length >= 2)
+      .slice(0, 6)
 
-  if (!terms.length) {
-    return await Product.find({ inStock: true }).sort({ rating: -1, createdAt: -1 }).limit(limit).lean()
-  }
+    if (!terms.length) {
+      return await Product.find({ inStock: true }).sort({ rating: -1, createdAt: -1 }).limit(limit).lean()
+    }
 
-  const regexPattern = new RegExp(terms.join('|'), 'i')
+    const regexPattern = new RegExp(terms.join('|'), 'i')
 
-  const products = await Product.find({
-    $or: [
-      { name: regexPattern },
-      { description: regexPattern },
-      { category: regexPattern },
-      { tags: regexPattern },
-    ],
-  })
-    .limit(limit)
-    .lean()
-
-  if (products.length < limit) {
-    const fallback = await Product.find({ _id: { $nin: products.map((p) => p._id) }, inStock: true })
-      .sort({ rating: -1 })
-      .limit(limit - products.length)
+    const products = await Product.find({
+      $or: [
+        { name: regexPattern },
+        { description: regexPattern },
+        { category: regexPattern },
+      ],
+    })
+      .limit(limit)
       .lean()
-    return [...products, ...fallback]
-  }
 
-  return products
+    if (!products || products.length < limit) {
+      const existingIds = (products || []).map((p) => p._id)
+      const fallback = await Product.find({ _id: { $nin: existingIds }, inStock: true })
+        .sort({ rating: -1 })
+        .limit(limit - (products ? products.length : 0))
+        .lean()
+      return [...(products || []), ...(fallback || [])]
+    }
+
+    return products
+  } catch (err) {
+    console.warn('Product retrieval fallback:', err.message)
+    try {
+      return await Product.find().limit(limit).lean()
+    } catch (_) {
+      return []
+    }
+  }
 }
 
 /**
  * AI Shopping Assistant Chat
  */
 async function chatWithAssistant(question, sessionContext = []) {
-  const products = await retrieveRelevantProducts(question, 6)
+  const lower = String(question || '').trim().toLowerCase()
+  const isGreeting = /^(hi|hello|hey|salam|assalam|aoa|good\s+(morning|afternoon|evening)|hola|yo)\b/i.test(lower)
+  const isThanks = /^(thanks|thank\s+you|thx|jazakallah)\b/i.test(lower)
+  const isAffirmation = /^(ok|okay|great|nice|cool|perfect|fine|alright)\b/i.test(lower)
 
-  const productContext = products
+  let products = []
+  try {
+    products = await retrieveRelevantProducts(question, 6)
+  } catch (_) {
+    products = []
+  }
+
+  const productContext = (products || [])
     .map(
       (p, idx) =>
         `${idx + 1}. ${p.name} | $${Number(p.price || 0).toFixed(2)} | Category: ${p.category || 'General'} | In Stock: ${p.stock || 'Yes'} | Rating: ${p.rating || 4.5} | Highlights: ${(p.highlights || []).join(', ')} | Description: ${p.description || ''}`,
@@ -132,22 +151,22 @@ Instructions:
   try {
     answer = await callGemini(prompt)
   } catch (err) {
-    console.error('Gemini Assistant Fallback:', err.message)
-    const lower = String(question || '').toLowerCase()
-    if (lower.includes('thank')) {
-      answer = "You're very welcome! Feel free to ask if you need any more recommendations or details on our products."
-    } else if (['ok', 'okay', 'great', 'nice', 'cool'].some(w => lower.includes(w))) {
-      answer = "Awesome! What kind of gadgets or deals would you like to check out today?"
-    } else if (products.length > 0) {
-      answer = `Here are our top recommended products matching your inquiry: ${products.slice(0, 3).map((p) => `${p.name} ($${p.price})`).join(', ')}. Let me know if you would like more details!`
+    if (isGreeting) {
+      answer = 'Hello! 👋 Welcome to Tech Innovation Store. How can I help you find smartphones, headphones, smartwatches, or exclusive deals today?'
+    } else if (isThanks) {
+      answer = "You're very welcome! Feel free to ask anytime if you need more gadget recommendations or assistance."
+    } else if (isAffirmation) {
+      answer = 'Awesome! Let me know if you would like to explore our top-rated tech products or check our latest discounts.'
+    } else if (products && products.length > 0) {
+      answer = `Here are some of our top tech products matching your request: ${products.slice(0, 3).map((p) => `${p.name} ($${Number(p.price).toFixed(2)})`).join(', ')}. Let me know if you would like details on any of these!`
     } else {
-      answer = `Welcome to Tech Innovation Store! Ask me about any gadgets, specs, prices, or recommendations.`
+      answer = 'Welcome to Tech Innovation Store! Ask me anything about our gadgets, specs, prices, or recommendations.'
     }
   }
 
   return {
     answer,
-    products: products.map((p) => ({
+    products: (products || []).map((p) => ({
       _id: p._id,
       name: p.name,
       price: p.price,
