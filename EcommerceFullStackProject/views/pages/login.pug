@@ -48,23 +48,25 @@ block content
     script.
       document.addEventListener('DOMContentLoaded', function() {
         const emailInput = document.getElementById('email');
+        const passInput = document.getElementById('password');
         const datalist = document.getElementById('saved-emails-list');
         const form = document.querySelector('form.auth-form');
+
+        // Always keep fields clean/empty on page load & refresh
+        if (emailInput) emailInput.value = '';
+        if (passInput) passInput.value = '';
 
         try {
           const stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
           if (datalist && Array.isArray(stored)) {
             datalist.innerHTML = '';
             stored.forEach(function(em) {
-              if (em && typeof em === 'string') {
+              if (em && typeof em === 'string' && em.trim()) {
                 const opt = document.createElement('option');
-                opt.value = em;
+                opt.value = em.trim();
                 datalist.appendChild(opt);
               }
             });
-          }
-          if (emailInput && !emailInput.value && Array.isArray(stored) && stored.length > 0) {
-            emailInput.value = stored[0];
           }
         } catch (e) {}
 
