@@ -29,7 +29,8 @@ block content
 
           .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="username email")
+            input#email(type="email" name="email" list="saved-emails-list" placeholder="your@email.com" required autocomplete="username email")
+            datalist#saved-emails-list
 
           .auth-field
             label(for="password") 🔐 Password
@@ -40,12 +41,46 @@ block content
 
           button.auth-submit(type="submit") 🔓 Sign In
 
-        .quick-login-hints(style="margin-top: 1.25rem; padding: 0.85rem; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 12px;")
-          p(style="margin: 0 0 0.5rem 0; font-size: 0.78rem; color: rgba(255,255,255,0.7); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;") ⚡ Quick Select Saved Account:
-          .hints-btns(style="display: flex; gap: 0.5rem; flex-wrap: wrap;")
-            button.btn.btn-outline(type="button" onclick="document.getElementById('email').value='admin123@gmail.com';document.getElementById('password').value='admin123';" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 8px;") 🛡️ Admin (admin123@gmail.com)
-            button.btn.btn-outline(type="button" onclick="document.getElementById('email').value='amirlatif2288@gmail.com';document.getElementById('password').value='123456';" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 8px;") 👤 Customer (amirlatif2288@gmail.com)
-
-        p.auth-bottom(style="margin-top: 1rem;")
+        p.auth-bottom(style="margin-top: 1.5rem;")
           | Don't have an account? 
           a(href="/register") Create One
+
+    script.
+      document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.getElementById('email');
+        const datalist = document.getElementById('saved-emails-list');
+        const form = document.querySelector('form.auth-form');
+
+        try {
+          const stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
+          if (datalist && Array.isArray(stored)) {
+            datalist.innerHTML = '';
+            stored.forEach(function(em) {
+              if (em && typeof em === 'string') {
+                const opt = document.createElement('option');
+                opt.value = em;
+                datalist.appendChild(opt);
+              }
+            });
+          }
+          if (emailInput && !emailInput.value && Array.isArray(stored) && stored.length > 0) {
+            emailInput.value = stored[0];
+          }
+        } catch (e) {}
+
+        if (form && emailInput) {
+          form.addEventListener('submit', function() {
+            try {
+              const val = (emailInput.value || '').trim().toLowerCase();
+              if (val && val.includes('@')) {
+                let stored = JSON.parse(localStorage.getItem('tech_saved_emails') || '[]');
+                if (!Array.isArray(stored)) stored = [];
+                stored = stored.filter(function(e) { return e !== val; });
+                stored.unshift(val);
+                stored = stored.slice(0, 5);
+                localStorage.setItem('tech_saved_emails', JSON.stringify(stored));
+              }
+            } catch (e) {}
+          });
+        }
+      });

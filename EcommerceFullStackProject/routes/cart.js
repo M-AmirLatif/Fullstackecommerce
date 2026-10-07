@@ -35,6 +35,53 @@ router.get('/cart', (req, res) => {
   res.render('pages/cart', { cart, total })
 })
 
+// CLAIM FEATURED DEAL DIRECTLY
+router.get('/claim-deal', forbidAdmin, async (req, res) => {
+  try {
+    const cart = ensureCart(req)
+    let product = await Product.findOne({ name: /StreamCam|Camera|Pro/i })
+    if (!product) {
+      product = await Product.findOne({ inStock: true })
+    }
+
+    if (product) {
+      const existing = cart.find((item) => String(item._id) === String(product._id))
+      const dealPrice = product.price ? Math.round(product.price * 0.7 * 100) / 100 : 159.99
+      if (existing) {
+        existing.quantity += 1
+      } else {
+        cart.push({
+          _id: product._id,
+          name: product.name + ' (🔥 30% OFF Flash Deal)',
+          price: dealPrice,
+          quantity: 1,
+          image: product.image || '/images/webcam.jpg',
+        })
+      }
+      req.session.flash = { type: 'success', text: '🎉 Deal Claimed! 30% discount applied directly to your cart.' }
+    } else {
+      const existing = cart.find((item) => String(item._id) === 'deal-streamcam-4k')
+      if (existing) {
+        existing.quantity += 1
+      } else {
+        cart.push({
+          _id: 'deal-streamcam-4k',
+          name: '4K Pro Ultra-Clear StreamCam (🔥 30% OFF Flash Deal)',
+          price: 159.99,
+          quantity: 1,
+          image: '/images/webcam.jpg',
+        })
+      }
+      req.session.flash = { type: 'success', text: '🎉 Deal Claimed! 30% discount applied directly to your cart.' }
+    }
+    return res.redirect('/cart')
+  } catch (err) {
+    console.error(err)
+    req.session.flash = { type: 'error', text: 'Unable to claim deal at this time.' }
+    return res.redirect('/cart')
+  }
+})
+
 // ADD TO CART
 router.post('/cart/add', forbidAdmin, async (req, res) => {
   try {

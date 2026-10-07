@@ -48,23 +48,25 @@ block content
                   br
                   small.text-muted ($#{(order.totalAmount || 0).toFixed(2)})
                 td
-                  if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Delivered'
-                    span.badge.success= order.status
+                  if order.status === 'Paid' || order.status === 'Confirmed'
+                    span.badge.badge-paid(style="background: #10b981; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem; letter-spacing: 0.04em;")= order.status
+                  else if order.status === 'Delivered'
+                    span.badge.badge-delivered(style="background: #059669; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
                   else if order.status === 'Shipped'
-                    span.badge.secondary= order.status
+                    span.badge.badge-shipped(style="background: #0284c7; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
                   else if order.status === 'Cancelled'
-                    span.badge.danger= order.status
+                    span.badge.badge-cancelled(style="background: #ef4444; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
                   else
-                    span.badge.warning= order.status || 'Pending'
-                td= new Date(order.createdAt).toLocaleDateString()
+                    span.badge.badge-pending(style="background: #f59e0b; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status || 'Pending'
+                td(style="white-space: nowrap; font-size: 0.88rem; color: rgba(255,255,255,0.8);")= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                 td
-                  .action-buttons
+                  .action-buttons(style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;")
                     if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Pending'
-                      form(method="POST", action=`/admin/orders/${order._id}/ship`, style="display:inline;")
-                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; background: #0284c7; border: 0;") 🚚 Ship
+                      form(method="POST", action=`/admin/orders/${order._id}/ship`, style="display:inline; margin: 0;")
+                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: #0284c7; color: #ffffff; border: 1px solid #0369a1; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);") 🚚 Ship
                     if order.status === 'Shipped'
-                      form(method="POST", action=`/admin/orders/${order._id}/deliver`, style="display:inline;")
-                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; background: #059669; border: 0;") ✅ Deliver
+                      form(method="POST", action=`/admin/orders/${order._id}/deliver`, style="display:inline; margin: 0;")
+                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: #059669; color: #ffffff; border: 1px solid #047857; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);") ✅ Deliver
                     if order.status === 'Pending' || order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Shipped'
-                      form(method="POST", action=`/admin/orders/${order._id}/cancel`, style="display:inline;", onclick="return confirm('Are you sure you want to cancel order #" + order._id.toString().slice(-6).toUpperCase() + "?')")
-                        button.btn.btn-danger(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem;") ❌ Cancel
+                      form(method="POST", action=`/admin/orders/${order._id}/cancel`, style="display:inline; margin: 0;", onclick="return confirm('Are you sure you want to cancel order #" + order._id.toString().slice(-6).toUpperCase() + "?')")
+                        button.btn.btn-danger(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: #dc2626 !important; color: #ffffff !important; border: 1px solid #ef4444 !important; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);") ❌ Cancel
