@@ -23,26 +23,17 @@ block content
         if flash
           .flash(class=flash.type)= flash.text
 
-        form.auth-form(action="/login" method="POST" autocomplete="off")
+        form.auth-form(action="/login" method="POST")
           if csrfToken
             input(type="hidden" name="_csrf" value=csrfToken)
 
-          //- Saved Accounts Quick-Select Bar (Populated from browser cache)
-          #saved-accounts-wrap(style="display: none; margin-bottom: 1.1rem; padding: 0.75rem 0.9rem; background: rgba(249, 115, 22, 0.08); border: 1px solid rgba(249, 115, 22, 0.25); border-radius: 10px;")
-            .saved-accounts-header(style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;")
-              span(style="font-size: 0.8rem; font-weight: 700; color: #f97316; display: flex; align-items: center; gap: 0.35rem;")
-                | ⚡ Saved Accounts
-              span(style="font-size: 0.72rem; color: rgba(255, 255, 255, 0.5);") Click to select
-            #saved-accounts-chips(style="display: flex; flex-wrap: wrap; gap: 0.45rem;")
-
-          .auth-field(style="position: relative;")
+          .auth-field
             label(for="email") 📧 Email Address
-            input#email(type="email" name="email" placeholder="your@email.com" required autocomplete="off" style="position: relative; z-index: 2;")
-            #custom-email-dropdown(style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #0f243a; border: 1px solid rgba(249, 115, 22, 0.4); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; max-height: 180px; overflow-y: auto; padding: 0.35rem 0;")
+            input#email(type="email" name="email" placeholder="your@email.com" required)
 
           .auth-field
             label(for="password") 🔐 Password
-            input#password(type="password" name="password" placeholder="••••••••" required autocomplete="new-password")
+            input#password(type="password" name="password" placeholder="••••••••" required)
 
           p.auth-bottom(style="margin-top: -0.35rem; margin-bottom: 0.6rem;")
             a(href="/forgot-password") Forgot password?
@@ -52,118 +43,3 @@ block content
         p.auth-bottom(style="margin-top: 1.5rem;")
           | Don't have an account? 
           a(href="/register") Create One
-
-    script.
-      (function() {
-        var defaultSaved = ['admin123@gmail.com', 'amirlatif2288@gmail.com'];
-
-        function getStoredEmails() {
-          try {
-            var raw = localStorage.getItem('tech_saved_emails');
-            if (!raw) {
-              localStorage.setItem('tech_saved_emails', JSON.stringify(defaultSaved));
-              return defaultSaved;
-            }
-            var parsed = JSON.parse(raw);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-            return defaultSaved;
-          } catch (e) {
-            return defaultSaved;
-          }
-        }
-
-        function saveEmail(em) {
-          try {
-            var val = (em || '').trim().toLowerCase();
-            if (val && val.includes('@')) {
-              var current = getStoredEmails();
-              current = current.filter(function(e) { return e !== val; });
-              current.unshift(val);
-              current = current.slice(0, 6);
-              localStorage.setItem('tech_saved_emails', JSON.stringify(current));
-            }
-          } catch (e) {}
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-          var form = document.querySelector('form.auth-form');
-          var emailInput = document.getElementById('email');
-          var passInput = document.getElementById('password');
-          var accountsWrap = document.getElementById('saved-accounts-wrap');
-          var accountsChips = document.getElementById('saved-accounts-chips');
-          var customDropdown = document.getElementById('custom-email-dropdown');
-
-          // Clean initial load state
-          if (form) form.reset();
-          if (emailInput) emailInput.value = '';
-          if (passInput) passInput.value = '';
-
-          // Render saved account chips & dropdown
-          var emails = getStoredEmails();
-          if (emails.length > 0) {
-            if (accountsWrap && accountsChips) {
-              accountsWrap.style.display = 'block';
-              accountsChips.innerHTML = '';
-              emails.forEach(function(em) {
-                var chip = document.createElement('button');
-                chip.type = 'button';
-                chip.className = 'saved-account-chip';
-                chip.style.cssText = 'background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s ease;';
-                chip.innerHTML = '👤 ' + em;
-                chip.onmouseenter = function() { chip.style.background = 'rgba(249, 115, 22, 0.25)'; chip.style.borderColor = '#f97316'; };
-                chip.onmouseleave = function() { chip.style.background = 'rgba(255,255,255,0.06)'; chip.style.borderColor = 'rgba(255,255,255,0.15)'; };
-                chip.onclick = function() {
-                  if (emailInput) {
-                    emailInput.value = em;
-                    if (passInput) passInput.focus();
-                  }
-                };
-                accountsChips.appendChild(chip);
-              });
-            }
-
-            if (customDropdown) {
-              customDropdown.innerHTML = '';
-              emails.forEach(function(em) {
-                var item = document.createElement('div');
-                item.style.cssText = 'padding: 0.55rem 0.9rem; font-size: 0.85rem; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background 0.15s ease;';
-                item.innerHTML = '<span>👤</span><span style="font-weight: 600;">' + em + '</span>';
-                item.onmouseenter = function() { item.style.background = 'rgba(249, 115, 22, 0.25)'; };
-                item.onmouseleave = function() { item.style.background = 'transparent'; };
-                item.onmousedown = function(e) {
-                  e.preventDefault();
-                  if (emailInput) emailInput.value = em;
-                  customDropdown.style.display = 'none';
-                  if (passInput) passInput.focus();
-                };
-                customDropdown.appendChild(item);
-              });
-            }
-          }
-
-          if (emailInput && customDropdown) {
-            emailInput.addEventListener('focus', function() {
-              if (emails.length > 0 && !emailInput.value) {
-                customDropdown.style.display = 'block';
-              }
-            });
-            emailInput.addEventListener('click', function() {
-              if (emails.length > 0 && !emailInput.value) {
-                customDropdown.style.display = 'block';
-              }
-            });
-            emailInput.addEventListener('input', function() {
-              customDropdown.style.display = 'none';
-            });
-            emailInput.addEventListener('blur', function() {
-              setTimeout(function() { customDropdown.style.display = 'none'; }, 200);
-            });
-          }
-
-          if (form && emailInput) {
-            form.addEventListener('submit', function() {
-              saveEmail(emailInput.value);
-            });
-          }
-        });
-      })();
