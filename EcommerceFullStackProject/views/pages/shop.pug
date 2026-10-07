@@ -92,7 +92,7 @@ block content
           .product(data-reveal="scale")
             .product-media
               if p.image && p.image.length > 0
-                img(src=imageUrl(p.image), alt=p.name, loading="lazy", decoding="async")
+                img(src=imageUrl(p.image), alt=p.name, loading="lazy", decoding="async", referrerpolicy="no-referrer")
               else
                 span.no-image []
 

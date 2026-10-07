@@ -1,4 +1,4 @@
-﻿extends ../layout
+extends ../layout
 
 block content
   if product
@@ -24,7 +24,7 @@ block content
         .product-images(data-reveal="up")
           .product-media.product-detail-media
             if product.image && product.image.length > 0
-              img#product-main-image(src=imageUrl(product.image), alt=product.name, loading="eager", decoding="async")
+              img#product-main-image(src=imageUrl(product.image), alt=product.name, loading="eager", decoding="async", referrerpolicy="no-referrer")
             else
               span.no-image []
 
@@ -117,7 +117,7 @@ block content
               .product(data-reveal="scale")
                 .product-media
                   if rec.image && rec.image.length > 0
-                    img(src=imageUrl(rec.image), alt=rec.name, loading="lazy", decoding="async")
+                    img(src=imageUrl(rec.image), alt=rec.name, loading="lazy", decoding="async", referrerpolicy="no-referrer")
                   else
                     span.no-image []
                 .product-body

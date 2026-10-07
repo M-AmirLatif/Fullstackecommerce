@@ -161,8 +161,8 @@ const infoPages = {
 
 router.get('/', async (req, res) => {
   try {
-    const products = await Product.find().limit(8)
-    const bestSellers = await Product.find().limit(4)
+    const products = await Product.find().sort({ featured: -1, createdAt: -1 }).limit(12)
+    const bestSellers = await Product.find().sort({ rating: -1, reviewCount: -1 }).limit(8)
 
     res.render('pages/home', {
       products: products || [],

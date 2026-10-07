@@ -76,7 +76,22 @@ app.use(
   }),
 )
 
-app.use(helmet())
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https:'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
+        connectSrc: ["'self'", 'https:', 'http:', 'ws:', 'wss:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        frameSrc: ["'self'", 'https:'],
+      },
+    },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }),
+)
 app.use(compression())
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 app.use(
