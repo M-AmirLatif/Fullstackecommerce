@@ -80,18 +80,18 @@ block content
                     br
                     small.text-muted= order.email
                 td
-                  strong.text-primary Rs. #{(order.totalAmount || 0).toLocaleString()}
+                  strong(style="color: #f97316; font-size: 0.98rem; font-weight: 800;") Rs. #{(order.totalAmount || 0).toLocaleString()}
                 td
                   if order.status === 'Paid' || order.status === 'Confirmed'
-                    span.badge.badge-paid(style="background: #10b981; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
+                    span.badge.badge-paid(style="background: #10b981; color: #ffffff; font-weight: 800; padding: 0.35rem 0.85rem; border-radius: 999px; display: inline-block; font-size: 0.78rem; letter-spacing: 0.04em; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);")= order.status
                   else if order.status === 'Delivered'
-                    span.badge.badge-delivered(style="background: #059669; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
+                    span.badge.badge-delivered(style="background: #059669; color: #ffffff; font-weight: 800; padding: 0.35rem 0.85rem; border-radius: 999px; display: inline-block; font-size: 0.78rem; box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);")= order.status
                   else if order.status === 'Shipped'
-                    span.badge.badge-shipped(style="background: #0284c7; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
+                    span.badge.badge-shipped(style="background: #0284c7; color: #ffffff; font-weight: 800; padding: 0.35rem 0.85rem; border-radius: 999px; display: inline-block; font-size: 0.78rem; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);")= order.status
                   else if order.status === 'Cancelled'
-                    span.badge.badge-cancelled(style="background: #ef4444; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
+                    span.badge.badge-cancelled(style="background: #ef4444; color: #ffffff; font-weight: 800; padding: 0.35rem 0.85rem; border-radius: 999px; display: inline-block; font-size: 0.78rem; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);")= order.status
                   else
-                    span.badge.badge-pending(style="background: #f59e0b; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status || 'Pending'
+                    span.badge.badge-pending(style="background: #f59e0b; color: #ffffff; font-weight: 800; padding: 0.35rem 0.85rem; border-radius: 999px; display: inline-block; font-size: 0.78rem; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);")= order.status || 'Pending'
                 td(style="white-space: nowrap; font-size: 0.88rem; color: rgba(255,255,255,0.8);")= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                 td
                   .action-buttons(style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;")

@@ -81,12 +81,12 @@ block content
       .form-row.full
         .form-group
           label(for="highlights") ✨ Feature Highlights (Comma or Newline Separated)
-          textarea#highlights(name="highlights", placeholder="Key features", style="min-height: 80px;")= (product.highlights || []).join(', ')
+          textarea#highlights(name="highlights", placeholder="Active Noise Cancellation, 30-hour battery life, Multipoint Bluetooth connection", style="min-height: 95px; resize: none; border-radius: 12px; padding: 0.85rem 1rem;")= (product.highlights || []).join(', ')
 
       .form-row.full
         .form-group
           label(for="description") 📝 Detailed Product Description
-          textarea#description(name="description", placeholder="Enter description", style="min-height: 140px;")= product.description
+          textarea#description(name="description", placeholder="Enter comprehensive product specifications and overview...", style="min-height: 140px; resize: none; border-radius: 12px; padding: 0.85rem 1rem;")= product.description
 
       .form-row
         .form-group
