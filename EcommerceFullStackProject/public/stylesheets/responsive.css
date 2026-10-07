@@ -1334,6 +1334,10 @@ img {
     font-size: 1.25rem !important;
   }
 
+  .card-price-row {
+    padding-right: 0.85rem !important;
+  }
+
   .card-price-row .btn-claim,
   .btn-claim {
     display: inline-flex !important;
@@ -1351,6 +1355,7 @@ img {
     border-radius: 10px !important;
     width: auto !important;
     flex-shrink: 0 !important;
+    margin-right: 0.75rem !important;
   }
 
   /* Section heading enhancements on mobile */
