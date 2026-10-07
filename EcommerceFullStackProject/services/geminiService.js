@@ -1,7 +1,7 @@
 const Product = require('../models/product')
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || ''
-const GEMINI_MODEL = process.env.AI_GEMINI_MODEL || 'gemini-2.5-flash'
+const GEMINI_MODEL = process.env.AI_GEMINI_MODEL || 'gemini-3.8-flash'
 
 /**
  * Direct call to Google Gemini API
@@ -11,7 +11,7 @@ async function callGemini(prompt, systemInstruction = '') {
     throw new Error('GEMINI_API_KEY is not configured in environment.')
   }
 
-  const models = [GEMINI_MODEL, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
+  const models = [GEMINI_MODEL, 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.0-flash']
   let lastError = null
 
   for (const model of models) {
