@@ -82,24 +82,26 @@ block content
                 td
                   strong.text-primary Rs. #{(order.totalAmount || 0).toLocaleString()}
                 td
-                  if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Delivered'
-                    span.badge.success= order.status
+                  if order.status === 'Paid' || order.status === 'Confirmed'
+                    span.badge.badge-paid(style="background: #10b981; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
+                  else if order.status === 'Delivered'
+                    span.badge.badge-delivered(style="background: #059669; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
                   else if order.status === 'Shipped'
-                    span.badge.secondary= order.status
+                    span.badge.badge-shipped(style="background: #0284c7; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
                   else if order.status === 'Cancelled'
-                    span.badge.danger= order.status
+                    span.badge.badge-cancelled(style="background: #ef4444; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status
                   else
-                    span.badge.warning= order.status || 'Pending'
-                td= new Date(order.createdAt).toLocaleDateString()
+                    span.badge.badge-pending(style="background: #f59e0b; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;")= order.status || 'Pending'
+                td(style="white-space: nowrap; font-size: 0.88rem; color: rgba(255,255,255,0.8);")= new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                 td
-                  .action-buttons
+                  .action-buttons(style="display: flex; gap: 0.45rem; align-items: center; flex-wrap: wrap;")
                     if order.status === 'Paid' || order.status === 'Confirmed' || order.status === 'Pending'
-                      form(method="POST", action=`/admin/orders/${order._id}/ship`, style="display:inline;")
-                        button.btn(type="submit", style="padding: 0.4rem 0.85rem; font-size: 0.82rem; background: #0284c7; border: 0;") 🚚 Ship
+                      form(method="POST", action=`/admin/orders/${order._id}/ship`, style="display:inline; margin: 0;")
+                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: #0284c7; color: #ffffff; border: 1px solid #0369a1; border-radius: 8px; cursor: pointer;") 🚚 Ship
                     if order.status === 'Shipped'
-                      form(method="POST", action=`/admin/orders/${order._id}/deliver`, style="display:inline;")
-                        button.btn(type="submit", style="padding: 0.4rem 0.85rem; font-size: 0.82rem; background: #059669; border: 0;") ✅ Deliver
-                    a.btn.btn-outline(href="/admin/orders", style="padding: 0.4rem 0.85rem; font-size: 0.82rem;") Details
+                      form(method="POST", action=`/admin/orders/${order._id}/deliver`, style="display:inline; margin: 0;")
+                        button.btn(type="submit", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: #059669; color: #ffffff; border: 1px solid #047857; border-radius: 8px; cursor: pointer;") ✅ Deliver
+                    a.btn.btn-outline(href="/admin/orders", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: rgba(255, 255, 255, 0.08); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px;") Details
 
   // Recent Catalog Products
   .card(data-reveal="up" style="background: rgba(8, 22, 40, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 1.5rem;")

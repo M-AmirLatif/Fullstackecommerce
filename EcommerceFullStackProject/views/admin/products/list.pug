@@ -50,10 +50,10 @@ block content
                   small.text-muted $#{(product.price || 0).toFixed(2)}
                 td
                   if product.inStock !== false && product.stock > 0
-                    span.badge.success #{product.stock} in stock
+                    span.badge.badge-paid(style="background: #10b981; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;") #{product.stock} in stock
                   else
-                    span.badge.danger Out of stock
+                    span.badge.badge-cancelled(style="background: #ef4444; color: #ffffff; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 999px; display: inline-block; font-size: 0.76rem;") Out of stock
                 td
-                  .action-buttons
-                    a.btn(href=`/admin/products/edit/${product._id}`, style="padding: 0.45rem 0.85rem; font-size: 0.82rem; background: #0284c7; border: 0;") ✍️ Edit
-                    a.btn.btn-danger(href=`/admin/products/delete/${product._id}`, onclick="return confirm('Are you sure you want to delete ' + " + JSON.stringify(product.name) + " + '?')", style="padding: 0.45rem 0.85rem; font-size: 0.82rem;") 🗑 Delete
+                  .action-buttons(style="display: flex; gap: 0.45rem; align-items: center;")
+                    a.btn(href=`/admin/products/edit/${product._id}`, style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: #0284c7; color: #ffffff; border: 1px solid #0369a1; border-radius: 8px;") ✍️ Edit
+                    a.btn.btn-danger(href=`/admin/products/delete/${product._id}`, onclick="return confirm('Are you sure you want to delete ' + " + JSON.stringify(product.name) + " + '?')", style="padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; background: #dc2626 !important; color: #ffffff !important; border: 1px solid #ef4444 !important; border-radius: 8px;") 🗑 Delete
